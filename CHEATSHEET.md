@@ -89,9 +89,9 @@ Remove by value extracted by supplied mapper function | `StreamEx.removeBy()`
 Leave only elements greater/less/at least/at most given value | `IntStreamEx/LongStreamEx/DoubleStreamEx.greater()/atLeast()/less()/atMost()`
 Filter by value extracted by supplied mapper function | `StreamEx.filterBy()`
 Filter entries which keys or values satisfy the predicate | `EntryStream.filterKeys()/filterValues()`
-Filter entries applying the `BiPredicate` to key and value | `EntryStream.filterKeyValue()`
+Filter entries applying the `BiPredicate` to key and value | `EntryStream.filter()`
 Remove entries which keys or values satisfy the predicate | `EntryStream.removeKeys()/removeValues()`
-Remove entries applying the `BiPredicate` to key and value | `EntryStream.removeKeyValue()`
+Remove entries applying the `BiPredicate` to key and value | `EntryStream.remove()`
 Select elements which are instances of given class | `StreamEx.select()`
 Select entries which keys or values are instances of given class | `EntryStream.selectKeys()/selectValues()`
 Take stream elements while the condition is true | `any.takeWhile()`
@@ -106,7 +106,7 @@ Map array or `List` indices to the corresponding elements | `IntStreamEx.element
 Map element to the entry | `any.mapToEntry()`
 Map entry keys leaving values unchanged | `EntryStream.mapKeys()/mapToKey()`
 Map entry values leaving keys unchanged | `EntryStream.mapValues()/mapToValue()`
-Map entry key and value using `BiFunction` | `EntryStream.mapKeyValue()`
+Map entry key and value using `BiFunction` | `EntryStream.map()`
 Swap entry key and value (so entry value becomes key and vice versa) | `EntryStream.invert()`
 Drop entry values leaving only keys | `EntryStream.keys()`
 Drop entry keys leaving only values | `EntryStream.values()`
@@ -125,9 +125,9 @@ Flatten multiple collections to the stream of their elements | `StreamEx/EntrySt
 Flatten multiple arrays to the stream of their elements | `StreamEx/EntryStream.flatArray()`
 Flatten multiple maps to the stream of their entries | `StreamEx.flatMapToEntry()`
 Perform cross product of current stream with given array, `Collection` or `Stream` source creating entries | `StreamEx.cross()`
-Flat-map entry keys leaving values unchanged | `EntryStream.flatMapKeys()/flatMapToKey()`
-Flat-map entry values leaving keys unchanged | `EntryStream.flatMapValues()/flatMapToValue()`
-Flat-map entry key and value using `BiFunction` | `EntryStream.flatMapKeyValue()`
+Flat-map entry keys leaving values unchanged | `EntryStream.flatMapKeys()`
+Flat-map entry values leaving keys unchanged | `EntryStream.flatMapValues()`
+Flat-map entry key and value using `BiFunction` | `EntryStream.flatMap`
 
 ### distinct
 
@@ -171,7 +171,7 @@ What I want | How to get it
 --- | ---
 Peek only entry keys | `EntryStream.peekKeys()`
 Peek only entry values | `EntryStream.peekValues()`
-Peek entry keys and values using `BiConsumer` | `EntryStream.peekKeyValue()`
+Peek entry keys and values using `BiConsumer` | `EntryStream.peek()`
 Peek only first or last stream element | `any.peekFirst()/peekLast()`
 
 ### misc intermediate operations
@@ -200,9 +200,9 @@ Collect elements or entries to `Map` | `StreamEx/EntryStream.toMap()/toSortedMap
 Collect entries to immutable `Map` | `EntryStream.toImmutableMap()`
 Collect entries to `Map` adding custom final step | `EntryStream.toMapAndThen()`
 Collect entries to custom `Map` | `EntryStream.toCustomMap()`
-Partition elements using the `Predicate` | `StreamEx.partitioningBy()/partitioningTo()`
-Grouping elements | `StreamEx.groupingBy()/groupingTo()`
-Grouping entries | `EntryStream.grouping()/groupingTo()`
+Partition elements using the `Predicate` | `StreamEx.partitionTo()`
+Grouping elements | `StreamEx.groupingTo()`
+Grouping entries | `EntryStream.groupTo()`
 Joining elements to `String` | `any.joining()`
 Flatten collections and collect them to single final collection | `StreamEx.toFlatList()/toFlatCollection()`
 Getting maximal element using custom key extractor | `any.maxBy()/maxByInt()/maxByLong()/maxByDouble()`
@@ -238,8 +238,8 @@ Collect stream of chars or codepoints to `String` | `IntStreamEx.charsToString()
 
 What I want | How to get it
 --- | ---
-Perform operation on every adjacent pair of elements | `StreamEx.forPairs()`
-Perform operation on entry key and value using `BiConsumer` | `EntryStream.forKeyValue()`
+Perform operation on every adjacent pair of elements | `StreamEx.forEachPair()`
+Perform operation on entry key and value using `BiConsumer` | `EntryStream.forEach()`
 
 ### misc terminal operations
 
