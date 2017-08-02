@@ -1349,20 +1349,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * with the same key are grouped together. The resulting {@code Map} keys
      * are the keys of this stream entries and the values are the lists of the
      * corresponding values.
-     * 
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} or {@code List} objects returned. If
-     * more control over the returned {@code Map} is required, use
-     * {@link #groupTo(Supplier)}. If more control over the lists required, use
-     * {@link #groupingTo(Supplier)}.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      *
      * @return a {@code Map} containing the elements of this stream
+     * @see #groupTo()
      * @see Collectors#groupingBy(Function)
+     * @since 0.8
      */
     public EntryStream<K, List<V>> groupBy() {
         return groupBy(Collectors.toList());
@@ -1374,22 +1365,13 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * are the keys of this stream entries and the values are the lists of the
      * corresponding values. The {@code Map} is created using the provided
      * supplier function.
-     * 
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code List} objects returned. If more control over
-     * the lists required, use {@link #groupingTo(Supplier)}.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      *
      * @param <M> the type of the resulting {@code Map}
      * @param mapSupplier a function which returns a new, empty {@code Map} into
      *        which the results will be inserted
      * @return a {@code Map} containing the elements of this stream
-     * @see #groupTo(Supplier, Collector)
-     * @see #groupTo(Supplier, Supplier)
+     * @see #groupTo(Supplier)
+     * @since 0.8
      */
     public EntryStream<K, List<V>> groupBy(Supplier<Map<K, List<V>>> mapSupplier) {
         return groupBy(mapSupplier, Collectors.toList());
@@ -1400,11 +1382,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * the same key are grouped together. The resulting {@code Map} keys are the
      * keys of this stream entries and the values are the collections of the
      * corresponding values. The collections are created by the provided
-     * factory.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
+     * factory. 
      *
      * @param <C> the type of the resulting {@code Collection}
      * @param <M> the type of the resulting {@code Map}
@@ -1413,7 +1391,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @param collectionFactory a {@code Supplier} which returns a new, empty
      *        {@code Collection} of the appropriate type
      * @return a {@code Map} containing the elements of this stream
+     * @see #groupTo(Supplier, Supplier)
      * @see Collectors#toCollection(Supplier)
+     * @since 0.8
      */
     public <C extends Collection<V>> EntryStream<K, C> groupBy(Supplier<Map<K, C>> mapSupplier,
             Supplier<C> collectionFactory) {
@@ -1424,24 +1404,16 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * Returns a {@link Map} where elements of this stream with the same key are
      * grouped together. The resulting {@code Map} keys are the keys of this
      * stream entries and the corresponding values are combined using the
-     * provided downstream collector.
-     * 
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} object returned. If more control over
-     * the returned {@code Map} is required, use
-     * {@link #groupTo(Supplier, Collector)}.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
+     * provided downstream collector. 
      *
      * @param <A> the intermediate accumulation type of the downstream collector
      * @param <D> the result type of the downstream reduction
      * @param downstream a {@code Collector} implementing the downstream
      *        reduction
      * @return a {@code Map} containing the elements of this stream
+     * @see #groupTo(Collector)
      * @see Collectors#groupingBy(Function, Collector)
+     * @since 0.8
      */
     public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream) {
         final Map<K, D> m = groupTo(downstream);
@@ -1456,10 +1428,6 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * provided downstream collector. The {@code Map} is created using the
      * provided supplier function.
      *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
-     *
      * @param <A> the intermediate accumulation type of the downstream collector
      * @param <D> the result type of the downstream reduction
      * @param <M> the type of the resulting {@code Map}
@@ -1468,7 +1436,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @param downstream a {@code Collector} implementing the downstream
      *        reduction
      * @return a {@code Map} containing the elements of this stream
+     * @see #groupTo(Supplier, Collector)
      * @see Collectors#groupingBy(Function, Supplier, Collector)
+     * @since 0.8
      */
     public <A, D> EntryStream<K, D> groupBy(Supplier<Map<K, D>> mapSupplier, Collector<? super V, A, D> downstream) {
         final Map<K, D> m = groupTo(mapSupplier, downstream);
