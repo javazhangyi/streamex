@@ -2,6 +2,10 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 0.8.1:
+* Rename `toCustomMap` to `toMap`.
+* Support `null` value for `toMap`/`toSortedMap`/`toNavigableMap`
+ 		
 ### 0.8: API refactoring and improvements:
 * Improve Null Safety
 * Rename:
