@@ -70,10 +70,12 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     }
 
     final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val, BinaryOperator<V> mergeFunction) {
-        if (map.containsKey(key)) {
-            map.put(key, mergeFunction.apply(map.get(key), val));
-        } else {
+        final V oldValue = map.get(key);
+
+        if (oldValue == null && map.containsKey(key) == false) {
             map.put(key, val);
+        } else {
+            map.put(key, mergeFunction.apply(oldValue, val));
         }
     }
 
