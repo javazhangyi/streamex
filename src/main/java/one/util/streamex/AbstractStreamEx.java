@@ -331,8 +331,13 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *        element
      * @return the new stream
      */
+    @SuppressWarnings("unchecked")
     public <K, V> EntryStream<K, V> mapToEntry(Function<? super T, ? extends Map.Entry<K, V>> mapper) {
-        return new EntryStream<>(stream().map(e -> mapper.apply(e)), context);
+        if (mapper == Function.identity()) {
+            return new EntryStream<>((StreamEx<Map.Entry<K, V>>) this, context);
+        } else {
+            return new EntryStream<>(stream().map(e -> mapper.apply(e)), context);
+        }
     }
 
     /**
