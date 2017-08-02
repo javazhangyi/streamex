@@ -49,9 +49,15 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         return StreamSupport.stream(spliterator, context.parallel);
     }
 
-    final <K, V, M extends Map<K, V>> M toMapThrowing(Function<? super T, ? extends K> keyMapper,
+    final <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, M map) {
-        forEach(t -> addToMap(map, keyMapper.apply(t), Objects.requireNonNull(valMapper.apply(t))));
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
+        return map;
+    }
+
+    final <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
         return map;
     }
 
@@ -60,6 +66,14 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         if (oldVal != null) {
             throw new IllegalStateException("Duplicate entry for key '" + key + "' (attempt to merge values '" + oldVal
                 + "' and '" + val + "')");
+        }
+    }
+
+    final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val, BinaryOperator<V> mergeFunction) {
+        if (map.containsKey(key)) {
+            map.put(key, mergeFunction.apply(map.get(key), val));
+        } else {
+            map.put(key, val);
         }
     }
 

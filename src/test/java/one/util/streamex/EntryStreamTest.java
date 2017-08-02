@@ -305,7 +305,7 @@ public class EntryStreamTest {
     public void testToMap() {
         Map<String, Integer> base = IntStreamEx.range(100).mapToEntry(String::valueOf, Integer::valueOf).toMap();
         entryStream(() -> EntryStream.of(base), supplier -> {
-            TreeMap<String, Integer> result = supplier.get().toCustomMap(TreeMap::new);
+            TreeMap<String, Integer> result = supplier.get().toMap(TreeMap::new);
             assertEquals(base, result);
         });
 
@@ -315,7 +315,7 @@ public class EntryStreamTest {
         Function<StreamExSupplier<String>, EntryStream<Integer, String>> fn = supplier -> supplier.get().mapToEntry(
             String::length, Function.identity());
         streamEx(() -> StreamEx.of("aaa", "bb", "dd"), supplier -> {
-            HashMap<Integer, String> customMap = fn.apply(supplier).toCustomMap(String::concat, HashMap::new);
+            HashMap<Integer, String> customMap = fn.apply(supplier).toMap(String::concat, HashMap::new);
             assertEquals(expected, customMap);
             Map<Integer, String> map = fn.apply(supplier).toMap(String::concat);
             assertEquals(expected, map);
@@ -327,7 +327,7 @@ public class EntryStreamTest {
             checkIllegalStateException(() -> fn.apply(supplier).toMap(), "2", "dd", "bb");
             checkIllegalStateException(() -> fn.apply(supplier).toSortedMap(), "2", "dd", "bb");
             checkIllegalStateException(() -> fn.apply(supplier).toNavigableMap(), "2", "dd", "bb");
-            checkIllegalStateException(() -> fn.apply(supplier).toCustomMap(HashMap::new), "2", "dd", "bb");
+            checkIllegalStateException(() -> fn.apply(supplier).toMap(HashMap::new), "2", "dd", "bb");
         });
 
         assertEquals(createMap(), EntryStream.of(createMap()).parallel().toMap());
@@ -469,7 +469,7 @@ public class EntryStreamTest {
     public void testSorting() {
         Map<String, Integer> data = createMap();
         LinkedHashMap<String, Integer> result = EntryStream.of(data).reverseSorted(Entry.comparingByValue())
-                .toCustomMap(LinkedHashMap::new);
+                .toMap(LinkedHashMap::new);
         assertEquals("{ccc=33, bb=22, a=1}", result.toString());
     }
 
@@ -530,7 +530,7 @@ public class EntryStreamTest {
 
     @Test(expected = IllegalStateException.class)
     public void testCollision() {
-        StreamEx.of("aa", "aa").mapToEntry(s -> s, String::length).toCustomMap(LinkedHashMap::new);
+        StreamEx.of("aa", "aa").mapToEntry(s -> s, String::length).toMap(LinkedHashMap::new);
     }
 
     @Test

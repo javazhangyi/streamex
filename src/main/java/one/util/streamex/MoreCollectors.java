@@ -1,12 +1,12 @@
 /*
  * Copyright 2015, 2016 Tagir Valeev
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,6 +34,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -53,7 +55,7 @@ import static one.util.streamex.StreamExInternals.*;
 
 /**
  * Implementations of several collectors in addition to ones available in JDK.
- * 
+ *
  * @author Tagir Valeev
  * @see Collectors
  * @see Joining
@@ -67,7 +69,7 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which just ignores the input and calls the
      * provided supplier once to return the output.
-     * 
+     *
      * @param <T> the type of input elements
      * @param <U> the type of output
      * @param supplier the supplier of the output
@@ -88,7 +90,7 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} that accumulates the input elements into a
      * new array.
-     * 
+     *
      * The operation performed by the returned collector is equivalent to
      * {@code stream.toArray(generator)}. This collector is mostly useful as a
      * downstream collector.
@@ -107,7 +109,7 @@ public final class MoreCollectors {
      * Returns a {@code Collector} which produces a boolean array containing the
      * results of applying the given predicate to the input elements, in
      * encounter order.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param predicate a non-interfering, stateless predicate to apply to each
      *        input element. The result values of this predicate are collected
@@ -133,7 +135,7 @@ public final class MoreCollectors {
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the resulting set
      * contains all possible enum values.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param enumClass the class of input enum values
      * @return a {@code Collector} which collects all the input elements into a
@@ -150,12 +152,12 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which counts a number of distinct values the
      * mapper function returns for the stream elements.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.map(mapper).distinct().count()}. This collector is mostly
      * useful as a downstream collector.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param mapper a function which classifies input elements.
      * @return a collector which counts a number of distinct classes the mapper
@@ -173,15 +175,15 @@ public final class MoreCollectors {
      * For ordered source the order of collected elements is preserved. If the
      * same result is returned by mapper function for several elements, only the
      * first element is included into the resulting list.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.distinct(mapper).toList()}, but may work faster.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param mapper a function which classifies input elements.
      * @return a collector which collects distinct elements to the {@code List}.
@@ -214,7 +216,7 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which aggregates the results of two supplied
      * collectors using the supplied finisher function.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
@@ -277,12 +279,12 @@ public final class MoreCollectors {
      * Returns a {@code Collector} which finds the minimal and maximal element
      * according to the supplied comparator, then applies finisher function to
      * them producing the final result.
-     * 
+     *
      * <p>
      * This collector produces stable result for ordered stream: if several
      * minimal or maximal elements appear, the collector always selects the
      * first encountered.
-     * 
+     *
      * <p>
      * If there are no input elements, the finisher method is not called and
      * empty {@code Optional} is returned. Otherwise the finisher result is
@@ -488,12 +490,12 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which collects the stream element if stream
      * contains exactly one element.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>.
-     * 
+     *
      * @param <T> the type of the input elements
      * @return a collector which returns an {@link Optional} describing the only
      *         element of the stream. For empty stream or stream containing more
@@ -510,17 +512,17 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which collects only the first stream element
      * if any.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.findFirst()}. This collector is mostly useful as a
      * downstream collector.
-     * 
+     *
      * @param <T> the type of the input elements
      * @return a collector which returns an {@link Optional} which describes the
      *         first element of the stream. For empty stream an empty
@@ -537,7 +539,7 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which collects only the last stream element
      * if any.
-     * 
+     *
      * @param <T> the type of the input elements
      * @return a collector which returns an {@link Optional} which describes the
      *         last element of the stream. For empty stream an empty
@@ -555,16 +557,16 @@ public final class MoreCollectors {
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.limit(n).collect(Collectors.toList())}. This collector is
      * mostly useful as a downstream collector.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param n maximum number of stream elements to preserve
      * @return a collector which returns a {@code List} containing the first n
@@ -585,16 +587,16 @@ public final class MoreCollectors {
     /**
      * Returns a {@code Collector} which collects at most specified number of
      * the last stream elements into the {@link List}.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * When supplied {@code n} is less or equal to zero, this method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> which ignores the input and produces an empty list.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param n maximum number of stream elements to preserve
      * @return a collector which returns a {@code List} containing the last n
@@ -621,22 +623,22 @@ public final class MoreCollectors {
      * {@link Comparator} into the {@link List}. The resulting {@code List} is
      * sorted in comparator reverse order (greatest element is the first). The
      * order of equal elements is the same as in the input stream.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.sorted(comparator.reversed()).limit(n).collect(Collectors.toList())}
      * , but usually performed much faster if {@code n} is much less than the
      * stream size.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * When supplied {@code n} is less or equal to zero, this method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> which ignores the input and produces an empty list.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param comparator the comparator to compare the elements by
      * @param n maximum number of stream elements to preserve
@@ -653,22 +655,22 @@ public final class MoreCollectors {
      * {@link List}. The resulting {@code List} is sorted in reverse order
      * (greatest element is the first). The order of equal elements is the same
      * as in the input stream.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.sorted(Comparator.reverseOrder()).limit(n).collect(Collectors.toList())}
      * , but usually performed much faster if {@code n} is much less than the
      * stream size.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * When supplied {@code n} is less or equal to zero, this method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> which ignores the input and produces an empty list.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param n maximum number of stream elements to preserve
      * @return a collector which returns a {@code List} containing the greatest
@@ -684,22 +686,22 @@ public final class MoreCollectors {
      * into the {@link List}. The resulting {@code List} is sorted in comparator
      * order (least element is the first). The order of equal elements is the
      * same as in the input stream.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.sorted(comparator).limit(n).collect(Collectors.toList())},
      * but usually performed much faster if {@code n} is much less than the
      * stream size.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * When supplied {@code n} is less or equal to zero, this method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> which ignores the input and produces an empty list.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param comparator the comparator to compare the elements by
      * @param n maximum number of stream elements to preserve
@@ -736,22 +738,22 @@ public final class MoreCollectors {
      * {@link List}. The resulting {@code List} is sorted in natural order
      * (least element is the first). The order of equal elements is the same as
      * in the input stream.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.sorted().limit(n).collect(Collectors.toList())}, but
      * usually performed much faster if {@code n} is much less than the stream
      * size.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * <p>
      * When supplied {@code n} is less or equal to zero, this method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> which ignores the input and produces an empty list.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param n maximum number of stream elements to preserve
      * @return a collector which returns a {@code List} containing the least n
@@ -851,7 +853,7 @@ public final class MoreCollectors {
      * keys including keys which were never returned by the classification
      * function. These keys are mapped to the default collector value which is
      * equivalent to collecting an empty stream with the same collector.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
@@ -898,7 +900,7 @@ public final class MoreCollectors {
      * produce some of domain keys at all, they are also added to the result.
      * These keys are mapped to the default collector value which is equivalent
      * to collecting an empty stream with the same collector.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
@@ -943,7 +945,7 @@ public final class MoreCollectors {
      * not produce some of domain keys at all, they are also added to the
      * result. These keys are mapped to the default collector value which is
      * equivalent to collecting an empty stream with the same collector.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
@@ -1015,7 +1017,7 @@ public final class MoreCollectors {
      * <p>
      * The returned collector produces an empty set if the input is empty or
      * intersection of the input collections is empty.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code Set} returned.
@@ -1025,7 +1027,7 @@ public final class MoreCollectors {
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the resulting
      * intersection is empty.
-     * 
+     *
      * @param <T> the type of the elements in the input collections
      * @param <S> the type of the input collections
      * @return a {@code Collector} which finds all the minimal elements and
@@ -1052,7 +1054,7 @@ public final class MoreCollectors {
     /**
      * Adapts a {@code Collector} to perform an additional finishing
      * transformation.
-     * 
+     *
      * <p>
      * Unlike {@link Collectors#collectingAndThen(Collector, Function)} this
      * method returns a
@@ -1088,13 +1090,13 @@ public final class MoreCollectors {
      * another {@code Collector}, and organizes them into a
      * {@code Map<Boolean, D>} whose values are the result of the downstream
      * reduction.
-     * 
+     *
      * <p>
      * Unlike {@link Collectors#partitioningBy(Predicate, Collector)} this
      * method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> if the downstream collector is short-circuiting.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <A> the intermediate accumulation type of the downstream collector
      * @param <D> the result type of the downstream reduction
@@ -1128,7 +1130,7 @@ public final class MoreCollectors {
      * returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> if the downstream collector is short-circuiting.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <U> type of elements accepted by downstream collector
      * @param <A> intermediate accumulation type of the downstream collector
@@ -1157,15 +1159,15 @@ public final class MoreCollectors {
     /**
      * Returns a collector which collects input elements to the new {@code List}
      * transforming them with the supplied function beforehand.
-     * 
+     *
      * <p>
      * This method behaves like
      * {@code Collectors.mapping(mapper, Collectors.toList())}.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <U> the resulting type of the mapper function
      * @param mapper a function to be applied to the input elements
@@ -1187,13 +1189,13 @@ public final class MoreCollectors {
      * {@link java.util.stream.BaseStream#close() closed} after its contents
      * have been placed downstream. (If a mapped stream is {@code null} an empty
      * stream is used, instead.)
-     * 
+     *
      * <p>
      * This method is similar to {@code Collectors.flatMapping} method which
      * appears in JDK 9. However when downstream collector is
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting</a>
      * , this method will also return a short-circuiting collector.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <U> type of elements accepted by downstream collector
      * @param <A> intermediate accumulation type of the downstream collector
@@ -1244,15 +1246,15 @@ public final class MoreCollectors {
      * {@link java.util.stream.BaseStream#close() closed} after its contents
      * have been placed downstream. (If a mapped stream is {@code null} an empty
      * stream is used, instead.)
-     * 
+     *
      * <p>
      * This method behaves like {@code flatMapping(mapper, Collectors.toList())}
      * .
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <U> type of the resulting elements
      * @param mapper a function to be applied to the input elements, which
@@ -1274,7 +1276,7 @@ public final class MoreCollectors {
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> if downstream collector is short-circuiting.
-     * 
+     *
      * <p>
      * The operation performed by the returned collector is equivalent to
      * {@code stream.filter(predicate).collect(downstream)}. This collector is
@@ -1286,7 +1288,7 @@ public final class MoreCollectors {
      * appears in JDK 9. However when downstream collector is
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting</a>
      * , this method will also return a short-circuiting collector.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param <A> intermediate accumulation type of the downstream collector
      * @param <R> result type of collector
@@ -1321,11 +1323,11 @@ public final class MoreCollectors {
      * <p>
      * This method behaves like
      * {@code filtering(predicate, Collectors.toList())}.
-     * 
+     *
      * <p>
      * There are no guarantees on the type, mutability, serializability, or
      * thread-safety of the {@code List} returned.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param predicate a filter function to be applied to the input elements
      * @return a collector which applies the predicate to the input elements and
@@ -1347,7 +1349,7 @@ public final class MoreCollectors {
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the result is zero.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param mapper a function extracting the property to be processed
      * @return a {@code Collector} that produces the bitwise-and operation of a
@@ -1381,7 +1383,7 @@ public final class MoreCollectors {
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the result is zero.
-     * 
+     *
      * @param <T> the type of the input elements
      * @param mapper a function extracting the property to be processed
      * @return a {@code Collector} that produces the bitwise-and operation of a
@@ -1419,13 +1421,13 @@ public final class MoreCollectors {
      * <a href="http://www.unicode.org/glossary/#low_surrogate_code_unit">
      * Unicode low-surrogate code unit</a> in any of the input sequences.
      * Normally the ending high-surrogate code unit is removed from the prefix.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the common prefix
      * is empty.
-     * 
+     *
      * @return a {@code Collector} which computes a common prefix.
      * @since 0.5.0
      */
@@ -1471,13 +1473,13 @@ public final class MoreCollectors {
      * <a href="http://www.unicode.org/glossary/#high_surrogate_code_unit">
      * Unicode high-surrogate code unit</a> in any of the input sequences.
      * Normally the starting low-surrogate code unit is removed from the suffix.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if the common suffix
      * is empty.
-     * 
+     *
      * @return a {@code Collector} which computes a common suffix.
      * @since 0.5.0
      */
@@ -1518,21 +1520,21 @@ public final class MoreCollectors {
      * elements are defined according to given isDominator {@code BiPredicate}.
      * The isDominator relation must be transitive (if A dominates over B and B
      * dominates over C, then A also dominates over C).
-     * 
+     *
      * <p>
      * This operation is similar to
      * {@code streamEx.collapse(isDominator).toList()}. The important difference
      * is that in this method {@code BiPredicate} accepts not the adjacent
      * stream elements, but the leftmost element of the series (current
      * dominator) and the current element.
-     * 
+     *
      * <p>
      * For example, consider the stream of numbers:
-     * 
+     *
      * <pre>{@code
      * StreamEx<Integer> stream = StreamEx.of(1, 5, 3, 4, 2, 7);
      * }</pre>
-     * 
+     *
      * <p>
      * Using {@code stream.collapse((a, b) -> a >= b).toList()} you will get the
      * numbers which are bigger than their immediate predecessor (
@@ -1540,7 +1542,7 @@ public final class MoreCollectors {
      * using {@code stream.collect(dominators((a, b) -> a >= b))} you will get
      * the numbers which are bigger than any predecessor ({@code [1, 5, 7]}) as
      * 5 is the dominator element for the subsequent 3, 4 and 2.
-     * 
+     *
      * @param <T> type of the input elements.
      * @param isDominator a non-interfering, stateless, transitive
      *        {@code BiPredicate} which returns true if the first argument is
@@ -1571,19 +1573,19 @@ public final class MoreCollectors {
      * Returns a {@code Collector} which performs downstream reduction if all
      * elements satisfy the {@code Predicate}. The result is described as an
      * {@code Optional<R>}.
-     * 
+     *
      * <p>
      * The resulting collector returns an empty optional if at least one input
      * element does not satisfy the predicate. Otherwise it returns an optional
      * which contains the result of the downstream collector.
-     * 
+     *
      * <p>
      * This method returns a
      * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a>: it may not process all the elements if some of items don't
      * satisfy the predicate or if downstream collector is a short-circuiting
      * collector.
-     * 
+     *
      * <p>
      * It's guaranteed that the downstream collector is not called for elements
      * which don't satisfy the predicate.
@@ -1628,5 +1630,370 @@ public final class MoreCollectors {
                 finished == null ? acc -> !acc.b : acc -> !acc.b || finished.test(acc.a),
                 downstream.characteristics().contains(Characteristics.UNORDERED) ? UNORDERED_CHARACTERISTICS
                         : NO_CHARACTERISTICS);
+    }
+
+    static final Collector.Characteristics[] CH_ID
+        = {Collector.Characteristics.IDENTITY_FINISH};
+    static final Collector.Characteristics[] CH_CONCURRENT_ID
+        = {Collector.Characteristics.CONCURRENT, Collector.Characteristics.UNORDERED, Collector.Characteristics.IDENTITY_FINISH};
+
+    /**
+     * Returns a merge function, suitable for use in
+     * {@link Map#merge(Object, Object, BiFunction) Map.merge()} or
+     * {@link #toMap(Function, Function, BinaryOperator) toMap()}, which always
+     * throws {@code IllegalStateException}.  This can be used to enforce the
+     * assumption that the elements being collected are distinct.
+     *
+     * @param <T> the type of input arguments to the merge function
+     * @return a merge function which always throw {@code IllegalStateException}
+     */
+    private static <T> BinaryOperator<T> throwingMerger() {
+        return (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+    }
+
+    /**
+     * {@code BinaryOperator<Map>} that merges the contents of its right
+     * argument into its left argument, using the provided merge function to
+     * handle duplicate keys.
+     *
+     * @param <K> type of the map keys
+     * @param <V> type of the map values
+     * @param <M> type of the map
+     * @param mergeFunction A merge function suitable for
+     * {@link Map#merge(Object, Object, BiFunction) Map.merge()}
+     * @return a merge function for two maps
+     */
+    private static <K, V, M extends Map<K,V>>
+    BinaryOperator<M> mapMerger(BinaryOperator<V> mergeFunction) {
+        return (m1, m2) -> {
+            for (Map.Entry<K,V> e : m2.entrySet())
+                m1.merge(e.getKey(), e.getValue(), mergeFunction);
+            return m1;
+        };
+    }
+
+    static final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val, BinaryOperator<V> mergeFunction) {
+        if (map.containsKey(key)) {
+            map.put(key, mergeFunction.apply(map.get(key), val));
+        } else {
+            map.put(key, val);
+        }
+    }
+
+    /**
+     * Returns a {@code Collector} that accumulates elements into a
+     * {@code Map} whose keys and values are the result of applying the provided
+     * mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to
+     * {@link Object#equals(Object)}), an {@code IllegalStateException} is
+     * thrown when the collection operation is performed.  If the mapped keys
+     * may have duplicates, use {@link #toMap(Function, Function, BinaryOperator)}
+     * instead.
+     *
+     * @apiNote
+     * It is common for either the key or the value to be the input elements.
+     * In this case, the utility method
+     * {@link java.util.function.Function#identity()} may be helpful.
+     * For example, the following produces a {@code Map} mapping
+     * students to their grade point average:
+     * <pre>{@code
+     *     Map<Student, Double> studentToGPA
+     *         students.stream().collect(toMap(Functions.identity(),
+     *                                         student -> computeGPA(student)));
+     * }</pre>
+     * And the following produces a {@code Map} mapping a unique identifier to
+     * students:
+     * <pre>{@code
+     *     Map<String, Student> studentIdToStudent
+     *         students.stream().collect(toMap(Student::getId,
+     *                                         Functions.identity());
+     * }</pre>
+     *
+     * @implNote
+     * The returned {@code Collector} is not concurrent.  For parallel stream
+     * pipelines, the {@code combiner} function operates by merging the keys
+     * from one map into another, which can be an expensive operation.  If it is
+     * not required that results are inserted into the {@code Map} in encounter
+     * order, using {@link #toConcurrentMap(Function, Function)}
+     * may offer better parallel performance.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @return a {@code Collector} which collects elements into a {@code Map}
+     * whose keys and values are the result of applying mapping functions to
+     * the input elements
+     *
+     * @see #toMap(Function, Function, BinaryOperator)
+     * @see #toMap(Function, Function, BinaryOperator, Supplier)
+     * @see #toConcurrentMap(Function, Function)
+     */
+    public static <T, K, U>
+    Collector<T, ?, Map<K,U>> toMap(Function<? super T, ? extends K> keyMapper,
+                                    Function<? super T, ? extends U> valueMapper) {
+        return toMap(keyMapper, valueMapper, throwingMerger(), HashMap::new);
+    }
+
+    /**
+     * Returns a {@code Collector} that accumulates elements into a
+     * {@code Map} whose keys and values are the result of applying the provided
+     * mapping functions to the input elements.
+     *
+     * <p>If the mapped
+     * keys contains duplicates (according to {@link Object#equals(Object)}),
+     * the value mapping function is applied to each equal element, and the
+     * results are merged using the provided merging function.
+     *
+     * @apiNote
+     * There are multiple ways to deal with collisions between multiple elements
+     * mapping to the same key.  The other forms of {@code toMap} simply use
+     * a merge function that throws unconditionally, but you can easily write
+     * more flexible merge policies.  For example, if you have a stream
+     * of {@code Person}, and you want to produce a "phone book" mapping name to
+     * address, but it is possible that two persons have the same name, you can
+     * do as follows to gracefully deals with these collisions, and produce a
+     * {@code Map} mapping names to a concatenated list of addresses:
+     * <pre>{@code
+     *     Map<String, String> phoneBook
+     *         people.stream().collect(toMap(Person::getName,
+     *                                       Person::getAddress,
+     *                                       (s, a) -> s + ", " + a));
+     * }</pre>
+     *
+     * @implNote
+     * The returned {@code Collector} is not concurrent.  For parallel stream
+     * pipelines, the {@code combiner} function operates by merging the keys
+     * from one map into another, which can be an expensive operation.  If it is
+     * not required that results are merged into the {@code Map} in encounter
+     * order, using {@link #toConcurrentMap(Function, Function, BinaryOperator)}
+     * may offer better parallel performance.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param mergeFunction a merge function, used to resolve collisions between
+     *                      values associated with the same key, as supplied
+     *                      to {@link Map#merge(Object, Object, BiFunction)}
+     * @return a {@code Collector} which collects elements into a {@code Map}
+     * whose keys are the result of applying a key mapping function to the input
+     * elements, and whose values are the result of applying a value mapping
+     * function to all input elements equal to the key and combining them
+     * using the merge function
+     *
+     * @see #toMap(Function, Function)
+     * @see #toMap(Function, Function, BinaryOperator, Supplier)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator)
+     */
+    public static <T, K, U>
+    Collector<T, ?, Map<K,U>> toMap(Function<? super T, ? extends K> keyMapper,
+                                    Function<? super T, ? extends U> valueMapper,
+                                    BinaryOperator<U> mergeFunction) {
+        return toMap(keyMapper, valueMapper, mergeFunction, HashMap::new);
+    }
+
+    /**
+     * Returns a {@code Collector} that accumulates elements into a
+     * {@code Map} whose keys and values are the result of applying the provided
+     * mapping functions to the input elements.
+     *
+     * <p>If the mapped
+     * keys contains duplicates (according to {@link Object#equals(Object)}),
+     * the value mapping function is applied to each equal element, and the
+     * results are merged using the provided merging function.  The {@code Map}
+     * is created by a provided supplier function.
+     *
+     * @implNote
+     * The returned {@code Collector} is not concurrent.  For parallel stream
+     * pipelines, the {@code combiner} function operates by merging the keys
+     * from one map into another, which can be an expensive operation.  If it is
+     * not required that results are merged into the {@code Map} in encounter
+     * order, using {@link #toConcurrentMap(Function, Function, BinaryOperator, Supplier)}
+     * may offer better parallel performance.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param <M> the type of the resulting {@code Map}
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param mergeFunction a merge function, used to resolve collisions between
+     *                      values associated with the same key, as supplied
+     *                      to {@link Map#merge(Object, Object, BiFunction)}
+     * @param mapSupplier a function which returns a new, empty {@code Map} into
+     *                    which the results will be inserted
+     * @return a {@code Collector} which collects elements into a {@code Map}
+     * whose keys are the result of applying a key mapping function to the input
+     * elements, and whose values are the result of applying a value mapping
+     * function to all input elements equal to the key and combining them
+     * using the merge function
+     *
+     * @see #toMap(Function, Function)
+     * @see #toMap(Function, Function, BinaryOperator)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
+     */
+    public static <T, K, U, M extends Map<K, U>>
+    Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
+                                Function<? super T, ? extends U> valueMapper,
+                                BinaryOperator<U> mergeFunction,
+                                Supplier<M> mapSupplier) {
+        BiConsumer<M, T> accumulator
+                = (map, element) -> addToMap(map, keyMapper.apply(element), valueMapper.apply(element), mergeFunction);
+        return Collector.of(mapSupplier, accumulator, mapMerger(mergeFunction), CH_ID);
+    }
+
+    /**
+     * Returns a concurrent {@code Collector} that accumulates elements into a
+     * {@code ConcurrentMap} whose keys and values are the result of applying
+     * the provided mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to
+     * {@link Object#equals(Object)}), an {@code IllegalStateException} is
+     * thrown when the collection operation is performed.  If the mapped keys
+     * may have duplicates, use
+     * {@link #toConcurrentMap(Function, Function, BinaryOperator)} instead.
+     *
+     * @apiNote
+     * It is common for either the key or the value to be the input elements.
+     * In this case, the utility method
+     * {@link java.util.function.Function#identity()} may be helpful.
+     * For example, the following produces a {@code Map} mapping
+     * students to their grade point average:
+     * <pre>{@code
+     *     Map<Student, Double> studentToGPA
+     *         students.stream().collect(toMap(Functions.identity(),
+     *                                         student -> computeGPA(student)));
+     * }</pre>
+     * And the following produces a {@code Map} mapping a unique identifier to
+     * students:
+     * <pre>{@code
+     *     Map<String, Student> studentIdToStudent
+     *         students.stream().collect(toConcurrentMap(Student::getId,
+     *                                                   Functions.identity());
+     * }</pre>
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper the mapping function to produce keys
+     * @param valueMapper the mapping function to produce values
+     * @return a concurrent, unordered {@code Collector} which collects elements into a
+     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
+     * function to the input elements, and whose values are the result of
+     * applying a value mapping function to the input elements
+     *
+     * @see #toMap(Function, Function)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
+     */
+    public static <T, K, U>
+    Collector<T, ?, ConcurrentMap<K,U>> toConcurrentMap(Function<? super T, ? extends K> keyMapper,
+                                                        Function<? super T, ? extends U> valueMapper) {
+        return toConcurrentMap(keyMapper, valueMapper, throwingMerger(), ConcurrentHashMap::new);
+    }
+
+    /**
+     * Returns a concurrent {@code Collector} that accumulates elements into a
+     * {@code ConcurrentMap} whose keys and values are the result of applying
+     * the provided mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to {@link Object#equals(Object)}),
+     * the value mapping function is applied to each equal element, and the
+     * results are merged using the provided merging function.
+     *
+     * @apiNote
+     * There are multiple ways to deal with collisions between multiple elements
+     * mapping to the same key.  The other forms of {@code toConcurrentMap} simply use
+     * a merge function that throws unconditionally, but you can easily write
+     * more flexible merge policies.  For example, if you have a stream
+     * of {@code Person}, and you want to produce a "phone book" mapping name to
+     * address, but it is possible that two persons have the same name, you can
+     * do as follows to gracefully deals with these collisions, and produce a
+     * {@code Map} mapping names to a concatenated list of addresses:
+     * <pre>{@code
+     *     Map<String, String> phoneBook
+     *         people.stream().collect(toConcurrentMap(Person::getName,
+     *                                                 Person::getAddress,
+     *                                                 (s, a) -> s + ", " + a));
+     * }</pre>
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param mergeFunction a merge function, used to resolve collisions between
+     *                      values associated with the same key, as supplied
+     *                      to {@link Map#merge(Object, Object, BiFunction)}
+     * @return a concurrent, unordered {@code Collector} which collects elements into a
+     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
+     * function to the input elements, and whose values are the result of
+     * applying a value mapping function to all input elements equal to the key
+     * and combining them using the merge function
+     *
+     * @see #toConcurrentMap(Function, Function)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
+     * @see #toMap(Function, Function, BinaryOperator)
+     */
+    public static <T, K, U>
+    Collector<T, ?, ConcurrentMap<K,U>>
+    toConcurrentMap(Function<? super T, ? extends K> keyMapper,
+                    Function<? super T, ? extends U> valueMapper,
+                    BinaryOperator<U> mergeFunction) {
+        return toConcurrentMap(keyMapper, valueMapper, mergeFunction, ConcurrentHashMap::new);
+    }
+
+    /**
+     * Returns a concurrent {@code Collector} that accumulates elements into a
+     * {@code ConcurrentMap} whose keys and values are the result of applying
+     * the provided mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to {@link Object#equals(Object)}),
+     * the value mapping function is applied to each equal element, and the
+     * results are merged using the provided merging function.  The
+     * {@code ConcurrentMap} is created by a provided supplier function.
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param <M> the type of the resulting {@code ConcurrentMap}
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param mergeFunction a merge function, used to resolve collisions between
+     *                      values associated with the same key, as supplied
+     *                      to {@link Map#merge(Object, Object, BiFunction)}
+     * @param mapSupplier a function which returns a new, empty {@code Map} into
+     *                    which the results will be inserted
+     * @return a concurrent, unordered {@code Collector} which collects elements into a
+     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
+     * function to the input elements, and whose values are the result of
+     * applying a value mapping function to all input elements equal to the key
+     * and combining them using the merge function
+     *
+     * @see #toConcurrentMap(Function, Function)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator)
+     * @see #toMap(Function, Function, BinaryOperator, Supplier)
+     */
+    public static <T, K, U, M extends ConcurrentMap<K, U>>
+    Collector<T, ?, M> toConcurrentMap(Function<? super T, ? extends K> keyMapper,
+                                       Function<? super T, ? extends U> valueMapper,
+                                       BinaryOperator<U> mergeFunction,
+                                       Supplier<M> mapSupplier) {
+        BiConsumer<M, T> accumulator
+                = (map, element) -> addToMap(map, keyMapper.apply(element), valueMapper.apply(element), mergeFunction);
+        return Collector.of(mapSupplier, accumulator, mapMerger(mergeFunction), CH_CONCURRENT_ID);
     }
 }

@@ -1019,7 +1019,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * Returns a {@link Map} containing the elements of this stream. There are
      * no guarantees on the type or serializability of the {@code Map} returned;
      * if more control over the returned {@code Map} is required, use
-     * {@link #toCustomMap(Supplier)}.
+     * {@link #toMap(Supplier)}.
      *
      * <p>
      * This is a <a href="package-summary.html#StreamOps">terminal</a>
@@ -1099,7 +1099,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * Returns a {@link Map} containing the elements of this stream. There are
      * no guarantees on the type or serializability of the {@code Map} returned;
      * if more control over the returned {@code Map} is required, use
-     * {@link #toCustomMap(BinaryOperator, Supplier)}.
+     * {@link #toMap(BinaryOperator, Supplier)}.
      *
      * <p>
      * If the mapped keys contains duplicates (according to
@@ -1123,9 +1123,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public Map<K, V> toMap(BinaryOperator<V> mergeFunction) {
-        Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        return collect(Collectors.toMap(keyMapper, valueMapper, mergeFunction, HashMap::new));
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final Map<K, V> map = isParallel() ? new ConcurrentHashMap<>() : new HashMap<>();
+
+        return toMap(keyMapper, valueMapper, mergeFunction, map);
     }
 
     /**
@@ -1145,14 +1147,16 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toMap(Function, Function)
      * @see Collectors#toConcurrentMap(Function, Function)
      */
-    public <M extends Map<K, V>> M toCustomMap(Supplier<M> mapSupplier) {
-        M map = mapSupplier.get();
-        if (isParallel() && !(map instanceof ConcurrentMap)) {
-            return collect(mapSupplier, (m, t) -> addToMap(m, t.getKey(), Objects.requireNonNull(t.getValue())), (m1,
-                    m2) -> m2.forEach((k, v) -> addToMap(m1, k, v)));
+    public <M extends Map<K, V>> M toMap(Supplier<M> mapSupplier) {
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final M map = mapSupplier.get();
+        
+        if (this.isParallel() == false || map instanceof ConcurrentMap) {
+            return toMap(keyMapper, valueMapper, map);            
+        } else {
+            return this.sequential().toMap(mapSupplier);      
         }
-        forEach(toMapConsumer(map));
-        return map;
     }
 
     /**
@@ -1178,17 +1182,23 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toMap(Function, Function)
      * @see Collectors#toConcurrentMap(Function, Function)
      */
-    public <M extends Map<K, V>> M toCustomMap(BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
-        Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        return collect(Collectors.toMap(keyMapper, valueMapper, mergeFunction, mapSupplier));
+    public <M extends Map<K, V>> M toMap(BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final M map = mapSupplier.get();
+        
+        if (this.isParallel() == false || map instanceof ConcurrentMap) {
+            return toMap(keyMapper, valueMapper, mergeFunction, map);            
+        } else {
+            return this.sequential().toMap(mergeFunction, mapSupplier);      
+        }
     }
 
     /**
      * Returns a {@link SortedMap} containing the elements of this stream. There
      * are no guarantees on the type or serializability of the {@code SortedMap}
      * returned; if more control over the returned {@code Map} is required, use
-     * {@link #toCustomMap(Supplier)}.
+     * {@link #toMap(Supplier)}.
      *
      * <p>
      * This is a <a href="package-summary.html#StreamOps">terminal</a>
@@ -1214,7 +1224,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * Returns a {@link SortedMap} containing the elements of this stream. There
      * are no guarantees on the type or serializability of the {@code SortedMap}
      * returned; if more control over the returned {@code Map} is required, use
-     * {@link #toCustomMap(BinaryOperator, Supplier)}.
+     * {@link #toMap(BinaryOperator, Supplier)}.
      *
      * <p>
      * If the mapped keys contains duplicates (according to
@@ -1244,7 +1254,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * Returns a {@link NavigableMap} containing the elements of this stream.
      * There are no guarantees on the type or serializability of the
      * {@code NavigableMap} returned; if more control over the returned
-     * {@code Map} is required, use {@link #toCustomMap(Supplier)}.
+     * {@code Map} is required, use {@link #toMap(Supplier)}.
      *
      * <p>
      * This is a <a href="package-summary.html#StreamOps">terminal</a>
@@ -1264,9 +1274,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.6.5
      */
     public NavigableMap<K, V> toNavigableMap() {
-        NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
-        forEach(toMapConsumer(map));
-        return map;
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+
+        return toMap(keyMapper, valueMapper, map);
     }
 
     /**
@@ -1274,7 +1286,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * There are no guarantees on the type or serializability of the
      * {@code NavigableMap} returned; if more control over the returned
      * {@code Map} is required, use
-     * {@link #toCustomMap(BinaryOperator, Supplier)}.
+     * {@link #toMap(BinaryOperator, Supplier)}.
      *
      * <p>
      * If the mapped keys contains duplicates (according to
@@ -1297,7 +1309,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.6.5
      */
     public NavigableMap<K, V> toNavigableMap(BinaryOperator<V> mergeFunction) {
-        return collect(Collectors.toMap(Entry::getKey, Entry::getValue, mergeFunction, TreeMap::new));
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+
+        return toMap(keyMapper, valueMapper, mergeFunction, map);
     }
 
     /**
