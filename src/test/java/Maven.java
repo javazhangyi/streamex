@@ -17,7 +17,7 @@ public class Maven {
     public void test_name() throws Exception {
         final String sourceVersion = "0.8";
         final String targetVersion = PropertiesUtil.load(new File("./build.properties")).get("version");
-        final String commonMavenPath = "C:/Users/haiyangl/landawn/Abacus/maven/";
+        final String commonMavenPath = "../StreamEx/maven/";
         final String sourcePath = commonMavenPath + sourceVersion;
         final String targetPath = commonMavenPath + targetVersion;
         final File sourceDir = new File(sourcePath);
