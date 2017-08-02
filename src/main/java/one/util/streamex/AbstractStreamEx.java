@@ -553,6 +553,18 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         }
         return rawCollect(collector);
     }
+    
+    /**
+     * 
+     * @param downstream
+     * @param finisher
+     * @return
+     * @see Collectors#collectingAndThen(Collector, java.util.function.Function)
+     * @since 0.8.2
+     */
+    public <R, A, RR> RR collectAndThen(Collector<? super T, A, R> downstream, Function<R, RR> finisher) {
+        return collect(Collectors.collectingAndThen(downstream, finisher));
+    }
 
     @Override
     public Optional<T> min(Comparator<? super T> comparator) {

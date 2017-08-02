@@ -4,7 +4,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 0.8.2:
 * Add `groupByToEntry` and `partitionByToEntry`.
- 
+* Add `collectAndThen` to `StreamEx` and `EntryStream`
+
 ### 0.8.1:
 * Rename `toCustomMap` to `toMap`.
 * Support `null` value for `toMap`/`toSortedMap`/`toNavigableMap`
