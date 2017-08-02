@@ -417,22 +417,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * elements, and whose corresponding values are {@code List}s containing the
      * input elements which map to the associated key under the classification
      * function.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability or serializability of the
-     * {@code Map} or {@code List} objects returned.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      * 
      * @param <K> the type of the keys
      * @param classifier the classifier function mapping input elements to keys
      * @return a {@code Map} containing the results of the group-by operation
      *
-     * @see #groupTo(Function, Collector)
+     * @see #groupTo(Function)
      * @see Collectors#groupingBy(Function)
      * @see Collectors#groupingByConcurrent(Function)
+     * @since 0.8
      */
     public <K> StreamEx<Map.Entry<K, List<T>>> groupBy(Function<? super T, ? extends K> classifier) {
         final Map<K, List<T>> m = groupTo(classifier);
@@ -446,14 +439,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * elements, and whose corresponding values are the result of reduction of
      * the input elements which map to the associated key under the
      * classification function.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability or serializability of the
-     * {@code Map} objects returned.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      * 
      * @param <K> the type of the keys
      * @param <D> the result type of the downstream reduction
@@ -462,9 +447,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        reduction
      * @return a {@code Map} containing the results of the group-by operation
      *
-     * @see #groupTo(Function)
+     * @see #groupTo(Function, Collector)
      * @see Collectors#groupingBy(Function, Collector)
      * @see Collectors#groupingByConcurrent(Function, Collector)
+     * @since 0.8
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
@@ -479,13 +465,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * elements, and whose corresponding values are the result of reduction of
      * the input elements which map to the associated key under the
      * classification function.
-     *
-     * <p>
-     * The {@code Map} will be created using the provided factory function.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      * 
      * @param <K> the type of the keys
      * @param <D> the result type of the downstream reduction
@@ -497,9 +476,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        reduction
      * @return a {@code Map} containing the results of the group-by operation
      *
-     * @see #groupTo(Function)
+     * @see #groupTo(Function, Supplier, Collector)
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
+     * @since 0.8
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<Map<K, D>> mapFactory, Collector<? super T, ?, D> downstream) {
@@ -514,14 +494,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * elements, and whose corresponding values are the collections of the input
      * elements which map to the associated key under the classification
      * function.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability or serializability of the
-     * {@code Map} objects returned.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      * 
      * @param <K> the type of the keys
      * @param <C> the type of the collection used in resulting {@code Map}
@@ -532,10 +504,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        elements.
      * @return a {@code Map} containing the results of the group-by operation
      *
-     * @see #groupTo(Function, Collector)
-     * @see Collectors#groupingBy(Function, Collector)
-     * @see Collectors#groupingByConcurrent(Function, Collector)
-     * @since 0.2.2
+     * @see #groupTo(Function, Supplier)
+     * @see Collectors#groupingBy(Function, Supplier)
+     * @see Collectors#groupingByConcurrent(Function, Supplier)
+     * @since 0.8
      */
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<C> collectionFactory) {
@@ -550,13 +522,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * elements, and whose corresponding values are the collections of the input
      * elements which map to the associated key under the classification
      * function.
-     *
-     * <p>
-     * The {@code Map} will be created using the provided factory function.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
      * 
      * @param <K> the type of the keys
      * @param <C> the type of the collection used in resulting {@code Map}
@@ -573,7 +538,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #groupTo(Function, Supplier)
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
-     * @since 0.2.2
+     * @since 0.8
      */
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<Map<K, C>> mapFactory, Supplier<C> collectionFactory) {
@@ -586,14 +551,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * Returns a {@code StreamEx<Map.Entry<Boolean, List<T>>>} which contains
      * two partitions of the input elements according to a {@code Predicate}.
      *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} returned.
-     *
      * @param predicate a predicate used for classifying input elements
      * @return a {@code Map<Boolean, List<T>>} which {@link Boolean#TRUE} key is
      *         mapped to the list of the stream elements for which predicate is
@@ -602,7 +559,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *
      * @see #partitionTo(Predicate, Collector)
      * @see Collectors#partitioningBy(Predicate)
-     * @since 0.2.2
+     * @since 0.8
      */
     public StreamEx<Map.Entry<Boolean, List<T>>> partitionBy(Predicate<? super T> predicate) {
         final Map<Boolean, List<T>> m = partitionTo(predicate);
@@ -614,16 +571,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * Returns a {@code StreamEx<Map.Entry<Boolean, D>>} which contains two
      * partitions of the input elements according to a {@code Predicate}, which
      * are reduced according to the supplied {@code Collector}.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation. The operation may short-circuit if the downstream collector is
-     * <a href=
-     * "package-summary.html#ShortCircuitReduction">short-circuiting</a>.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} returned.
      *
      * @param <D> the result type of the downstream reduction
      * @param predicate a predicate used for classifying input elements
@@ -637,7 +584,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *
      * @see #partitionTo(Predicate)
      * @see Collectors#partitioningBy(Predicate, Collector)
-     * @since 0.2.2
+     * @since 0.8
      */
     public <D> StreamEx<Map.Entry<Boolean, D>> partitionBy(Predicate<? super T> predicate,
             Collector<? super T, ?, D> downstream) {
@@ -649,14 +596,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     /**
      * Returns a {@code StreamEx<Map.Entry<Boolean, C>>} which contains two
      * partitions of the input elements according to a {@code Predicate}.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
-     *
-     * <p>
-     * There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} returned.
      *
      * @param <C> the type of {@code Collection} used as returned {@code Map}
      *        values.
@@ -671,13 +610,217 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *
      * @see #partitionTo(Predicate, Collector)
      * @see Collectors#partitioningBy(Predicate)
-     * @since 0.2.2
+     * @since 0.8
      */
     public <C extends Collection<T>> StreamEx<Map.Entry<Boolean, C>> partitionBy(Predicate<? super T> predicate,
             Supplier<C> collectionFactory) {
         final Map<Boolean, C> m = partitionTo(predicate, collectionFactory);
 
         return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+    }
+
+    /**
+     * Returns a {@code EntryStream<K, List<T>>} whose keys are the
+     * values resulting from applying the classification function to the input
+     * elements, and whose corresponding values are {@code List}s containing the
+     * input elements which map to the associated key under the classification
+     * function.
+     * 
+     * @param <K> the type of the keys
+     * @param classifier the classifier function mapping input elements to keys
+     * @return a {@code Map} containing the results of the group-by operation
+     *
+     * @see #groupBy(Function, Collector)
+     * @see Collectors#groupingBy(Function)
+     * @see Collectors#groupingByConcurrent(Function)
+     * @since 0.8.2
+     */
+    public <K> EntryStream<K, List<T>> groupByToEntry(Function<? super T, ? extends K> classifier) {
+        final StreamEx<Map.Entry<K, List<T>>> s =  groupBy(classifier);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<K, D>} whose keys are the values
+     * resulting from applying the classification function to the input
+     * elements, and whose corresponding values are the result of reduction of
+     * the input elements which map to the associated key under the
+     * classification function.
+     * 
+     * @param <K> the type of the keys
+     * @param <D> the result type of the downstream reduction
+     * @param classifier the classifier function mapping input elements to keys
+     * @param downstream a {@code Collector} implementing the downstream
+     *        reduction
+     * @return a {@code Map} containing the results of the group-by operation
+     *
+     * @see #groupBy(Function)
+     * @see Collectors#groupingBy(Function, Collector)
+     * @see Collectors#groupingByConcurrent(Function, Collector)
+     * @since 0.8.2
+     */
+    public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Collector<? super T, ?, D> downstream) {
+        final StreamEx<Map.Entry<K, D>> s =  groupBy(classifier, downstream);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<K, D>} whose keys are the values
+     * resulting from applying the classification function to the input
+     * elements, and whose corresponding values are the result of reduction of
+     * the input elements which map to the associated key under the
+     * classification function.
+     * 
+     * @param <K> the type of the keys
+     * @param <D> the result type of the downstream reduction
+     * @param <M> the type of the resulting {@code Map}
+     * @param classifier the classifier function mapping input elements to keys
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
+     * @param downstream a {@code Collector} implementing the downstream
+     *        reduction
+     * @return a {@code Map} containing the results of the group-by operation
+     *
+     * @see #groupBy(Function)
+     * @see Collectors#groupingBy(Function, Supplier, Collector)
+     * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
+     * @since 0.8.2
+     */
+    public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Supplier<Map<K, D>> mapFactory, Collector<? super T, ?, D> downstream) {
+        final StreamEx<Map.Entry<K, D>> s =  groupBy(classifier, mapFactory, downstream);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<K, C>} whose keys are the values
+     * resulting from applying the classification function to the input
+     * elements, and whose corresponding values are the collections of the input
+     * elements which map to the associated key under the classification
+     * function.
+     * 
+     * @param <K> the type of the keys
+     * @param <C> the type of the collection used in resulting {@code Map}
+     *        values
+     * @param classifier the classifier function mapping input elements to keys
+     * @param collectionFactory a function which returns a new empty
+     *        {@code Collection} which will be used to store the stream
+     *        elements.
+     * @return a {@code Map} containing the results of the group-by operation
+     *
+     * @see #groupBy(Function, Collector)
+     * @see Collectors#groupingBy(Function, Collector)
+     * @see Collectors#groupingByConcurrent(Function, Collector)
+     * @since 0.8.2
+     */
+    public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Supplier<C> collectionFactory) {
+        final StreamEx<Map.Entry<K, C>> s =  groupBy(classifier, collectionFactory);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<K, C>} whose keys are the values
+     * resulting from applying the classification function to the input
+     * elements, and whose corresponding values are the collections of the input
+     * elements which map to the associated key under the classification
+     * function.
+     * 
+     * @param <K> the type of the keys
+     * @param <C> the type of the collection used in resulting {@code Map}
+     *        values
+     * @param <M> the type of the resulting {@code Map}
+     * @param classifier the classifier function mapping input elements to keys
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
+     * @param collectionFactory a function which returns a new empty
+     *        {@code Collection} which will be used to store the stream
+     *        elements.
+     * @return a {@code Map} containing the results of the group-by operation
+     *
+     * @see #groupBy(Function, Supplier)
+     * @see Collectors#groupingBy(Function, Supplier, Collector)
+     * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
+     * @since 0.8.2
+     */
+    public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Supplier<Map<K, C>> mapFactory, Supplier<C> collectionFactory) {
+
+        return groupBy(classifier, mapFactory, collectionFactory).mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<Boolean, List<T>>} which contains
+     * two partitions of the input elements according to a {@code Predicate}.
+     *
+     * @param predicate a predicate used for classifying input elements
+     * @return a {@code Map<Boolean, List<T>>} which {@link Boolean#TRUE} key is
+     *         mapped to the list of the stream elements for which predicate is
+     *         true and {@link Boolean#FALSE} key is mapped to the list of all
+     *         other stream elements.
+     *
+     * @see #partitionBy(Predicate, Collector)
+     * @see Collectors#partitioningBy(Predicate)
+     * @since 0.8.2
+     */
+    public EntryStream<Boolean, List<T>> partitionByToEntry(Predicate<? super T> predicate) {
+
+        return partitionBy(predicate).mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<Boolean, D>} which contains two
+     * partitions of the input elements according to a {@code Predicate}, which
+     * are reduced according to the supplied {@code Collector}.
+     *
+     * @param <D> the result type of the downstream reduction
+     * @param predicate a predicate used for classifying input elements
+     * @param downstream a {@code Collector} implementing the downstream
+     *        reduction
+     * @return a {@code Map<Boolean, List<T>>} which {@link Boolean#TRUE} key is
+     *         mapped to the result of downstream {@code Collector} collecting
+     *         the the stream elements for which predicate is true and
+     *         {@link Boolean#FALSE} key is mapped to the result of downstream
+     *         {@code Collector} collecting the other stream elements.
+     *
+     * @see #partitionBy(Predicate)
+     * @see Collectors#partitioningBy(Predicate, Collector)
+     * @since 0.8.2
+     */
+    public <D> EntryStream<Boolean, D> partitionByToEntry(Predicate<? super T> predicate,
+            Collector<? super T, ?, D> downstream) {
+
+        return partitionBy(predicate, downstream).mapToEntry(Function.identity());
+    }
+
+    /**
+     * Returns a {@code EntryStream<Boolean, C>} which contains two
+     * partitions of the input elements according to a {@code Predicate}.
+     *
+     * @param <C> the type of {@code Collection} used as returned {@code Map}
+     *        values.
+     * @param predicate a predicate used for classifying input elements
+     * @param collectionFactory a function which returns a new empty
+     *        {@code Collection} which will be used to store the stream
+     *        elements.
+     * @return a {@code Map<Boolean, C>} which {@link Boolean#TRUE} key is
+     *         mapped to the collection of the stream elements for which
+     *         predicate is true and {@link Boolean#FALSE} key is mapped to the
+     *         collection of all other stream elements.
+     *
+     * @see #partitionBy(Predicate, Collector)
+     * @see Collectors#partitioningBy(Predicate)
+     * @since 0.8.2
+     */
+    public <C extends Collection<T>> EntryStream<Boolean, C> partitionByToEntry(Predicate<? super T> predicate,
+            Supplier<C> collectionFactory) {
+
+        return partitionBy(predicate, collectionFactory).mapToEntry(Function.identity());
     }
 
     /**
