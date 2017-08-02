@@ -1666,8 +1666,17 @@ public final class MoreCollectors {
     private static <K, V, M extends Map<K,V>>
     BinaryOperator<M> mapMerger(BinaryOperator<V> mergeFunction) {
         return (m1, m2) -> {
-            for (Map.Entry<K,V> e : m2.entrySet())
-                m1.merge(e.getKey(), e.getValue(), mergeFunction);
+            K key = null;
+            for (Map.Entry<K,V> e : m2.entrySet()) {
+                key = e.getKey();
+
+                if (m1.containsKey(key)) {
+                    m1.put(key, mergeFunction.apply(m1.get(key), e.getValue()));
+                } else {
+                    m1.put(key, e.getValue());
+                }
+            }
+
             return m1;
         };
     }
