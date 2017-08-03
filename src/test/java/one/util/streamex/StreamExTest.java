@@ -1384,12 +1384,12 @@ public class StreamExTest {
     public void testRunLenghts() {
         Integer[] input = { 1, 2, 2, 4, 2, null, null, 1, 1, 1, null, null };
         streamEx(() -> StreamEx.of(input), s -> {
-            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths().join(": ").join(
+            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths(Objects::equals).join(": ").join(
                 ", "));
-            assertEquals("1=1, 2=2, 4=1, 2=1, null=2, 1=3", s.get().runLengths().distinct().map(String::valueOf)
+            assertEquals("1=1, 2=2, 4=1, 2=1, null=2, 1=3", s.get().runLengths(Objects::equals).distinct().map(String::valueOf)
                     .join(", "));
         });
-        Entry<Integer, Long> entry = StreamEx.of(input).runLengths().findFirst().get();
+        Entry<Integer, Long> entry = StreamEx.of(input).runLengths(Objects::equals).findFirst().get();
         // Test qeuals contract for custom entry
         assertNotEquals(entry, new Object());
         assertNotEquals(new Object(), entry);
@@ -1398,7 +1398,7 @@ public class StreamExTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testRunLengthsModify() {
-        StreamEx.of("1", "1", "1").runLengths().forEach(e -> e.setValue(5L));
+        StreamEx.of("1", "1", "1").runLengths(Objects::equals).forEach(e -> e.setValue(5L));
     }
 
     @Test
@@ -1416,8 +1416,8 @@ public class StreamExTest {
                 }
             }
             expected.put(input[input.length - 1], len);
-            assertEquals(expected, IntStreamEx.of(input).sorted().boxed().runLengths().toMap());
-            assertEquals(expected, IntStreamEx.of(input).parallel().sorted().boxed().runLengths().toMap());
+            assertEquals(expected, IntStreamEx.of(input).sorted().boxed().runLengths(Objects::equals).toMap());
+            assertEquals(expected, IntStreamEx.of(input).parallel().sorted().boxed().runLengths(Objects::equals).toMap());
         });
     }
 
@@ -1426,7 +1426,7 @@ public class StreamExTest {
      * the corresponding Scala method)
      */
     private long segmentLength(IntStreamEx source, IntPredicate predicate) {
-        return source.mapToObj(predicate::test).runLengths().removeKeys(Boolean.FALSE::equals).mapToLong(
+        return source.mapToObj(predicate::test).runLengths(Objects::equals).removeKeys(Boolean.FALSE::equals).mapToLong(
             Entry::getValue).max().orElse(0);
     }
 

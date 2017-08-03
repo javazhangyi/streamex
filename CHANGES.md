@@ -5,6 +5,7 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 ### 0.8.3:
 * Add `sliding` and `slidingToList` to `StreamEx`.
 * Add `runLengths(BiPredicate<? super T, ? super T> sameGroup)` to `StreamEx`.
+* Remove `EntryStream<T, Long> runLengths()` from StreamEx. It's replaced with `runLengths(Objects::equals)`.
 
 ### 0.8.2:
 * Add `groupByToEntry` and `partitionByToEntry`.

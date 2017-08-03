@@ -2032,28 +2032,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Collapses adjacent equal elements and returns an {@link EntryStream}
-     * where keys are input elements and values specify how many elements were
-     * collapsed.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate</a>
-     * partial reduction operation.
-     * 
-     * <p>
-     * For sorted input {@code runLengths().toMap()} is the same as
-     * {@code groupingBy(Function.identity(), Collectors.counting())}, but may
-     * perform faster. For unsorted input the resulting stream may contain
-     * repeating keys.
-     * 
-     * @return the new stream
-     * @since 0.3.3
-     */
-    public EntryStream<T, Long> runLengths() {        
-        return runLengths(Objects::equals);
-    }
-
-    /**
      * Collapses adjacent elements are grouped according to supplied predicate
      * and returns an {@link EntryStream} where keys are input elements and values specify how many elements were collapsed.
      * 

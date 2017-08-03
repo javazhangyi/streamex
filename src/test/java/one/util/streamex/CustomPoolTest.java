@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,7 +115,7 @@ public class CustomPoolTest {
                 }));
 
         assertEquals(Collections.singletonMap(1, 3L), StreamEx.of(1, 1, 1).parallel(pool).peek(this::checkThread)
-                .runLengths().toMap());
+                .runLengths(Objects::equals).toMap());
     }
 
     @Test
