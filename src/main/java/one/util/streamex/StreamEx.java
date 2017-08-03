@@ -2053,7 +2053,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return runLengths(Objects::equals);
     }
 
-
     /**
      * Collapses adjacent elements are grouped according to supplied predicate
      * and returns an {@link EntryStream} where keys are input elements and values specify how many elements were collapsed.
