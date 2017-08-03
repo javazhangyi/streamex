@@ -2382,7 +2382,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
     
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * @param size
      * @return
@@ -2393,7 +2393,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
     
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * @param size
      * @return
@@ -2429,7 +2429,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * <p>Example:
      * <pre>
@@ -2447,7 +2447,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * <p>Example:
      * <pre>
@@ -2474,7 +2474,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * <p>Example:
      * <pre>
@@ -2492,7 +2492,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
     
     /**
-     * Always run sequentially, even under parallel Streams.
+     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 
      * <p>Example:
      * <pre>
