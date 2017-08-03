@@ -35,6 +35,7 @@ import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -2426,6 +2427,149 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 
                 return list;
             }            
+        });
+        
+        return new StreamEx<>(this.context.parallel ? s.parallel() : s, this.context);
+    }
+
+    /**
+     * Always run sequentially, even under parallel Streams.
+     * 
+     * <p>Example:
+     * <pre>
+     * windowSize: 3
+     * stream: [1, 2, 3, 4, 5]
+     * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+     * </pre>
+     * 
+     * @param windowSize
+     * @return
+     * @throws IllegalArgumentException if windowSize < 1.
+     */
+    public StreamEx<StreamEx<T>> sliding(int windowSize) {
+        return sliding(windowSize, 1);
+    }
+
+    /**
+     * Always run sequentially, even under parallel Streams.
+     * 
+     * <p>Example:
+     * <pre>
+     * windowSize: 3, increment: 3
+     * stream: [1, 1, 1, 2, 2, 2, 3, 3, ]
+     * result: [[1, 1, 1], [2, 2, 2] [3, 3]]
+     *
+     * windowSize: 2, increment: 3
+     * stream: [1, 2, 3, 1, 2, 3, 1, 2, 3]
+     * result: [[1, 2], [1, 2], [1, 2]]
+     *
+     * windowSize: 3, increment: 1
+     * stream: [1, 2, 3, 4, 5, 6]
+     * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]]
+     * </pre>
+     * 
+     * @param windowSize
+     * @param increment
+     * @return
+     * @throws IllegalArgumentException if windowSize < 1 or increment < 1.
+     */
+    public StreamEx<StreamEx<T>> sliding(int windowSize, int increment) {
+        return slidingToList(windowSize, increment).map(l -> StreamEx.of(l));
+    }
+
+    /**
+     * Always run sequentially, even under parallel Streams.
+     * 
+     * <p>Example:
+     * <pre>
+     * windowSize: 3
+     * stream: [1, 2, 3, 4, 5]
+     * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+     * </pre>
+     * 
+     * @param windowSize
+     * @return
+     * @throws IllegalArgumentException if windowSize < 1.
+     */
+    public StreamEx<List<T>> slidingToList(int windowSize) {
+        return slidingToList(windowSize, 1);
+    }
+    
+    /**
+     * Always run sequentially, even under parallel Streams.
+     * 
+     * <p>Example:
+     * <pre>
+     * windowSize: 3, increment: 3
+     * stream: [1, 1, 1, 2, 2, 2, 3, 3]
+     * result: [[1, 1, 1], [2, 2, 2] [3, 3]]
+     *
+     * windowSize: 2, increment: 3
+     * stream: [1, 2, 3, 1, 2, 3, 1, 2, 3]
+     * result: [[1, 2], [1, 2], [1, 2]]
+     *
+     * windowSize: 3, increment: 1
+     * stream: [1, 2, 3, 4, 5, 6]
+     * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]]
+     * </pre>
+     * 
+     * @param windowSize
+     * @param increment
+     * @return
+     * @throws IllegalArgumentException if windowSize < 1 or increment < 1.
+     */
+    public StreamEx<List<T>> slidingToList(int windowSize, int increment) {
+        if (windowSize < 1 || increment < 1) {
+            throw new IllegalArgumentException("'windowSize' and 'increment' must be bigger than 0, can't be: " + windowSize + ", " + increment);
+        }
+        
+        final StreamEx<List<T>> s = of(new Iterator<List<T>>() {
+            private final Iterator<T> iter = StreamEx.this.iterator();
+            
+            private List<T> prev = null;
+
+            @Override
+            public boolean hasNext() {
+                if (prev != null && increment > windowSize) {
+                    int skipNum = increment - windowSize;
+
+                    while (skipNum-- > 0 && iter.hasNext()) {
+                        iter.next();
+                    }
+
+                    prev = null;
+                }
+
+                return iter.hasNext();
+            }
+
+            @Override
+            public List<T> next() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+
+                final List<T> result = new ArrayList<>(windowSize);
+                int cnt = 0;
+
+                if (prev != null && increment < windowSize) {
+                    cnt = windowSize - increment;
+
+                    if (cnt <= 8) {
+                        for (int i = windowSize - cnt; i < windowSize; i++) {
+                            result.add(prev.get(i));
+                        }
+                    } else {
+                        result.addAll(prev.subList(windowSize - cnt, windowSize));
+                    }
+                }
+
+                while (cnt++ < windowSize && iter.hasNext()) {
+                    result.add(iter.next());
+                }
+
+                return prev = result;
+            }
         });
         
         return new StreamEx<>(this.context.parallel ? s.parallel() : s, this.context);

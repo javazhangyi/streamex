@@ -2076,4 +2076,15 @@ public class StreamExTest {
         System.out.println(str);
         assertEquals("[0, 1, 2]-[3, 4, 5]-[6, 7, 8]-[9]", str);
     }
+    
+    @Test
+    public void test_sliding() {
+        IntStreamEx.range(0, 10).boxed().slidingToList(3).forEach(System.out::println);
+        System.out.println("=============================================================");
+        IntStreamEx.range(0, 10).boxed().slidingToList(3, 1).forEach(System.out::println);
+        System.out.println("=============================================================");
+        IntStreamEx.range(0, 10).boxed().slidingToList(3, 3).forEach(System.out::println);
+        System.out.println("=============================================================");
+        IntStreamEx.range(0, 10).boxed().slidingToList(3, 5).forEach(System.out::println);
+    }
 }
