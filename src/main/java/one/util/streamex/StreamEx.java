@@ -2049,8 +2049,27 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return the new stream
      * @since 0.3.3
      */
-    public EntryStream<T, Long> runLengths() {
-        return new EntryStream<>(collapseInternal(Objects::equals, t -> new ObjLongBox<>(t, 1L), (acc, t) -> {
+    public EntryStream<T, Long> runLengths() {        
+        return runLengths(Objects::equals);
+    }
+
+
+    /**
+     * Collapses adjacent elements are grouped according to supplied predicate
+     * and returns an {@link EntryStream} where keys are input elements and values specify how many elements were collapsed.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * partial reduction operation.
+     * 
+     * @param sameGroup a non-interfering, stateless predicate to apply to the
+     *        pair of adjacent elements which returns true for elements which
+     *        belong to the same group.
+     * @return the new stream
+     * @since 0.8.3
+     */
+    public EntryStream<T, Long> runLengths(BiPredicate<? super T, ? super T> sameGroup) {
+        return new EntryStream<>(collapseInternal(sameGroup, t -> new ObjLongBox<>(t, 1L), (acc, t) -> {
             acc.b++;
             return acc;
         }, (e1, e2) -> {
