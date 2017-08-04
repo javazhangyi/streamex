@@ -694,7 +694,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *        excluded
      * @return the new stream
      */
-    public S remove(Predicate<? super T> predicate) {
+    public S removeIf(Predicate<? super T> predicate) {
         return filter(predicate.negate());
     }
 

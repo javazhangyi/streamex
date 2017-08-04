@@ -222,7 +222,7 @@ public class DoubleStreamExTest {
 
     @Test
     public void testRemove() {
-        assertArrayEquals(new double[] { 1, 2 }, DoubleStreamEx.of(1, 2, 3).remove(x -> x > 2).toArray(), 0.0);
+        assertArrayEquals(new double[] { 1, 2 }, DoubleStreamEx.of(1, 2, 3).removeIf(x -> x > 2).toArray(), 0.0);
     }
 
     @Test

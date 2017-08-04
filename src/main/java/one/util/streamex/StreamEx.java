@@ -153,7 +153,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        filter.
      * @return the new stream
      * @since 0.6.4
-     * @see #remove(Predicate)
+     * @see #removeIf(Predicate)
      */
     public <K> StreamEx<T> removeBy(Function<? super T, ? extends K> mapper, K value) {
         return value == null ? filter(t -> mapper.apply(t) != null) : filter(t -> !value.equals(mapper.apply(t)));
@@ -1778,12 +1778,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return the new stream
      * @since 0.2.2
      * @see #without(Object...)
-     * @see #remove(Predicate)
+     * @see #removeIf(Predicate)
      */
     public StreamEx<T> without(T value) {
         if (value == null)
             return filter(Objects::nonNull);
-        return remove(value::equals);
+        return removeIf(value::equals);
     }
 
     /**
@@ -1814,7 +1814,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return the new stream
      * @since 0.5.5
      * @see #without(Object)
-     * @see #remove(Predicate)
+     * @see #removeIf(Predicate)
      */
     @SafeVarargs
     public final StreamEx<T> without(T... values) {
@@ -1822,7 +1822,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             return this;
         if (values.length == 1)
             return without(values[0]);
-        return remove(Arrays.asList(values)::contains);
+        return removeIf(Arrays.asList(values)::contains);
     }
 
     /**

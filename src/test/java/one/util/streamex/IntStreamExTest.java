@@ -399,7 +399,7 @@ public class IntStreamExTest {
 
     @Test
     public void testRemove() {
-        assertArrayEquals(new int[] { 1, 2 }, IntStreamEx.of(1, 2, 3).remove(x -> x > 2).toArray());
+        assertArrayEquals(new int[] { 1, 2 }, IntStreamEx.of(1, 2, 3).removeIf(x -> x > 2).toArray());
     }
 
     @Test

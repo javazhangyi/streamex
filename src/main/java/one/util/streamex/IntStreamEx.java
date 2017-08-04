@@ -99,7 +99,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      *        element to determine if it should be excluded
      * @return the new stream
      */
-    public IntStreamEx remove(IntPredicate predicate) {
+    public IntStreamEx removeIf(IntPredicate predicate) {
         return filter(predicate.negate());
     }
 
@@ -128,7 +128,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @return the new stream
      * @since 0.2.2
      * @see #without(int...)
-     * @see #remove(IntPredicate)
+     * @see #removeIf(IntPredicate)
      */
     public IntStreamEx without(int value) {
         return filter(val -> val != value);
@@ -155,7 +155,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @return the new stream
      * @since 0.5.5
      * @see #without(int)
-     * @see #remove(IntPredicate)
+     * @see #removeIf(IntPredicate)
      */
     public IntStreamEx without(int... values) {
         if (values == null || values.length == 0)

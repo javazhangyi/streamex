@@ -254,7 +254,7 @@ public class StreamExTest {
         assertEquals(Number.class, numbers.getClass().getComponentType());
         Integer[] emptyArray = {};
         assertSame(emptyArray, StreamEx.of(1, 2, 3).filter(x -> x > 3).toArray(emptyArray));
-        assertArrayEquals(new Integer[] { 1, 2, 3 }, StreamEx.of(1, 2, 3).remove(x -> x > 3).toArray(emptyArray));
+        assertArrayEquals(new Integer[] { 1, 2, 3 }, StreamEx.of(1, 2, 3).removeIf(x -> x > 3).toArray(emptyArray));
     }
 
     @Test
@@ -497,7 +497,7 @@ public class StreamExTest {
     
     @Test
     public void testAppend() {
-        assertEquals(asList("a", "b", "c", "d", "e"), StreamEx.of("a", "b", "c", "dd").remove(s -> s.length() > 1)
+        assertEquals(asList("a", "b", "c", "d", "e"), StreamEx.of("a", "b", "c", "dd").removeIf(s -> s.length() > 1)
                 .append("d", "e").toList());
         assertEquals(asList("a", "b", "c", "d", "e"), StreamEx.of("a", "b", "c").append(asList("d", "e").stream())
                 .toList());
@@ -520,7 +520,7 @@ public class StreamExTest {
         Supplier<Stream<String>> notSized = () -> StreamEx.of(StreamEx.of("a", "b", "c", "dd").iterator());
         for (Supplier<Stream<String>> supplier : asList(sized, notSized)) {
             streamEx(supplier, s -> {
-                assertEquals(asList("d", "e", "a", "b", "c"), s.get().remove(str -> str.length() > 1).prepend("d", "e")
+                assertEquals(asList("d", "e", "a", "b", "c"), s.get().removeIf(str -> str.length() > 1).prepend("d", "e")
                         .toList());
                 assertEquals(asList("d", "e", "a", "b", "c", "dd"), s.get().prepend(asList("d", "e").stream())
                         .toList());
@@ -1322,7 +1322,7 @@ public class StreamExTest {
     @Test
     public void testGroupRunsSeparated() {
         streamEx(asList("a", "b", null, "c", null, "d", "e")::stream, supplier -> assertEquals(asList(asList("a", "b"),
-            asList("c"), asList("d", "e")), supplier.get().groupRuns((a, b) -> a != null && b != null).remove(
+            asList("c"), asList("d", "e")), supplier.get().groupRuns((a, b) -> a != null && b != null).removeIf(
                 list -> list.get(0) == null).toList()));
     }
 

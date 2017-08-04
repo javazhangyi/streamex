@@ -79,7 +79,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      *        element to determine if it should be excluded
      * @return the new stream
      */
-    public DoubleStreamEx remove(DoublePredicate predicate) {
+    public DoubleStreamEx removeIf(DoublePredicate predicate) {
         return filter(predicate.negate());
     }
 
@@ -108,7 +108,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @return the new stream
      * @since 0.2.2
      * @see #without(long...)
-     * @see #remove(LongPredicate)
+     * @see #removeIf(LongPredicate)
      */
     public DoubleStreamEx without(double value) {
         return filter(val -> val != value);
@@ -135,7 +135,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @return the new stream
      * @since 0.5.5
      * @see #without(long)
-     * @see #remove(LongPredicate)
+     * @see #removeIf(LongPredicate)
      */
     public DoubleStreamEx without(double... values) {
         if (values == null || values.length == 0)

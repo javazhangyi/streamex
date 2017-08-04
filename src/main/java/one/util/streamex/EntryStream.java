@@ -678,7 +678,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      * @since 0.6.0
      */
-    public EntryStream<K, V> remove(BiPredicate<? super K, ? super V> predicate) {
+    public EntryStream<K, V> removeIf(BiPredicate<? super K, ? super V> predicate) {
         return filter(predicate.negate());
     }
 

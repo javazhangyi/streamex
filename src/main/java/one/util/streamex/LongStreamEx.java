@@ -79,7 +79,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      *        element to determine if it should be excluded
      * @return the new stream
      */
-    public LongStreamEx remove(LongPredicate predicate) {
+    public LongStreamEx removeIf(LongPredicate predicate) {
         return filter(predicate.negate());
     }
 
@@ -108,7 +108,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @return the new stream
      * @since 0.2.2
      * @see #without(long...)
-     * @see #remove(LongPredicate)
+     * @see #removeIf(LongPredicate)
      */
     public LongStreamEx without(long value) {
         return filter(val -> val != value);
@@ -135,7 +135,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @return the new stream
      * @since 0.5.5
      * @see #without(long)
-     * @see #remove(LongPredicate)
+     * @see #removeIf(LongPredicate)
      */
     public LongStreamEx without(long... values) {
         if (values == null || values.length == 0)

@@ -339,7 +339,7 @@ public class LongStreamExTest {
 
     @Test
     public void testRemove() {
-        assertArrayEquals(new long[] { 1, 2 }, LongStreamEx.of(1, 2, 3).remove(x -> x > 2).toArray());
+        assertArrayEquals(new long[] { 1, 2 }, LongStreamEx.of(1, 2, 3).removeIf(x -> x > 2).toArray());
     }
 
     @Test
