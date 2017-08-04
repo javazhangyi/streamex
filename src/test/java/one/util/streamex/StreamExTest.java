@@ -1679,8 +1679,8 @@ public class StreamExTest {
     public void testDistinct() {
         List<String> input = asList("str", "a", "foo", "", "bbbb", null, "abcd", "s");
         streamEx(input::stream, supplier -> {
-            assertEquals(input, supplier.get().distinct(x -> x).toList());
-            assertEquals(asList("str", "a", "", "bbbb"), supplier.get().distinct(x -> x == null ? 0 : x.length())
+            assertEquals(input, supplier.get().distinctBy(x -> x).toList());
+            assertEquals(asList("str", "a", "", "bbbb"), supplier.get().distinctBy(x -> x == null ? 0 : x.length())
                     .toList());
         });
     }

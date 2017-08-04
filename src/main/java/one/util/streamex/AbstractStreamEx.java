@@ -409,7 +409,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      * @since 0.3.8
      */
-    public S distinct(Function<? super T, ?> keyExtractor) {
+    public S distinctBy(Function<? super T, ?> keyExtractor) {
         return supply(stream().map(t -> new PairBox<>(t, keyExtractor.apply(t))).distinct().map(box -> box.a));
     }
 

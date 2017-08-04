@@ -453,7 +453,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.3.8
      */
     public EntryStream<K, V> distinctKeys() {
-        return distinct(Entry::getKey);
+        return distinctBy(Entry::getKey);
     }
 
     /**
@@ -474,7 +474,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.3.8
      */
     public EntryStream<K, V> distinctValues() {
-        return distinct(Entry::getValue);
+        return distinctBy(Entry::getValue);
     }
 
     /**

@@ -6,6 +6,9 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 * Add `sliding` and `slidingToList` to `StreamEx`.
 * Add `runLengths(BiPredicate<? super T, ? super T> sameGroup)` to `StreamEx`.
 * Remove `EntryStream<T, Long> runLengths()` from StreamEx. It's replaced with `runLengths(Objects::equals)`.
+* Rename `remove` to `removeIf`
+* Rename `distinct(Function<? super T, ?> keyExtractor)` to `distinctBy(Function<? super T, ?> keyExtractor)`.
+
 
 ### 0.8.2:
 * Add `groupByToEntry` and `partitionByToEntry`.
