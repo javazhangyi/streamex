@@ -1263,8 +1263,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * <p>
      * For parallel stream the concurrent {@code Map} is created.
      *
-     * @param <V> the output type of the value mapping function
-     * @param valMapper a mapping function to produce values
+     * @param <K> the output type of the key mapping function
+     * @param keyMapper a mapping function to produce values
      * @return a {@code Map} whose keys are elements from this stream and values
      *         are the result of applying mapping function to the input elements
      * @throws IllegalStateException if this stream contains duplicate objects
@@ -1273,8 +1273,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#toConcurrentMap(Function, Function)
      * @see #toMap(Function, Function)
      */
-    public <V> Map<T, V> toMap(Function<? super T, ? extends V> valMapper) {
-        return toMap(Function.identity(), valMapper);
+    public <K> Map<K, T> toMap(Function<? super T, ? extends K> keyMapper) {
+        return toMap(keyMapper, Function.identity());
     }
 
     /**
@@ -1372,8 +1372,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * <p>
      * Returned {@code SortedMap} is guaranteed to be modifiable.
      *
-     * @param <V> the output type of the value mapping function
-     * @param valMapper a mapping function to produce values
+     * @param <K> the output type of the key mapping function
+     * @param keyMapper a mapping function to produce values
      * @return a {@code SortedMap} whose keys are elements from this stream and
      *         values are the result of applying mapping function to the input
      *         elements
@@ -1384,8 +1384,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #toNavigableMap(Function)
      * @since 0.1.0
      */
-    public <V> SortedMap<T, V> toSortedMap(Function<? super T, ? extends V> valMapper) {
-        return toSortedMap(Function.identity(), valMapper);
+    public <K> SortedMap<K, T> toSortedMap(Function<? super T, ? extends K> keyMapper) {
+        return toSortedMap(keyMapper, Function.identity());
     }
 
     /**
@@ -1488,8 +1488,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * <p>
      * Returned {@code NavigableMap} is guaranteed to be modifiable.
      *
-     * @param <V> the output type of the value mapping function
-     * @param valMapper a mapping function to produce values
+     * @param <K> the output type of the key mapping function
+     * @param keyMapper a mapping function to produce values
      * @return a {@code NavigableMap} whose keys are elements from this stream
      *         and values are the result of applying mapping function to the
      *         input elements
@@ -1499,8 +1499,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #toNavigableMap(Function, Function)
      * @since 0.6.5
      */
-    public <V> NavigableMap<T, V> toNavigableMap(Function<? super T, ? extends V> valMapper) {
-        return toNavigableMap(Function.identity(), valMapper);
+    public <K> NavigableMap<K, T> toNavigableMap(Function<? super T, ? extends K> keyMapper) {
+        return toNavigableMap(keyMapper, Function.identity());
     }
 
     /**

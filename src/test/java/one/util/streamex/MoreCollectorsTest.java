@@ -509,7 +509,7 @@ public class MoreCollectorsTest {
     @Test
     public void testFlatMapping() {
         {
-            Map<Integer, List<Integer>> expected = IntStreamEx.rangeClosed(1, 100).boxed().toMap(
+            Map<Integer, List<Integer>> expected = IntStreamEx.rangeClosed(1, 100).boxed().toMap(Function.identity(),
                 x -> IntStreamEx.rangeClosed(1, x).boxed().toList());
             Collector<Integer, ?, Map<Integer, List<Integer>>> groupingBy = Collectors.groupingBy(Function.identity(),
                 MoreCollectors.flatMapping(x -> IntStream.rangeClosed(1, x).boxed(), Collectors.toList()));

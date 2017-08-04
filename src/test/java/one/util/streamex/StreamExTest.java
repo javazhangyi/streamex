@@ -302,7 +302,7 @@ public class StreamExTest {
         expected2.put(3, "ccc");
 
         streamEx(() -> Stream.of("a", "bb", "ccc"), supplier -> {
-            Map<String, Integer> map = supplier.get().toMap(String::length);
+            Map<String, Integer> map = supplier.get().toMap(Function.identity(), String::length);
             assertEquals(supplier.get().isParallel(), map instanceof ConcurrentMap);
             assertEquals(expected, map);
 
@@ -337,7 +337,7 @@ public class StreamExTest {
         expected2.put(3, "ccc");
 
         streamEx(() -> Stream.of("a", "bb", "ccc"), supplier -> {
-            SortedMap<String, Integer> map = supplier.get().toSortedMap(String::length);
+            SortedMap<String, Integer> map = supplier.get().toSortedMap(Function.identity(), String::length);
             assertEquals(supplier.get().isParallel(), map instanceof ConcurrentMap);
             assertEquals(expected, map);
 
@@ -373,7 +373,7 @@ public class StreamExTest {
         expected2.put(3, "ccc");
 
         streamEx(() -> Stream.of("a", "bb", "ccc"), supplier -> {
-            NavigableMap<String, Integer> map = supplier.get().toNavigableMap(String::length);
+            NavigableMap<String, Integer> map = supplier.get().toNavigableMap(Function.identity(), String::length);
             assertEquals(supplier.get().isParallel(), map instanceof ConcurrentMap);
             assertEquals(expected, map);
 
