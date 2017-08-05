@@ -3,6 +3,13 @@
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 0.8.3:
+* Rename `distinct(Function<? super T, ?> keyExtractor)` to `distinctBy(Function<? super T, ?> keyExtractor)`.
+* Refatoring***: toMap/toSortedMap/toNavigableMap
+	Change: `Map<T, V> toMap(Function<? super T, ? extends V> valueMapper)`
+	To: `Map<K, T> toMap(Function<? super T, ? extends K> keyMapper)`.
+
+
+### 0.8.3:
 * Add `sliding` and `slidingToList` to `StreamEx`.
 * Add `runLengths(BiPredicate<? super T, ? super T> sameGroup)` to `StreamEx`.
 * Remove `EntryStream<T, Long> runLengths()` from StreamEx. It's replaced with `runLengths(Objects::equals)`.
