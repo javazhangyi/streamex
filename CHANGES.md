@@ -2,7 +2,7 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
-### 0.8.3:
+### 0.8.4:
 * Rename `distinct(Function<? super T, ?> keyExtractor)` to `distinctBy(Function<? super T, ?> keyExtractor)`.
 * Refatoring***: toMap/toSortedMap/toNavigableMap
 	Change: `Map<T, V> toMap(Function<? super T, ? extends V> valueMapper)`
