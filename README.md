@@ -1,4 +1,4 @@
-# StreamEx 0.8.3
+# StreamEx 0.8.4
 Enhancing Java 8 Streams.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.landawn/streamex.svg)](https://maven-badges.herokuapp.com/maven-central/com.landawn/streamex/)
@@ -129,7 +129,7 @@ To use from maven add this snippet to the pom.xml `dependencies` section:
 <dependency>
   <groupId>com.landawn</groupId>
   <artifactId>streamex</artifactId>
-  <version>0.8.3</version>
+  <version>0.8.4</version>
 </dependency>
 ```
 
