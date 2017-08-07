@@ -1882,6 +1882,45 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return supply(result);
     }
 
+    @Override
+    public StreamEx<T> intersperse(T delimiter) {
+        // return supply(stream().flatMap(s -> StreamEx.of(delimiter, s)).skip(1));        
+
+        return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<T>() {
+            private final Iterator<T> iter = iterator();
+            @SuppressWarnings("unchecked")
+            private T next = (T) NONE;
+            private boolean toInsert = false;
+
+            @Override
+            public boolean hasNext() {
+                if (next == NONE && iter.hasNext()) {
+                    next = iter.next();
+                }
+    
+                return next != NONE;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public T next() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+
+                if (toInsert) {
+                    toInsert = false;
+                    return delimiter;
+                } else {
+                    final T res = next;
+                    next = (T) NONE;
+                    toInsert = true;
+                    return res;
+                }
+            }
+        }), this.context);    
+    }
+
     /**
      * Returns a stream consisting of the results of applying the given function
      * to the every adjacent pair of elements of this stream.
@@ -2381,6 +2420,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return new StreamEx<>(spliterator, context);
     }
     
+
     /**
      * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
      * 

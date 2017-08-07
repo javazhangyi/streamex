@@ -1607,6 +1607,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         forEach(toConsumer(action));
     }
 
+    @Override
+    public EntryStream<K, V> intersperse(Map.Entry<K, V> delimiter) {
+        return chain(s -> s.intersperse(delimiter));
+    }
+
     /**
      * Returns an empty sequential {@code EntryStream}.
      *
