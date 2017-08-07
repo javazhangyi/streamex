@@ -2443,10 +2443,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         if (size < 1) {
             throw new IllegalArgumentException("size must be bigger than 0, can't be: " + size);
         }
-        
-        final StreamEx<List<T>> s = of(new Iterator<List<T>>() {
+
+        return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<List<T>>() {
             private final Iterator<T> iter = StreamEx.this.iterator();
-            
+
             @Override
             public boolean hasNext() {
                 return iter.hasNext();
@@ -2463,9 +2463,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 
                 return list;
             }            
-        });
-        
-        return new StreamEx<>(this.context.parallel ? s.parallel() : s, this.context);
+        }), context);
     }
 
     /**
@@ -2559,9 +2557,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             throw new IllegalArgumentException("'windowSize' and 'increment' must be bigger than 0, can't be: " + windowSize + ", " + increment);
         }
         
-        final StreamEx<List<T>> s = of(new Iterator<List<T>>() {
+        return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<List<T>>() {
             private final Iterator<T> iter = StreamEx.this.iterator();
-            
+
             private List<T> prev = null;
 
             @Override
@@ -2606,9 +2604,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
                 return prev = result;
             }
-        });
-        
-        return new StreamEx<>(this.context.parallel ? s.parallel() : s, this.context);
+        }), context);
     }
 
     /**
