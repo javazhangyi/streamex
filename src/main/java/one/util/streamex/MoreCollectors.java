@@ -1778,8 +1778,7 @@ public final class MoreCollectors {
      * @param keyMapper a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
      * @param mergeFunction a merge function, used to resolve collisions between
-     *        values associated with the same key, as supplied to
-     *        {@link Map#merge(Object, Object, BiFunction)}
+     *        values associated with the same key.
      * @return a {@code Collector} which collects elements into a {@code Map}
      *         whose keys are the result of applying a key mapping function to
      *         the input elements, and whose values are the result of applying a
@@ -1821,8 +1820,7 @@ public final class MoreCollectors {
      * @param keyMapper a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
      * @param mergeFunction a merge function, used to resolve collisions between
-     *        values associated with the same key, as supplied to
-     *        {@link Map#merge(Object, Object, BiFunction)}
+     *        values associated with the same key.
      * @param mapSupplier a function which returns a new, empty {@code Map} into
      *        which the results will be inserted
      * @return a {@code Collector} which collects elements into a {@code Map}
@@ -1932,8 +1930,7 @@ public final class MoreCollectors {
      * @param keyMapper a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
      * @param mergeFunction a merge function, used to resolve collisions between
-     *        values associated with the same key, as supplied to
-     *        {@link Map#merge(Object, Object, BiFunction)}
+     *        values associated with the same key.
      * @return a concurrent, unordered {@code Collector} which collects elements
      *         into a {@code ConcurrentMap} whose keys are the result of
      *         applying a key mapping function to the input elements, and whose
@@ -1974,8 +1971,7 @@ public final class MoreCollectors {
      * @param keyMapper a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
      * @param mergeFunction a merge function, used to resolve collisions between
-     *        values associated with the same key, as supplied to
-     *        {@link Map#merge(Object, Object, BiFunction)}
+     *        values associated with the same key.
      * @param mapSupplier a function which returns a new, empty {@code Map} into
      *        which the results will be inserted
      * @return a concurrent, unordered {@code Collector} which collects elements
