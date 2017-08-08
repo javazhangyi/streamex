@@ -1194,6 +1194,18 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         }
     }
 
+    final  <M extends Map<K, V>> M toMap(Function<? super Map.Entry<K, V>, ? extends K> keyMapper,
+            Function<? super Map.Entry<K, V>, ? extends V> valMapper, M map) {
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
+        return map;
+    }
+
+    final  <M extends Map<K, V>> M toMap(Function<? super Map.Entry<K, V>, ? extends K> keyMapper,
+            Function<? super Map.Entry<K, V>, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
+        return map;
+    }
+
     /**
      * Returns a {@link SortedMap} containing the elements of this stream. There
      * are no guarantees on the type or serializability of the {@code SortedMap}

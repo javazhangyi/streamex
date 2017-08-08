@@ -1353,6 +1353,35 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * 
+     * @param keyMapper
+     * @param valMapper
+     * @param map
+     * @return
+     * @since 0.8.5
+     */
+    public  <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valMapper, M map) {
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
+        return map;
+    }
+
+    /**
+     * 
+     * @param keyMapper
+     * @param valMapper
+     * @param mergeFunction
+     * @param map
+     * @return
+     * @since 0.8.5
+     */
+    public  <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
+        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
+        return map;
+    }
+
+    /**
      * Returns a {@link SortedMap} whose keys are elements from this stream and
      * values are the result of applying the provided mapping functions to the
      * input elements.

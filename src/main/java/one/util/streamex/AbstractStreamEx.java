@@ -49,18 +49,6 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         return StreamSupport.stream(spliterator, context.parallel);
     }
 
-    final <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valMapper, M map) {
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
-        return map;
-    }
-
-    final <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
-        return map;
-    }
-
     final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val) {
         V oldVal = map.putIfAbsent(key, val);
         if (oldVal != null) {

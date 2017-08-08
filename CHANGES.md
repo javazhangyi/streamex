@@ -2,6 +2,12 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 0.8.5:
+
+* Add `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, M map)` and `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map)` to StreamEx.
+
+* Improve `intersperse`.
+
 ### 0.8.4:
 * Rename `distinct(Function<? super T, ?> keyExtractor)` to `distinctBy(Function<? super T, ?> keyExtractor)`.
 * Refatoring***: toMap/toSortedMap/toNavigableMap
