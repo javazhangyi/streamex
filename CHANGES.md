@@ -6,6 +6,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, M map)` and `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map)` to StreamEx.
 
+* Add `Fn` and `Comparators`.
+
 * Improve `intersperse`.
 
 ### 0.8.4:
