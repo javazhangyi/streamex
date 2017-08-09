@@ -1805,6 +1805,10 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return mapper.apply(this);
     }
 
+    public void println() {
+        boxed().println();
+    }
+
     /**
      * Returns an empty sequential {@code IntStreamEx}.
      *

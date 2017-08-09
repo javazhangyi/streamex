@@ -2,6 +2,11 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 0.8.6:
+
+* Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`
+
+
 ### 0.8.5:
 
 * Add `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, M map)` and `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map)` to StreamEx.
@@ -9,6 +14,7 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 * Add `Fn` and `Comparators`.
 
 * Improve `intersperse`.
+
 
 ### 0.8.4:
 * Rename `distinct(Function<? super T, ?> keyExtractor)` to `distinctBy(Function<? super T, ?> keyExtractor)`.
@@ -29,9 +35,11 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 * Add `groupByToEntry` and `partitionByToEntry`.
 * Add `collectAndThen` to `StreamEx` and `EntryStream`.
 
+
 ### 0.8.1:
 * Rename `toCustomMap` to `toMap`.
 * Support `null` value for `toMap`/`toSortedMap`/`toNavigableMap`.
+
  		
 ### 0.8: API refactoring and improvements:
 * Improve Null Safety
@@ -63,6 +71,7 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 * Add `StreamEx<T> concat(T[] a, T[] b)`, `StreamEx<T> concat(Collection<? extends T> a, Collection<? extends T> b)`, `IntStreamEx concat(int[] a, int[] b)`, `LongStreamEx concat(long[] a, long[] b)` and `DoubleStreamEx concat(double[] a, double[] b)`.
 
 * Add `StreamEx<StreamEx<T>> split(int size)` and `StreamEx<List<T>> splitToList(int size)`.
+
 
 ### 0.6.6
 * [#145] Added: `intersperse` method for all stream types.

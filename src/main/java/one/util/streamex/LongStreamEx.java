@@ -1575,6 +1575,10 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
         return mapper.apply(this);
     }
 
+    public void println() {
+        boxed().println();
+    }
+
     /**
      * Returns an empty sequential {@code LongStreamEx}.
      *

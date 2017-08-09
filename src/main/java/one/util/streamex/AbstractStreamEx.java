@@ -1837,4 +1837,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public <U> U chain(Function<? super S, U> mapper) {
         return mapper.apply((S)this);
     }
+
+    public void println() {
+        System.out.println(toList());
+    }
 }

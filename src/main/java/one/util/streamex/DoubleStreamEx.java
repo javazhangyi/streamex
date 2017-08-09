@@ -1580,6 +1580,10 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
         return mapper.apply(this);
     }
 
+    public void println() {
+        boxed().println();
+    }
+
     /**
      * Returns an empty sequential {@code DoubleStreamEx}.
      *
