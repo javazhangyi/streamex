@@ -10,6 +10,14 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
  
 
+/**
+ * Factory utility class for Comparator.
+ * 
+ * 
+ * @author haiyang li
+ * 
+ * @since 0.8.5
+ */
 @SuppressWarnings("unchecked")
 public final class Comparators {
     @SuppressWarnings("rawtypes")

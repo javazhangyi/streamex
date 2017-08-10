@@ -1,4 +1,3 @@
-/** <a href="http://www.cpupk.com/decompiler">Eclipse Class Decompiler</a> plugin, Copyright (c) 2017 Chen Chao. */
 /*
  * Copyright (C) 2017 HaiYang Li
  *
@@ -37,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -47,8 +47,16 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
-import java.util.stream.Collectors; 
+import java.util.stream.Collectors;
+ 
 
+/**
+ * Factory utility class for functional interfaces.
+ * 
+ * @author haiyang li
+ * 
+ * @since 0.8.5
+ */
 @SuppressWarnings("unchecked")
 public final class Fn {
 
@@ -97,6 +105,13 @@ public final class Fn {
         @Override
         public Object apply(Map.Entry<Object, Object> t) {
             return t.getValue();
+        }
+    };
+
+    private static final BiFunction<Object, Object, Map.Entry<Object, Object>> ENTRY = new BiFunction<Object, Object, Map.Entry<Object, Object>>() {
+        @Override
+        public Map.Entry<Object, Object> apply(Object key, Object value) {
+            return new AbstractMap.SimpleImmutableEntry<>(key, value);
         }
     };
 
@@ -221,7 +236,12 @@ public final class Fn {
     public static <K, V> Function<Entry<K, V>, V> value() {
         return (Function) VALUE;
     }
-
+    
+    @SuppressWarnings("rawtypes")
+    public static <K, V> BiFunction<K, V, Map.Entry<K, V>> entry() {
+        return (BiFunction) ENTRY;
+    }
+    
     public static Function<String, String> trim() {
         return TRIM;
     }
