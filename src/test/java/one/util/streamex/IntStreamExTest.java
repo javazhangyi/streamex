@@ -776,5 +776,9 @@ public class IntStreamExTest {
         assertArrayEquals(new int[] { 1, 0, 10, 0, 100, 0, 1000 }, IntStreamEx.of(1, 10, 100, 1000).intersperse(0)
                 .toArray());
         assertEquals(0L, IntStreamEx.empty().intersperse(1).count());
+        
+        IntStreamEx.empty().intersperse(-1).println();
+        IntStreamEx.of(1).intersperse(-1).println();
+        IntStreamEx.of(1, 2).intersperse(-1).println();
     }
 }
