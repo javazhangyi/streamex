@@ -8,6 +8,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `<K, V> BiFunction<K, V, Map.Entry<K, V>> entry()` to `Fn`.
 
+* Add `throwingMerger`, `ignoringMerger`, `replacingMerger` to `Fn`.
+
 * Improvements.
 
 ### 0.8.5:

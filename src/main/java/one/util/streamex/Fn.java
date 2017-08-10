@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -48,7 +49,7 @@ import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
- 
+
 
 /**
  * Factory utility class for functional interfaces.
@@ -169,6 +170,30 @@ public final class Fn {
         @Override
         public boolean test(Object value) {
             return value != null;
+        }
+    };
+    
+    @SuppressWarnings("rawtypes")
+    private static final BinaryOperator THROWING_MERGER = new BinaryOperator() {
+        @Override
+        public Object apply(Object t, Object u) {
+            throw new IllegalStateException(String.format("Duplicate key %s", u));
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    private static final BinaryOperator IGNORING_MERGER = new BinaryOperator() {
+        @Override
+        public Object apply(Object t, Object u) {
+            return t;
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    private static final BinaryOperator REPLACING_MERGER = new BinaryOperator() {
+        @Override
+        public Object apply(Object t, Object u) {
+            return u;
         }
     };
 
@@ -471,6 +496,18 @@ public final class Fn {
                 return new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), func.apply(entry.getValue()));
             }
         };
+    }
+
+    public static <T> BinaryOperator<T> throwingMerger() {
+        return THROWING_MERGER;
+    }
+
+    public static <T> BinaryOperator<T> ignoringMerger() {
+        return IGNORING_MERGER;
+    }
+
+    public static <T> BinaryOperator<T> replacingMerger() {
+        return REPLACING_MERGER;
     }
 
     public static <T> Collector<T, ?, List<T>> toList() {
