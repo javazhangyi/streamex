@@ -84,12 +84,7 @@ public final class Fn {
     };
 
     @SuppressWarnings("rawtypes")
-    private static final Function IDENTITY = new Function() {
-        @Override
-        public Object apply(Object t) {
-            return t;
-        }
-    };
+    private static final Function IDENTITY = Function.identity();
 
     private static final Function<Map.Entry<Object, Object>, Object> KEY = new Function<Map.Entry<Object, Object>, Object>() {
         @Override
