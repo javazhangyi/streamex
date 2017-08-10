@@ -177,8 +177,7 @@ public final class Fn {
     private static final BinaryOperator THROWING_MERGER = new BinaryOperator() {
         @Override
         public Object apply(Object t, Object u) {
-            throw new IllegalStateException(String.format("Duplicate key %s", u));
-        }
+            throw new IllegalStateException(String.format("Duplicate key (attempted merging values %s and %s)", t, u));}
     };
 
     @SuppressWarnings("rawtypes")
