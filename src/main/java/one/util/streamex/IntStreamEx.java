@@ -353,7 +353,33 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @since 0.6.6
      */
     public IntStreamEx intersperse(int delimiter) {
-        return new IntStreamEx(stream().flatMap(s -> IntStreamEx.of(delimiter, s)).skip(1), context);
+        // return new IntStreamEx(stream().flatMap(s -> IntStreamEx.of(delimiter, s)).skip(1), context);
+
+        return new IntStreamEx(new UnknownSizeSpliterator.USOfInt(new PrimitiveIterator.OfInt() {
+            private final OfInt iter = iterator();
+            private boolean toInsert = false;
+
+            @Override
+            public boolean hasNext() {    
+                return iter.hasNext();
+            }
+
+            @Override
+            public int nextInt() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+
+                if (toInsert) {
+                    toInsert = false;
+                    return delimiter;
+                } else {
+                    final int res = iter.nextInt(); 
+                    toInsert = true;
+                    return res;
+                }
+            }
+        }), this.context);
     }
 
     @Override

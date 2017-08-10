@@ -376,7 +376,33 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @since 0.6.6
      */
     public DoubleStreamEx intersperse(int delimiter) {
-        return new DoubleStreamEx(stream().flatMap(s -> DoubleStreamEx.of(delimiter, s)).skip(1), context);
+        // return new DoubleStreamEx(stream().flatMap(s -> DoubleStreamEx.of(delimiter, s)).skip(1), context);
+
+        return new DoubleStreamEx(new UnknownSizeSpliterator.USOfDouble(new PrimitiveIterator.OfDouble() {
+            private final OfDouble iter = iterator();
+            private boolean toInsert = false;
+
+            @Override
+            public boolean hasNext() {    
+                return iter.hasNext();
+            }
+
+            @Override
+            public double nextDouble() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+
+                if (toInsert) {
+                    toInsert = false;
+                    return delimiter;
+                } else {
+                    final double res = iter.nextDouble(); 
+                    toInsert = true;
+                    return res;
+                }
+            }
+        }), this.context);
     }
 
     @Override

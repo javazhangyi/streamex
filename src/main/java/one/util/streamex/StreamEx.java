@@ -1917,20 +1917,13 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
         return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<T>() {
             private final Iterator<T> iter = iterator();
-            @SuppressWarnings("unchecked")
-            private T next = (T) NONE;
             private boolean toInsert = false;
 
             @Override
-            public boolean hasNext() {
-                if (next == NONE && iter.hasNext()) {
-                    next = iter.next();
-                }
-    
-                return next != NONE;
+            public boolean hasNext() {    
+                return iter.hasNext();
             }
-
-            @SuppressWarnings("unchecked")
+ 
             @Override
             public T next() {
                 if (hasNext() == false) {
@@ -1941,8 +1934,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                     toInsert = false;
                     return delimiter;
                 } else {
-                    final T res = next;
-                    next = (T) NONE;
+                    final T res = iter.next();
                     toInsert = true;
                     return res;
                 }

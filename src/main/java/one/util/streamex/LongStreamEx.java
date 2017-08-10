@@ -377,7 +377,33 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @since 0.6.6
      */
     public LongStreamEx intersperse(int delimiter) {
-        return new LongStreamEx(stream().flatMap(s -> LongStreamEx.of(delimiter, s)).skip(1), context);
+        // return new LongStreamEx(stream().flatMap(s -> LongStreamEx.of(delimiter, s)).skip(1), context);
+
+        return new LongStreamEx(new UnknownSizeSpliterator.USOfLong(new PrimitiveIterator.OfLong() {
+            private final OfLong iter = iterator();
+            private boolean toInsert = false;
+
+            @Override
+            public boolean hasNext() {    
+                return iter.hasNext();
+            }
+
+            @Override
+            public long nextLong() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+
+                if (toInsert) {
+                    toInsert = false;
+                    return delimiter;
+                } else {
+                    final long res = iter.nextLong(); 
+                    toInsert = true;
+                    return res;
+                }
+            }
+        }), this.context);
     }
 
     @Override
