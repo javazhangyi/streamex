@@ -89,7 +89,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     <M extends Map<K, V>> Consumer<? super Entry<K, V>> toMapConsumer(M map) {
-        return entry -> addToMap(map, entry.getKey(), Objects.requireNonNull(entry.getValue()));
+        return entry -> addToMap(map, entry.getKey(), entry.getValue());
     }
 
     BiPredicate<? super Entry<K, V>, ? super Entry<K, V>> equalKeys() {
