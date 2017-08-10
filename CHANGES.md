@@ -4,8 +4,11 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 0.8.6:
 
-* Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`
+* Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`.
 
+* Add `<K, V> BiFunction<K, V, Map.Entry<K, V>> entry()` to `Fn`.
+
+* Improvements.
 
 ### 0.8.5:
 
