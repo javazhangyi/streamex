@@ -2628,7 +2628,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         }), context);
     }
 
-    public boolean containsAll(T... a) {
+    @SafeVarargs
+    public final boolean containsAll(T... a) {
         if (a == null || a.length == 0) {
             return true;
         } else if (a.length == 1) {
@@ -2647,6 +2648,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public boolean containsAll(Collection<? extends T> c) {
         if (c == null || c.size() == 0) {
             return true;
@@ -2808,6 +2810,14 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         }
 
         return of(collection.spliterator());
+    }
+
+    public static <K, V> StreamEx<Map.Entry<K, V>> of(Map<K, V> map) {
+        if (map == null || map.size() == 0) {
+            return StreamEx.empty();
+        }
+
+        return of(map.entrySet());
     }
 
     /**
@@ -3052,12 +3062,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *
      * @param path the path to the file
      * @return the lines from the file as a {@code StreamEx}
-     * @throws IOException if an I/O error occurs opening the file
+     * @throws UncheckedIOException if an I/O error occurs opening the file
      * @since 0.5.0
      * @see Files#lines(Path)
      */
-    public static StreamEx<String> ofLines(Path path) throws IOException {
-        return of(UnknownSizeSpliterator.optimize(Files.lines(path)));
+    public static StreamEx<String> ofLines(Path path) throws UncheckedIOException {       
+        return ofLines(path, StandardCharsets.UTF_8);
     }
 
     /**
@@ -3085,12 +3095,16 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param path the path to the file
      * @param charset the charset to use for decoding
      * @return the lines from the file as a {@code StreamEx}
-     * @throws IOException if an I/O error occurs opening the file
+     * @throws UncheckedIOException if an I/O error occurs opening the file
      * @see Files#lines(Path, Charset)
      * @since 0.5.0
      */
-    public static StreamEx<String> ofLines(Path path, Charset charset) throws IOException {
-        return of(UnknownSizeSpliterator.optimize(Files.lines(path, charset)));
+    public static StreamEx<String> ofLines(Path path, Charset charset) throws UncheckedIOException {         
+        try {
+           return of(UnknownSizeSpliterator.optimize(Files.lines(path, charset)));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /**

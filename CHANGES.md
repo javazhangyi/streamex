@@ -2,6 +2,13 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 0.8.7:
+
+* Add `<K, V> StreamEx<Map.Entry<K, V>> of(Map<K, V> map)` to `StreamEx`.
+
+* Refatoring: Change `StreamEx<String> ofLines(Path path) throws IOException` to `StreamEx<String> ofLines(Path path) throws UncheckedIOException`.
+
+
 ### 0.8.6:
 
 * Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`.
@@ -13,6 +20,7 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 * Add `boolean containsAll(T... a)` and `boolean containsAll(Collection<? extends T> c)` to `StreamEx`
 
 * Improvements.
+
 
 ### 0.8.5:
 
