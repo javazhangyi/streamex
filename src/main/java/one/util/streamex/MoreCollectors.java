@@ -457,7 +457,7 @@ public final class MoreCollectors {
      * @see #maxAll()
      */
     public static <T extends Comparable<? super T>, A, D> Collector<T, ?, D> maxAll(Collector<T, A, D> downstream) {
-        return maxAll(Comparator.<T> naturalOrder(), downstream);
+        return maxAll(Comparators.<T> naturalOrder(), downstream);
     }
 
     /**
@@ -472,7 +472,7 @@ public final class MoreCollectors {
      * @see #maxAll(Collector)
      */
     public static <T extends Comparable<? super T>> Collector<T, ?, List<T>> maxAll() {
-        return maxAll(Comparator.<T> naturalOrder(), Collectors.toList());
+        return maxAll(Comparators.<T> naturalOrder());
     }
 
     /**
@@ -520,59 +520,9 @@ public final class MoreCollectors {
      * @return
      */
     public static <T> Collector<T, ?, List<T>> minAll(final Comparator<? super T> comparator, final int atMostSize) {
-        final Supplier<PairBox<List<T>, T>> supplier = () -> new PairBox<>(new ArrayList<>(Math.min(16, atMostSize)), none());
-
-        final BiConsumer<PairBox<List<T>, T>, T> accumulator = (acc, t) -> {
-            if (acc.b == NONE) {
-                if (acc.a.size() < atMostSize) {
-                    acc.a.add(t);
-                }
-                acc.b = t;
-            } else {
-                int cmp = comparator.compare(t, acc.b);
-                if (cmp < 0) {
-                    acc.a.clear();
-                    acc.b = t;
-                }
-
-                if (cmp <= 0) {
-                    if (acc.a.size() < atMostSize) {
-                        acc.a.add(t);
-                    }
-                }
-            }
-        };
-
-        final BinaryOperator<PairBox<List<T>, T>> combiner = (acc1, acc2) -> {
-            if (acc2.b == NONE) {
-                return acc1;
-            }
-            if (acc1.b == NONE) {
-                return acc2;
-            }
-            int cmp = comparator.compare(acc1.b, acc2.b);
-            if (cmp < 0) {
-                return acc1;
-            }
-            if (cmp > 0) {
-                return acc2;
-            }
-
-            if (acc1.a.size() < atMostSize) {
-                if (acc2.a.size() <= atMostSize - acc1.a.size()) {
-                    acc1.a.addAll(acc2.a);
-                } else {
-                    acc1.a.addAll(acc2.a.subList(0, atMostSize - acc1.a.size()));
-                }
-            }
-
-            return acc1;
-        };
-
-        final Function<PairBox<List<T>, T>, List<T>> finisher = acc -> acc.a;
-
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return maxAll(comparator.reversed(), atMostSize);
     }
+
     /**
      * Returns a {@code Collector} which finds all the elements which are equal
      * to each other and smaller than any other element according to the natural
@@ -605,7 +555,7 @@ public final class MoreCollectors {
      * @see #minAll(Collector)
      */
     public static <T extends Comparable<? super T>> Collector<T, ?, List<T>> minAll() {
-        return maxAll(Comparator.<T> reverseOrder(), Collectors.toList());
+        return minAll(Comparators.naturalOrder());
     }
 
     /**
@@ -650,7 +600,9 @@ public final class MoreCollectors {
      *         {@code Optional} is returned.
      */
     public static <T> Collector<T, ?, Optional<T>> first() {
-        return new CancellableCollectorImpl<>(() -> new Box<T>(none()), (box, t) -> {
+        final Supplier<Box<T>> supplier = () -> new Box<>(none());
+        
+        return new CancellableCollectorImpl<>(supplier, (box, t) -> {
             if (box.a == NONE)
                 box.a = t;
         }, (box1, box2) -> box1.a == NONE ? box2 : box1, box -> box.a == NONE ? Optional.empty() : Optional.of(box.a),
@@ -833,7 +785,8 @@ public final class MoreCollectors {
         if (n <= 0)
             return empty();
         if (n == 1) {
-            return Collector.of(() -> new Box<T>(none()), (box, t) -> {
+            final Supplier<Box<T>> supplier = () -> new Box<>(none());
+            return Collector.of(supplier, (box, t) -> {
                 if (box.a == NONE || comparator.compare(t, box.a) < 0)
                     box.a = t;
             }, (box1, box2) -> (box2.a != NONE && (box1.a == NONE || comparator.compare(box2.a, box1.a) < 0)) ? box2
