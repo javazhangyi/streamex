@@ -6,6 +6,10 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `<K, V> StreamEx<Map.Entry<K, V>> of(Map<K, V> map)` to `StreamEx`.
 
+* Add `maxAll(Comparator<? super T> comparator, int atMostSize)` and `minAll(Comparator<? super T> comparator, int atMostSize)` to `MoreCollectors`.
+
+* Improve `maxAll(Comparator<? super T> comparator)` and `minAll(Comparator<? super T> comparator)` in `MoreCollectors`.
+
 
 ### 0.8.6:
 
