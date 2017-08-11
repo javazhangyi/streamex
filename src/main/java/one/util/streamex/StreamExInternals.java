@@ -1002,7 +1002,6 @@ final class StreamExInternals {
         }
     }
 
-    @SuppressWarnings("unchecked")
     static <A> Predicate<A> finished(Collector<?, A, ?> collector) {
         if (collector instanceof CancellableCollector)
             return ((CancellableCollector<?, A, ?>) collector).finished();
