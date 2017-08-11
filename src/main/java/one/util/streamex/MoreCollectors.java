@@ -376,7 +376,68 @@ public final class MoreCollectors {
      * @see #maxAll()
      */
     public static <T> Collector<T, ?, List<T>> maxAll(Comparator<? super T> comparator) {
-        return maxAll(comparator, Collectors.toList());
+        return maxAll(comparator, Integer.MAX_VALUE);
+    }
+
+    /**
+     *
+     * @param comparator
+     * @param atMostSize
+     * @return
+     */
+    public static <T> Collector<T, ?, List<T>> maxAll(final Comparator<? super T> comparator, final int atMostSize) {
+        final Supplier<PairBox<List<T>, T>> supplier = () -> new PairBox<>(new ArrayList<>(Math.min(16, atMostSize)), none());
+
+        final BiConsumer<PairBox<List<T>, T>, T> accumulator = (acc, t) -> {
+            if (acc.b == NONE) {
+                if (acc.a.size() < atMostSize) {
+                    acc.a.add(t);
+                }
+                acc.b = t;
+            } else {
+                int cmp = comparator.compare(t, acc.b);
+                if (cmp > 0) {
+                    acc.a.clear();
+                    acc.b = t;
+                }
+
+                if (cmp >= 0) {
+                    if (acc.a.size() < atMostSize) {
+                        acc.a.add(t);
+                    }
+                }
+            }
+        };
+
+        final BinaryOperator<PairBox<List<T>, T>> combiner = (acc1, acc2) -> {
+            if (acc2.b == NONE) {
+                return acc1;
+            }
+            if (acc1.b == NONE) {
+                return acc2;
+            }
+            int cmp = comparator.compare(acc1.b, acc2.b);
+            if (cmp > 0) {
+                return acc1;
+            }
+            if (cmp < 0) {
+                return acc2;
+            }
+
+            if (acc1.a.size() < atMostSize) {
+                if (acc2.a.size() <= atMostSize - acc1.a.size()) {
+                    acc1.a.addAll(acc2.a);
+                } else {
+                    acc1.a.addAll(acc2.a.subList(0, atMostSize - acc1.a.size()));
+                }
+            }
+
+            return acc1;
+        };
+
+        final Function<PairBox<List<T>, T>, List<T>> finisher = acc -> acc.a;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
     /**
@@ -449,9 +510,69 @@ public final class MoreCollectors {
      * @see #minAll()
      */
     public static <T> Collector<T, ?, List<T>> minAll(Comparator<? super T> comparator) {
-        return maxAll(comparator.reversed(), Collectors.toList());
+        return minAll(comparator, Integer.MAX_VALUE);
     }
 
+    /**
+     *
+     * @param comparator
+     * @param atMostSize
+     * @return
+     */
+    public static <T> Collector<T, ?, List<T>> minAll(final Comparator<? super T> comparator, final int atMostSize) {
+        final Supplier<PairBox<List<T>, T>> supplier = () -> new PairBox<>(new ArrayList<>(Math.min(16, atMostSize)), none());
+
+        final BiConsumer<PairBox<List<T>, T>, T> accumulator = (acc, t) -> {
+            if (acc.b == NONE) {
+                if (acc.a.size() < atMostSize) {
+                    acc.a.add(t);
+                }
+                acc.b = t;
+            } else {
+                int cmp = comparator.compare(t, acc.b);
+                if (cmp < 0) {
+                    acc.a.clear();
+                    acc.b = t;
+                }
+
+                if (cmp <= 0) {
+                    if (acc.a.size() < atMostSize) {
+                        acc.a.add(t);
+                    }
+                }
+            }
+        };
+
+        final BinaryOperator<PairBox<List<T>, T>> combiner = (acc1, acc2) -> {
+            if (acc2.b == NONE) {
+                return acc1;
+            }
+            if (acc1.b == NONE) {
+                return acc2;
+            }
+            int cmp = comparator.compare(acc1.b, acc2.b);
+            if (cmp < 0) {
+                return acc1;
+            }
+            if (cmp > 0) {
+                return acc2;
+            }
+
+            if (acc1.a.size() < atMostSize) {
+                if (acc2.a.size() <= atMostSize - acc1.a.size()) {
+                    acc1.a.addAll(acc2.a);
+                } else {
+                    acc1.a.addAll(acc2.a.subList(0, atMostSize - acc1.a.size()));
+                }
+            }
+
+            return acc1;
+        };
+
+        final Function<PairBox<List<T>, T>, List<T>> finisher = acc -> acc.a;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
     /**
      * Returns a {@code Collector} which finds all the elements which are equal
      * to each other and smaller than any other element according to the natural
