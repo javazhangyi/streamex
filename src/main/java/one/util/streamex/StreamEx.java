@@ -3062,12 +3062,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *
      * @param path the path to the file
      * @return the lines from the file as a {@code StreamEx}
-     * @throws UncheckedIOException if an I/O error occurs opening the file
+     * @throws IOException if an I/O error occurs opening the file
      * @since 0.5.0
      * @see Files#lines(Path)
      */
-    public static StreamEx<String> ofLines(Path path) throws UncheckedIOException {       
-        return ofLines(path, StandardCharsets.UTF_8);
+    public static StreamEx<String> ofLines(Path path) throws IOException {   
+        return of(UnknownSizeSpliterator.optimize(Files.lines(path)));
     }
 
     /**
@@ -3095,16 +3095,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param path the path to the file
      * @param charset the charset to use for decoding
      * @return the lines from the file as a {@code StreamEx}
-     * @throws UncheckedIOException if an I/O error occurs opening the file
+     * @throws IOException if an I/O error occurs opening the file
      * @see Files#lines(Path, Charset)
      * @since 0.5.0
      */
-    public static StreamEx<String> ofLines(Path path, Charset charset) throws UncheckedIOException {         
-        try {
-           return of(UnknownSizeSpliterator.optimize(Files.lines(path, charset)));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    public static StreamEx<String> ofLines(Path path, Charset charset) throws IOException {
+        return of(UnknownSizeSpliterator.optimize(Files.lines(path, charset)));
     }
 
     /**

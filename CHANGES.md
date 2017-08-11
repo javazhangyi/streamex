@@ -6,8 +6,6 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `<K, V> StreamEx<Map.Entry<K, V>> of(Map<K, V> map)` to `StreamEx`.
 
-* Refatoring: Change `StreamEx<String> ofLines(Path path) throws IOException` to `StreamEx<String> ofLines(Path path) throws UncheckedIOException`.
-
 
 ### 0.8.6:
 
