@@ -1,4 +1,4 @@
-# StreamEx 0.8.5
+# StreamEx
 Enhancing Java 8 Streams.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.landawn/streamex.svg)](https://maven-badges.herokuapp.com/maven-central/com.landawn/streamex/)
