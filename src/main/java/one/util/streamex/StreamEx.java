@@ -2628,6 +2628,42 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         }), context);
     }
 
+    public boolean containsAll(T... a) {
+        if (a == null || a.length == 0) {
+            return true;
+        } else if (a.length == 1) {
+            return anyMatch(Fn.equal(a[0]));
+        } else if (a.length == 2) {
+            return filter(new Predicate<T>() {
+                private final T val1 = a[0], val2 = a[1];
+
+                @Override
+                public boolean test(T t) {
+                    return Objects.equals(t, val1) || Objects.equals(t, val2);
+                }
+            }).distinct().limit(2).count() == 2;
+        } else {
+            return containsAll(new HashSet<>(Arrays.asList(a)));
+        }
+    }
+
+    public boolean containsAll(Collection<? extends T> c) {
+        if (c == null || c.size() == 0) {
+            return true;
+        } else if (c.size() == 1) {
+            final T val = c instanceof List ? ((List<T>) c).get(0) : c.iterator().next();
+            return anyMatch(Fn.equal(val));
+        } else {
+            final Set<T> set = c instanceof Set ? (Set<T>) c : new HashSet<>(c);
+            return filter(new Predicate<T>() {
+                @Override
+                public boolean test(T t) {
+                    return set.contains(t);
+                }
+            }).distinct().limit(set.size()).count() == set.size();
+        }
+    }
+
     /**
      * Returns an empty sequential {@code StreamEx}.
      *

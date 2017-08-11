@@ -10,6 +10,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `throwingMerger`, `ignoringMerger`, `replacingMerger` to `Fn`.
 
+* Add `boolean containsAll(T... a)` and `boolean containsAll(Collection<? extends T> c)` to `StreamEx`
+
 * Improvements.
 
 ### 0.8.5:
