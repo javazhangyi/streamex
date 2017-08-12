@@ -1942,20 +1942,20 @@ public class StreamExTest {
     @Test
     public void testPrefix() {
         List<String> input = asList("a", "b", "c", "d", "e");
-        streamEx(input::stream, s -> assertEquals(asList("a", "ab", "abc", "abcd", "abcde"), s.get().prefix(
+        streamEx(input::stream, s -> assertEquals(asList("a", "ab", "abc", "abcd", "abcde"), s.get().scan(
             String::concat).toList()));
-        streamEx(input::stream, s -> assertEquals(Optional.of("abcd"), s.get().prefix(String::concat).findFirst(
+        streamEx(input::stream, s -> assertEquals(Optional.of("abcd"), s.get().scan(String::concat).findFirst(
             str -> str.length() > 3)));
 
         streamEx(() -> StreamEx.constant("a", 5), s -> assertEquals(new HashSet<>(asList("a", "aa", "aaa", "aaaa",
-            "aaaaa")), s.get().prefix(String::concat).toSet()));
-        streamEx(() -> StreamEx.constant("a", 5), s -> assertEquals(Optional.of("aaaaa"), s.get().prefix(String::concat)
+            "aaaaa")), s.get().scan(String::concat).toSet()));
+        streamEx(() -> StreamEx.constant("a", 5), s -> assertEquals(Optional.of("aaaaa"), s.get().scan(String::concat)
                 .findFirst(str -> str.length() > 4)));
 
-        streamEx(() -> StreamEx.constant(100L, 10000), s -> assertEquals(5000500000L, (long) s.get().prefix(Long::sum)
+        streamEx(() -> StreamEx.constant(100L, 10000), s -> assertEquals(5000500000L, (long) s.get().scan(Long::sum)
                 .reduce(0L, Long::sum)));
 
-        streamEx(() -> IntStreamEx.range(10000).boxed().unordered(), s -> assertEquals(49995000, s.get().prefix(
+        streamEx(() -> IntStreamEx.range(10000).boxed().unordered(), s -> assertEquals(49995000, s.get().scan(
             Integer::sum).mapToInt(Integer::intValue).max().getAsInt()));
     }
 
@@ -1969,7 +1969,7 @@ public class StreamExTest {
      *         stream is empty
      */
     static <T> Optional<T> maxWithStop(StreamEx<T> stream, Comparator<T> comparator, T stopValue) {
-        return stream.prefix(BinaryOperator.maxBy(comparator)).takeWhileInclusive(Predicate.isEqual(stopValue).negate())
+        return stream.scan(BinaryOperator.maxBy(comparator)).takeWhileInclusive(Predicate.isEqual(stopValue).negate())
                 .collect(MoreCollectors.last());
     }
 

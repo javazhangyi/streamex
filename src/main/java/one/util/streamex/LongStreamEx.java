@@ -897,6 +897,49 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
     }
 
     /**
+     * Returns a stream containing cumulative results of applying the
+     * accumulation function going left to right.
+     * 
+     * <p>
+     * This is a stateful
+     * <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * operation.
+     *
+     * <p>
+     * This operation resembles {@link #scanLeft(LongBinaryOperator)}, but
+     * unlike {@code scanLeft} this operation is intermediate and accumulation
+     * function must be associative.
+     * 
+     * <p>
+     * This method cannot take all the advantages of parallel streams as it must
+     * process elements strictly left to right. Using an unordered source or
+     * removing the ordering constraint with {@link #unordered()} may improve
+     * the parallel processing speed.
+     *
+     * @param op an <a href="package-summary.html#Associativity">associative</a>
+     *        , <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
+     *        function for computing the next element based on the previous one
+     * @return the new stream.
+     * @see #scanLeft(LongBinaryOperator)
+     * @since 0.6.1
+     */
+    public LongStreamEx scan(LongBinaryOperator op) {
+        return delegate(new PrefixOps.OfLong(spliterator(), op));
+    }
+
+    /**
+     * 
+     * @param seed
+     * @param op
+     * @return
+     * @since 0.8.7
+     */
+    public LongStreamEx scan(long seed, LongBinaryOperator op) {
+        return prepend(seed).scan(op);
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @see #collect(LongCollector)
@@ -1569,38 +1612,6 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      */
     public LongStreamEx dropWhile(LongPredicate predicate) {
         return VER_SPEC.callWhile(this, Objects.requireNonNull(predicate), true);
-    }
-
-    /**
-     * Returns a stream containing cumulative results of applying the
-     * accumulation function going left to right.
-     * 
-     * <p>
-     * This is a stateful
-     * <a href="package-summary.html#StreamOps">quasi-intermediate</a>
-     * operation.
-     *
-     * <p>
-     * This operation resembles {@link #scanLeft(LongBinaryOperator)}, but
-     * unlike {@code scanLeft} this operation is intermediate and accumulation
-     * function must be associative.
-     * 
-     * <p>
-     * This method cannot take all the advantages of parallel streams as it must
-     * process elements strictly left to right. Using an unordered source or
-     * removing the ordering constraint with {@link #unordered()} may improve
-     * the parallel processing speed.
-     *
-     * @param op an <a href="package-summary.html#Associativity">associative</a>
-     *        , <a href="package-summary.html#NonInterference">non-interfering
-     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
-     *        function for computing the next element based on the previous one
-     * @return the new stream.
-     * @see #scanLeft(LongBinaryOperator)
-     * @since 0.6.1
-     */
-    public LongStreamEx prefix(LongBinaryOperator op) {
-        return delegate(new PrefixOps.OfLong(spliterator(), op));
     }
 
     // Necessary to generate proper JavaDoc

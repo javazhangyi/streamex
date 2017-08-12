@@ -766,9 +766,9 @@ public class IntStreamExTest {
 
     @Test
     public void testPrefix() {
-        assertArrayEquals(new int[] { 1, 3, 6, 10, 20 }, IntStreamEx.of(1, 2, 3, 4, 10).prefix(Integer::sum).toArray());
-        assertEquals(OptionalInt.of(10), IntStreamEx.of(1, 2, 3, 4, 10).prefix(Integer::sum).findFirst(x -> x > 7));
-        assertEquals(OptionalInt.empty(), IntStreamEx.of(1, 2, 3, 4, 10).prefix(Integer::sum).findFirst(x -> x > 20));
+        assertArrayEquals(new int[] { 1, 3, 6, 10, 20 }, IntStreamEx.of(1, 2, 3, 4, 10).scan(Integer::sum).toArray());
+        assertEquals(OptionalInt.of(10), IntStreamEx.of(1, 2, 3, 4, 10).scan(Integer::sum).findFirst(x -> x > 7));
+        assertEquals(OptionalInt.empty(), IntStreamEx.of(1, 2, 3, 4, 10).scan(Integer::sum).findFirst(x -> x > 20));
     }
     
     @Test

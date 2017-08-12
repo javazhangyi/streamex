@@ -1576,7 +1576,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *         size as this stream.
      * @see #foldLeft(BinaryOperator)
      * @see #scanRight(BinaryOperator)
-     * @see #prefix(BinaryOperator)
+     * @see #scan(BinaryOperator)
      * @since 0.4.0
      */
     public List<T> scanLeft(BinaryOperator<T> accumulator) {
@@ -1705,7 +1705,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @see #scanLeft(BinaryOperator)
      * @since 0.6.1
      */
-    public S prefix(BinaryOperator<T> op) {
+    public S scan(BinaryOperator<T> op) {
         Spliterator<T> spltr = spliterator();
         return supply(spltr.hasCharacteristics(Spliterator.ORDERED) ? new PrefixOps.OfRef<>(spltr, op)
                 : new PrefixOps.OfUnordRef<>(spltr, op));

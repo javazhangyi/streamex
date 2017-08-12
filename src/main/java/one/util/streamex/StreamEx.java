@@ -2439,6 +2439,35 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         spliterator.context = context = context.detach();
         return new StreamEx<>(spliterator, context);
     }
+    
+    public <U> StreamEx<U> scan(final U seed, final BiFunction<? super U, ? super T, U> op) {
+        return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<U>() {
+            private final Iterator<T> iter = iterator();
+            private boolean isFirst = true;
+            private U val = null;
+            
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext() || isFirst;
+            }
+
+            @Override
+            public U next() {
+                if (!(iter.hasNext() || isFirst)) {
+                    throw new NoSuchElementException();
+                }
+ 
+                if (isFirst) {
+                    val = seed;
+                    isFirst = false;
+                } else {
+                    val = op.apply(val, iter.next());
+                }
+                
+                return val;
+            }            
+        }), this.context);
+    }
 
     /**
      * Always run sequentially, even under parallel Streams because it can't and

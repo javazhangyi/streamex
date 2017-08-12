@@ -467,6 +467,8 @@ public class DoubleStreamExTest {
                 .scanLeft(1, (a, b) -> a * b), 0.0);
         assertArrayEquals(new double[] { 1, 1, 2, 6, 24, 120 }, LongStreamEx.rangeClosed(1, 5).asDoubleStream()
                 .parallel().scanLeft(1, (a, b) -> a * b), 0.0);
+        
+        System.out.println(Arrays.toString(LongStreamEx.empty().scanLeft(100, (i, j) -> i + j)));
     }
 
     // Reads numbers from scanner stopping when non-number is encountered
@@ -489,9 +491,9 @@ public class DoubleStreamExTest {
 
     @Test
     public void testPrefix() {
-        assertArrayEquals(new double[] { 1, 3, 6, 10, 20 }, DoubleStreamEx.of(1, 2, 3, 4, 10).prefix(Double::sum).toArray(), 0.0);
-        assertEquals(OptionalDouble.of(10), DoubleStreamEx.of(1, 2, 3, 4, 10).prefix(Double::sum).findFirst(x -> x > 7));
-        assertEquals(OptionalDouble.empty(), DoubleStreamEx.of(1, 2, 3, 4, 10).prefix(Double::sum).findFirst(x -> x > 20));
+        assertArrayEquals(new double[] { 1, 3, 6, 10, 20 }, DoubleStreamEx.of(1, 2, 3, 4, 10).scan(Double::sum).toArray(), 0.0);
+        assertEquals(OptionalDouble.of(10), DoubleStreamEx.of(1, 2, 3, 4, 10).scan(Double::sum).findFirst(x -> x > 7));
+        assertEquals(OptionalDouble.empty(), DoubleStreamEx.of(1, 2, 3, 4, 10).scan(Double::sum).findFirst(x -> x > 20));
     }
     
     @Test

@@ -978,12 +978,12 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for computing the next key based on the previous one
      * @return the new stream.
-     * @see #prefix(BinaryOperator)
+     * @see #scan(BinaryOperator)
      * @see #prefixValues(BinaryOperator)
      * @since 0.6.4
      */
     public EntryStream<K, V> prefixKeys(BinaryOperator<K> op) {
-        return prefix((a, b) -> new SimpleImmutableEntry<>(op.apply(a.getKey(), b.getKey()), b.getValue()));
+        return scan((a, b) -> new SimpleImmutableEntry<>(op.apply(a.getKey(), b.getKey()), b.getValue()));
     }
 
     /**
@@ -1007,12 +1007,12 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for computing the next value based on the previous one
      * @return the new stream.
-     * @see #prefix(BinaryOperator)
+     * @see #scan(BinaryOperator)
      * @see #prefixKeys(BinaryOperator)
      * @since 0.6.4
      */
     public EntryStream<K, V> prefixValues(BinaryOperator<V> op) {
-        return prefix((a, b) -> new SimpleImmutableEntry<>(b.getKey(), op.apply(a.getValue(), b.getValue())));
+        return scan((a, b) -> new SimpleImmutableEntry<>(b.getKey(), op.apply(a.getValue(), b.getValue())));
     }
 
     /**

@@ -16,6 +16,10 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `mapToEntry(Int/Long/DoubleFunction<? extends Map.Entry<K, V>> mapper)` to `Int/Long/Double/StreamEx`.
 
+* Rename `prefix` to `scan`.
+
+* Add `StreamEx<U> scan(final U seed, final BiFunction<? super U, ? super T, U> op)`
+
 ### 0.8.6:
 
 * Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`.
