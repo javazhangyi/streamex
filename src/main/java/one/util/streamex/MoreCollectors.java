@@ -386,7 +386,8 @@ public final class MoreCollectors {
      * @return
      */
     public static <T> Collector<T, ?, List<T>> maxAll(final Comparator<? super T> comparator, final int atMostSize) {
-        final Supplier<PairBox<List<T>, T>> supplier = () -> new PairBox<>(new ArrayList<>(Math.min(16, atMostSize)), none());
+        final Supplier<PairBox<List<T>, T>> supplier = () -> new PairBox<>(new ArrayList<>(Math.min(16, atMostSize)),
+                none());
 
         final BiConsumer<PairBox<List<T>, T>, T> accumulator = (acc, t) -> {
             if (acc.b == NONE) {
@@ -601,7 +602,7 @@ public final class MoreCollectors {
      */
     public static <T> Collector<T, ?, Optional<T>> first() {
         final Supplier<Box<T>> supplier = () -> new Box<>(none());
-        
+
         return new CancellableCollectorImpl<>(supplier, (box, t) -> {
             if (box.a == NONE)
                 box.a = t;
@@ -946,12 +947,12 @@ public final class MoreCollectors {
      *        reduction
      * @return a {@code Collector} implementing the cascaded group-by operation
      * @see Collectors#groupingBy(Function, Collector)
-     * @see #groupingBy(Function, Set, Supplier, Collector)
+     * @see #groupingBy(Set, Function, Collector, Supplier)
      * @since 0.3.7
      */
     public static <T, K extends Enum<K>, A, D> Collector<T, ?, EnumMap<K, D>> groupingByEnum(Class<K> enumClass,
             Function<? super T, K> classifier, Collector<? super T, A, D> downstream) {
-        return groupingBy(classifier, EnumSet.allOf(enumClass), () -> new EnumMap<>(enumClass), downstream);
+        return groupingBy(EnumSet.allOf(enumClass), classifier, downstream, () -> new EnumMap<>(enumClass));
     }
 
     /**
@@ -981,25 +982,26 @@ public final class MoreCollectors {
      * collector</a> if the downstream collector is short-circuiting. The
      * collection might stop when for every possible key from the domain the
      * downstream collection is known to be finished.
+     * 
+     * @param domain a domain of all possible key values
+     * @param classifier a classifier function mapping input elements to keys
+     * @param downstream a {@code Collector} implementing the downstream
+     *        reduction
      *
      * @param <T> the type of the input elements
      * @param <K> the type of the keys
      * @param <A> the intermediate accumulation type of the downstream collector
      * @param <D> the result type of the downstream reduction
-     * @param classifier a classifier function mapping input elements to keys
-     * @param domain a domain of all possible key values
-     * @param downstream a {@code Collector} implementing the downstream
-     *        reduction
      * @return a {@code Collector} implementing the cascaded group-by operation
      *         with given domain
      *
-     * @see #groupingBy(Function, Set, Supplier, Collector)
+     * @see #groupingBy(Set, Function, Collector, Supplier)
      * @see #groupingByEnum(Class, Function, Collector)
      * @since 0.4.0
      */
-    public static <T, K, D, A> Collector<T, ?, Map<K, D>> groupingBy(Function<? super T, ? extends K> classifier,
-            Set<K> domain, Collector<? super T, A, D> downstream) {
-        return groupingBy(classifier, domain, HashMap::new, downstream);
+    public static <T, K, D, A> Collector<T, ?, Map<K, D>> groupingBy(Set<K> domain,
+            Function<? super T, ? extends K> classifier, Collector<? super T, A, D> downstream) {
+        return groupingBy(domain, classifier, downstream, HashMap::new);
     }
 
     /**
@@ -1026,28 +1028,29 @@ public final class MoreCollectors {
      * collector</a> if the downstream collector is short-circuiting. The
      * collection might stop when for every possible key from the domain the
      * downstream collection is known to be finished.
+     * 
+     * @param domain a domain of all possible key values
+     * @param classifier a classifier function mapping input elements to keys
+     * @param downstream a {@code Collector} implementing the downstream
+     *        reduction
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      *
      * @param <T> the type of the input elements
      * @param <K> the type of the keys
      * @param <A> the intermediate accumulation type of the downstream collector
      * @param <D> the result type of the downstream reduction
      * @param <M> the type of the resulting {@code Map}
-     * @param classifier a classifier function mapping input elements to keys
-     * @param domain a domain of all possible key values
-     * @param downstream a {@code Collector} implementing the downstream
-     *        reduction
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @return a {@code Collector} implementing the cascaded group-by operation
      *         with given domain
      *
-     * @see #groupingBy(Function, Set, Collector)
+     * @see #groupingBy(Set, Function, Collector)
      * @see #groupingByEnum(Class, Function, Collector)
      * @since 0.4.0
      */
-    public static <T, K, D, A, M extends Map<K, D>> Collector<T, ?, M> groupingBy(
-            Function<? super T, ? extends K> classifier, Set<K> domain, Supplier<M> mapFactory,
-            Collector<? super T, A, D> downstream) {
+    public static <T, K, D, A, M extends Map<K, D>> Collector<T, ?, M> groupingBy(Set<K> domain,
+            Function<? super T, ? extends K> classifier, Collector<? super T, A, D> downstream,
+            Supplier<M> mapFactory) {
         Supplier<A> downstreamSupplier = downstream.supplier();
         Collector<T, ?, M> groupingBy;
         Function<K, A> supplier = k -> {
@@ -1756,6 +1759,79 @@ public final class MoreCollectors {
         } else {
             map.put(key, val);
         }
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @return
+     * @see Collectors#groupingBy(Function)
+     */
+    public static <T, K> Collector<T, ?, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
+        return Collectors.groupingBy(classifier);
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @param downstream
+     * @return
+     * @see Collectors#groupingBy(Function, Collector)
+     */
+    public static <T, K, A, D> Collector<T, ?, Map<K, D>> groupingBy(Function<? super T, ? extends K> classifier,
+            Collector<? super T, A, D> downstream) {
+        return Collectors.groupingBy(classifier, downstream);
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @param downstream
+     * @param mapFactory
+     * @return
+     * @see Collectors#groupingBy(Function, Supplier, Collector)
+     */
+    public static <T, K, D, A, M extends Map<K, D>> Collector<T, ?, M> groupingBy(
+            Function<? super T, ? extends K> classifier, Collector<? super T, A, D> downstream,
+            Supplier<M> mapFactory) {
+        return Collectors.groupingBy(classifier, mapFactory, downstream);
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @return
+     * @see Collectors#groupingByConcurrent(Function)
+     */
+    public static <T, K> Collector<T, ?, ConcurrentMap<K, List<T>>> groupingByConcurrent(
+            Function<? super T, ? extends K> classifier) {
+        return Collectors.groupingByConcurrent(classifier);
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @param downstream
+     * @return
+     * @see Collectors#groupingByConcurrent(Function, Collector)
+     */
+    public static <T, K, A, D> Collector<T, ?, ConcurrentMap<K, D>> groupingByConcurrent(
+            Function<? super T, ? extends K> classifier, Collector<? super T, A, D> downstream) {
+        return Collectors.groupingByConcurrent(classifier, downstream);
+    }
+
+    /**
+     * 
+     * @param classifier
+     * @param downstream
+     * @param mapFactory
+     * @return
+     * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
+     */
+    public static <T, K, D, A, M extends ConcurrentMap<K, D>> Collector<T, ?, M> groupingByConcurrent(
+            Function<? super T, ? extends K> classifier, Collector<? super T, A, D> downstream,
+            Supplier<M> mapFactory) {
+        return Collectors.groupingByConcurrent(classifier, mapFactory, downstream);
     }
 
     /**

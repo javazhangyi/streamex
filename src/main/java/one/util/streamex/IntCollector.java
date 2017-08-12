@@ -129,8 +129,8 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      * @param <R> The final result type of the new collector
      * @return the new {@code IntCollector}
      */
-    static <A, R> IntCollector<A, R> of(Supplier<A> supplier, ObjIntConsumer<A> intAccumulator,
-            BiConsumer<A, A> merger, Function<A, R> finisher) {
+    static <A, R> IntCollector<A, R> of(Supplier<A> supplier, ObjIntConsumer<A> intAccumulator, BiConsumer<A, A> merger,
+            Function<A, R> finisher) {
         return new IntCollectorImpl<>(supplier, intAccumulator, merger, finisher, NO_CHARACTERISTICS);
     }
 
@@ -148,8 +148,8 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      *         separated by the specified delimiter, in encounter order
      */
     static IntCollector<?, String> joining(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-        return PartialCollector.joining(delimiter, prefix, suffix, true).asInt(
-            StreamExInternals.joinAccumulatorInt(delimiter));
+        return PartialCollector.joining(delimiter, prefix, suffix, true).asInt(StreamExInternals.joinAccumulatorInt(
+            delimiter));
     }
 
     /**
@@ -162,8 +162,8 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      *         separated by the specified delimiter, in encounter order
      */
     static IntCollector<?, String> joining(CharSequence delimiter) {
-        return PartialCollector.joining(delimiter, null, null, false).asInt(
-            StreamExInternals.joinAccumulatorInt(delimiter));
+        return PartialCollector.joining(delimiter, null, null, false).asInt(StreamExInternals.joinAccumulatorInt(
+            delimiter));
     }
 
     /**
@@ -319,8 +319,8 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      * @return an {@code IntCollector} which implements the reduction operation
      */
     static IntCollector<?, Integer> reducing(int identity, IntBinaryOperator op) {
-        return of(() -> new int[] { identity }, (box, i) -> box[0] = op.applyAsInt(box[0], i),
-            (box1, box2) -> box1[0] = op.applyAsInt(box1[0], box2[0]), UNBOX_INT);
+        return of(() -> new int[] { identity }, (box, i) -> box[0] = op.applyAsInt(box[0], i), (box1,
+                box2) -> box1[0] = op.applyAsInt(box1[0], box2[0]), UNBOX_INT);
     }
 
     /**
@@ -368,10 +368,11 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      * @return an {@code IntCollector} implementing the cascaded partitioning
      *         operation
      */
-    static <A, D> IntCollector<?, Map<Boolean, D>> partitioningBy(IntPredicate predicate, IntCollector<A, D> downstream) {
+    static <A, D> IntCollector<?, Map<Boolean, D>> partitioningBy(IntPredicate predicate,
+            IntCollector<A, D> downstream) {
         ObjIntConsumer<A> downstreamAccumulator = downstream.intAccumulator();
-        ObjIntConsumer<BooleanMap<A>> accumulator = (result, t) -> downstreamAccumulator.accept(
-            predicate.test(t) ? result.trueValue : result.falseValue, t);
+        ObjIntConsumer<BooleanMap<A>> accumulator = (result, t) -> downstreamAccumulator.accept(predicate.test(t)
+                ? result.trueValue : result.falseValue, t);
         return BooleanMap.partialCollector(downstream).asInt(accumulator);
     }
 
@@ -426,7 +427,7 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      */
     static <K, D, A> IntCollector<?, Map<K, D>> groupingBy(IntFunction<? extends K> classifier,
             IntCollector<A, D> downstream) {
-        return groupingBy(classifier, HashMap::new, downstream);
+        return groupingBy(classifier, downstream, HashMap::new);
     }
 
     /**
@@ -455,7 +456,7 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      *         operation
      */
     static <K, D, A, M extends Map<K, D>> IntCollector<?, M> groupingBy(IntFunction<? extends K> classifier,
-            Supplier<M> mapFactory, IntCollector<A, D> downstream) {
+            IntCollector<A, D> downstream, Supplier<M> mapFactory) {
         Supplier<A> downstreamSupplier = downstream.supplier();
         Function<K, A> supplier = k -> downstreamSupplier.get();
         ObjIntConsumer<A> downstreamAccumulator = downstream.intAccumulator();

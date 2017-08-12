@@ -414,11 +414,11 @@ public class StreamExTest {
             assertEquals(expected, map);
             assertTrue(map.get(1) instanceof LinkedList);
             assertEquals(expectedMapSet, supplier.get().groupTo(String::length, Collectors.toSet()));
-            assertEquals(expectedMapSet, supplier.get().groupTo(String::length, HashMap::new, Collectors.toSet()));
-            ConcurrentHashMap<Integer, Set<String>> chm = supplier.get().groupTo(String::length, ConcurrentHashMap::new,
-                Collectors.toSet());
+            assertEquals(expectedMapSet, supplier.get().groupTo(String::length, Collectors.toSet(), HashMap::new));
+            ConcurrentHashMap<Integer, Set<String>> chm = supplier.get().groupTo(String::length, Collectors.toSet(),
+                ConcurrentHashMap::new);
             assertEquals(expectedMapSet, chm);
-            chm = supplier.get().groupTo(String::length, ConcurrentHashMap::new, TreeSet::new);
+            chm = supplier.get().groupTo(String::length, TreeSet::new, ConcurrentHashMap::new);
             assertTrue(chm.get(1) instanceof TreeSet);
         });
     }

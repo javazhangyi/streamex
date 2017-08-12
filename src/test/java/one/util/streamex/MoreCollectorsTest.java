@@ -79,8 +79,8 @@ public class MoreCollectorsTest {
     public void testToArray() {
         List<String> input = asList("a", "bb", "c", "", "cc", "eee", "bb", "ddd");
         streamEx(input::stream, supplier -> {
-            Map<Integer, String[]> result = supplier.get().groupTo(String::length, HashMap::new,
-                MoreCollectors.toArray(String[]::new));
+            Map<Integer, String[]> result = supplier.get().groupTo(String::length, MoreCollectors.toArray(String[]::new),
+                HashMap::new);
             assertArrayEquals(new String[] { "" }, result.get(0));
             assertArrayEquals(new String[] { "a", "c" }, result.get(1));
             assertArrayEquals(new String[] { "bb", "cc", "bb" }, result.get(2));
@@ -98,8 +98,8 @@ public class MoreCollectorsTest {
     public void testDistinctCount() {
         List<String> input = asList("a", "bb", "c", "cc", "eee", "bb", "bc", "ddd");
         streamEx(input::stream, supplier -> {
-            Map<String, Integer> result = supplier.get().groupTo(s -> s.substring(0, 1), HashMap::new,
-                MoreCollectors.distinctCount(String::length));
+            Map<String, Integer> result = supplier.get().groupTo(s -> s.substring(0, 1), MoreCollectors.distinctCount(String::length),
+                HashMap::new);
             assertEquals(1, (int) result.get("a"));
             assertEquals(1, (int) result.get("b"));
             assertEquals(2, (int) result.get("c"));
@@ -112,14 +112,34 @@ public class MoreCollectorsTest {
     public void testDistinctBy() {
         List<String> input = asList("a", "bb", "c", "cc", "eee", "bb", "bc", "ddd", "ca", "ce", "cf", "ded", "dump");
         streamEx(input::stream, supplier -> {
-            Map<String, List<String>> result = supplier.get().groupTo(s -> s.substring(0, 1), HashMap::new,
-                MoreCollectors.distinctBy(String::length));
+            Map<String, List<String>> result = supplier.get().groupTo(s -> s.substring(0, 1), MoreCollectors.distinctBy(String::length),
+                HashMap::new);
             assertEquals(asList("a"), result.get("a"));
             assertEquals(asList("bb"), result.get("b"));
             assertEquals(asList("c", "cc"), result.get("c"));
             assertEquals(asList("ddd", "dump"), result.get("d"));
             assertEquals(asList("eee"), result.get("e"));
         });
+    }
+    
+
+    @Test
+    public void testMaxAll_2() {
+        List<Integer> list = StreamEx.of(5, 5, 3, 2, 1, 5, 1, 2, 5, 1).collect(MoreCollectors.maxAll(Comparator.naturalOrder(), 3));
+        System.out.println(list);
+        assertEquals(Arrays.asList(5, 5, 5), list);
+        
+        list = StreamEx.of(5, 5, 3, 2, 1, 5, 1, 2, 5, 1).collect(MoreCollectors.minAll(Comparator.naturalOrder(), 1));
+        System.out.println(list);
+        assertEquals(Arrays.asList(1), list);
+        
+        list = StreamEx.of(5, 5, 3, 2, 1, 5, 1, 2, 5, 1).collect(MoreCollectors.minAll(Comparator.naturalOrder(), 0));
+        System.out.println(list);
+        assertEquals(Arrays.asList(), list);
+        
+        list = StreamEx.of(5, 5, 3, 2, 1, 5, 1, 2, 5, 1).collect(MoreCollectors.minAll(Comparator.naturalOrder(), 5));
+        System.out.println(list);
+        assertEquals(Arrays.asList(1, 1, 1), list);
     }
 
     @Test
@@ -311,8 +331,8 @@ public class MoreCollectorsTest {
     @Test(expected = IllegalStateException.class)
     public void testGroupingByWithDomainException() {
         List<Integer> list = asList(1, 2, 20, 3, 31, 4);
-        Collector<Integer, ?, Map<Integer, List<Integer>>> c = MoreCollectors.groupingBy(i -> i % 10, StreamEx.of(0, 1,
-            2, 3).toSet(), Collectors.toList());
+        Collector<Integer, ?, Map<Integer, List<Integer>>> c = MoreCollectors.groupingBy(StreamEx.of(0, 1,
+            2, 3).toSet(), i -> i % 10, Collectors.toList());
         Map<Integer, List<Integer>> map = list.stream().collect(c);
         System.out.println(map);
     }
@@ -321,7 +341,7 @@ public class MoreCollectorsTest {
     public void testGroupingByWithDomain() {
         List<String> data = asList("a", "foo", "test", "ququq", "bar", "blahblah");
         Collector<String, ?, String> collector = MoreCollectors.collectingAndThen(MoreCollectors.groupingBy(
-            String::length, IntStreamEx.range(10).boxed().toSet(), TreeMap::new, MoreCollectors.first()),
+            IntStreamEx.range(10).boxed().toSet(), String::length, MoreCollectors.first(), TreeMap::new),
             Object::toString);
         checkShortCircuitCollector("groupingWithDomain",
             "{0=Optional.empty, 1=Optional[a], 2=Optional.empty, 3=Optional[foo], 4=Optional[test], 5=Optional[ququq], "
@@ -339,7 +359,7 @@ public class MoreCollectorsTest {
         name2sex.put("Ruth", "Girl");
         name2sex.put("Melanie", "Girl");
         Collector<Entry<String, String>, ?, Map<String, List<String>>> groupingBy = MoreCollectors.groupingBy(
-            Entry::getValue, StreamEx.of("Girl", "Boy").toSet(), MoreCollectors.mapping(Entry::getKey, MoreCollectors
+            StreamEx.of("Girl", "Boy").toSet(), Entry::getValue, MoreCollectors.mapping(Entry::getKey, MoreCollectors
                     .head(2)));
         AtomicInteger counter = new AtomicInteger();
         Map<String, List<String>> map = EntryStream.of(name2sex).peek(c -> counter.incrementAndGet()).collect(
@@ -349,7 +369,7 @@ public class MoreCollectorsTest {
         assertEquals(4, counter.get());
 
         Collector<Entry<String, String>, ?, Map<String, String>> groupingByJoin = MoreCollectors.groupingBy(
-            Entry::getValue, StreamEx.of("Girl", "Boy").toSet(), MoreCollectors.mapping(Entry::getKey, Joining.with(
+            StreamEx.of("Girl", "Boy").toSet(), Entry::getValue, MoreCollectors.mapping(Entry::getKey, Joining.with(
                 ", ").maxChars(16).cutAfterDelimiter()));
         counter.set(0);
         Map<String, String> mapJoin = EntryStream.of(name2sex).peek(c -> counter.incrementAndGet()).collect(
@@ -567,7 +587,7 @@ public class MoreCollectorsTest {
                 MoreCollectors.head(1));
             checkCollector("flatMappingSubShort", expected, list::stream, Collectors.groupingBy(Entry::getKey, headOne));
             checkShortCircuitCollector("flatMappingShort", expected, 4, list::stream, MoreCollectors.groupingBy(
-                Entry::getKey, StreamEx.of("a", "b", "c").toSet(), headOne));
+                StreamEx.of("a", "b", "c").toSet(), Entry::getKey, headOne));
             AtomicInteger cnt = new AtomicInteger();
             Collector<Entry<String, List<String>>, ?, List<String>> headPeek = MoreCollectors.flatMapping(valuesStream
                     .andThen(s -> s == null ? null : s.peek(x -> cnt.incrementAndGet())), MoreCollectors.head(1));
@@ -575,7 +595,7 @@ public class MoreCollectorsTest {
             assertEquals(3, cnt.get());
             cnt.set(0);
             assertEquals(expected, StreamEx.of(list).collect(
-                MoreCollectors.groupingBy(Entry::getKey, StreamEx.of("a", "b", "c").toSet(), headPeek)));
+                MoreCollectors.groupingBy(StreamEx.of("a", "b", "c").toSet(), Entry::getKey, headPeek)));
             assertEquals(3, cnt.get());
         }
         {

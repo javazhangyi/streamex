@@ -471,20 +471,20 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param <D> the result type of the downstream reduction
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param downstream a {@code Collector} implementing the downstream
      *        reduction
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
-     * @see #groupTo(Function, Supplier, Collector)
+     * @see #groupTo(Function, Collector, Supplier)
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
      * @since 0.8
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
-            Supplier<Map<K, D>> mapFactory, Collector<? super T, ?, D> downstream) {
-        final Map<K, D> m = groupTo(classifier, mapFactory, downstream);
+            Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
+        final Map<K, D> m = groupTo(classifier, downstream, mapFactory);
 
         return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
     }
@@ -529,11 +529,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        values
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param collectionFactory a function which returns a new empty
      *        {@code Collection} which will be used to store the stream
      *        elements.
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
      * @see #groupTo(Function, Supplier)
@@ -542,8 +542,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
-            Supplier<Map<K, C>> mapFactory, Supplier<C> collectionFactory) {
-        final Map<K, C> m = groupTo(classifier, mapFactory, collectionFactory);
+            Supplier<C> collectionFactory, Supplier<Map<K, C>> mapFactory) {
+        final Map<K, C> m = groupTo(classifier, collectionFactory, mapFactory);
 
         return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
     }
@@ -621,8 +621,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Returns a {@code EntryStream<K, List<T>>} whose keys are the
-     * values resulting from applying the classification function to the input
+     * Returns a {@code EntryStream<K, List<T>>} whose keys are the values
+     * resulting from applying the classification function to the input
      * elements, and whose corresponding values are {@code List}s containing the
      * input elements which map to the associated key under the classification
      * function.
@@ -637,17 +637,17 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public <K> EntryStream<K, List<T>> groupByToEntry(Function<? super T, ? extends K> classifier) {
-        final StreamEx<Map.Entry<K, List<T>>> s =  groupBy(classifier);
+        final StreamEx<Map.Entry<K, List<T>>> s = groupBy(classifier);
 
         return s.mapToEntry(Function.identity());
     }
 
     /**
-     * Returns a {@code EntryStream<K, D>} whose keys are the values
-     * resulting from applying the classification function to the input
-     * elements, and whose corresponding values are the result of reduction of
-     * the input elements which map to the associated key under the
-     * classification function.
+     * Returns a {@code EntryStream<K, D>} whose keys are the values resulting
+     * from applying the classification function to the input elements, and
+     * whose corresponding values are the result of reduction of the input
+     * elements which map to the associated key under the classification
+     * function.
      * 
      * @param <K> the type of the keys
      * @param <D> the result type of the downstream reduction
@@ -663,26 +663,26 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
-        final StreamEx<Map.Entry<K, D>> s =  groupBy(classifier, downstream);
+        final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream);
 
         return s.mapToEntry(Function.identity());
     }
 
     /**
-     * Returns a {@code EntryStream<K, D>} whose keys are the values
-     * resulting from applying the classification function to the input
-     * elements, and whose corresponding values are the result of reduction of
-     * the input elements which map to the associated key under the
-     * classification function.
+     * Returns a {@code EntryStream<K, D>} whose keys are the values resulting
+     * from applying the classification function to the input elements, and
+     * whose corresponding values are the result of reduction of the input
+     * elements which map to the associated key under the classification
+     * function.
      * 
      * @param <K> the type of the keys
      * @param <D> the result type of the downstream reduction
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param downstream a {@code Collector} implementing the downstream
      *        reduction
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
      * @see #groupBy(Function)
@@ -691,18 +691,17 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
-            Supplier<Map<K, D>> mapFactory, Collector<? super T, ?, D> downstream) {
-        final StreamEx<Map.Entry<K, D>> s =  groupBy(classifier, mapFactory, downstream);
+            Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
+        final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream, mapFactory);
 
         return s.mapToEntry(Function.identity());
     }
 
     /**
-     * Returns a {@code EntryStream<K, C>} whose keys are the values
-     * resulting from applying the classification function to the input
-     * elements, and whose corresponding values are the collections of the input
-     * elements which map to the associated key under the classification
-     * function.
+     * Returns a {@code EntryStream<K, C>} whose keys are the values resulting
+     * from applying the classification function to the input elements, and
+     * whose corresponding values are the collections of the input elements
+     * which map to the associated key under the classification function.
      * 
      * @param <K> the type of the keys
      * @param <C> the type of the collection used in resulting {@code Map}
@@ -720,28 +719,27 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
             Supplier<C> collectionFactory) {
-        final StreamEx<Map.Entry<K, C>> s =  groupBy(classifier, collectionFactory);
+        final StreamEx<Map.Entry<K, C>> s = groupBy(classifier, collectionFactory);
 
         return s.mapToEntry(Function.identity());
     }
 
     /**
-     * Returns a {@code EntryStream<K, C>} whose keys are the values
-     * resulting from applying the classification function to the input
-     * elements, and whose corresponding values are the collections of the input
-     * elements which map to the associated key under the classification
-     * function.
+     * Returns a {@code EntryStream<K, C>} whose keys are the values resulting
+     * from applying the classification function to the input elements, and
+     * whose corresponding values are the collections of the input elements
+     * which map to the associated key under the classification function.
      * 
      * @param <K> the type of the keys
      * @param <C> the type of the collection used in resulting {@code Map}
      *        values
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param collectionFactory a function which returns a new empty
      *        {@code Collection} which will be used to store the stream
      *        elements.
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
      * @see #groupBy(Function, Supplier)
@@ -750,14 +748,14 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
-            Supplier<Map<K, C>> mapFactory, Supplier<C> collectionFactory) {
+            Supplier<C> collectionFactory, Supplier<Map<K, C>> mapFactory) {
 
-        return groupBy(classifier, mapFactory, collectionFactory).mapToEntry(Function.identity());
+        return groupBy(classifier, collectionFactory, mapFactory).mapToEntry(Function.identity());
     }
 
     /**
-     * Returns a {@code EntryStream<Boolean, List<T>>} which contains
-     * two partitions of the input elements according to a {@code Predicate}.
+     * Returns a {@code EntryStream<Boolean, List<T>>} which contains two
+     * partitions of the input elements according to a {@code Predicate}.
      *
      * @param predicate a predicate used for classifying input elements
      * @return a {@code Map<Boolean, List<T>>} which {@link Boolean#TRUE} key is
@@ -775,9 +773,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Returns a {@code EntryStream<Boolean, D>} which contains two
-     * partitions of the input elements according to a {@code Predicate}, which
-     * are reduced according to the supplied {@code Collector}.
+     * Returns a {@code EntryStream<Boolean, D>} which contains two partitions
+     * of the input elements according to a {@code Predicate}, which are reduced
+     * according to the supplied {@code Collector}.
      *
      * @param <D> the result type of the downstream reduction
      * @param predicate a predicate used for classifying input elements
@@ -800,8 +798,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Returns a {@code EntryStream<Boolean, C>} which contains two
-     * partitions of the input elements according to a {@code Predicate}.
+     * Returns a {@code EntryStream<Boolean, C>} which contains two partitions
+     * of the input elements according to a {@code Predicate}.
      *
      * @param <C> the type of {@code Collection} used as returned {@code Map}
      *        values.
@@ -899,10 +897,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param <D> the result type of the downstream reduction
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param downstream a {@code Collector} implementing the downstream
      *        reduction
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
      * @see #groupTo(Function)
@@ -910,8 +908,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
      */
     @SuppressWarnings("unchecked")
-    public <K, D, M extends Map<K, D>> M groupTo(Function<? super T, ? extends K> classifier, Supplier<M> mapFactory,
-            Collector<? super T, ?, D> downstream) {
+    public <K, D, M extends Map<K, D>> M groupTo(Function<? super T, ? extends K> classifier,
+            Collector<? super T, ?, D> downstream, Supplier<M> mapFactory) {
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapFactory
                 .get() instanceof ConcurrentMap)
             return (M) rawCollect(Collectors.groupingByConcurrent(classifier,
@@ -970,11 +968,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        values
      * @param <M> the type of the resulting {@code Map}
      * @param classifier the classifier function mapping input elements to keys
-     * @param mapFactory a function which, when called, produces a new empty
-     *        {@code Map} of the desired type
      * @param collectionFactory a function which returns a new empty
      *        {@code Collection} which will be used to store the stream
      *        elements.
+     * @param mapFactory a function which, when called, produces a new empty
+     *        {@code Map} of the desired type
      * @return a {@code Map} containing the results of the group-by operation
      *
      * @see #groupTo(Function, Supplier)
@@ -983,8 +981,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.2.2
      */
     public <K, C extends Collection<T>, M extends Map<K, C>> M groupTo(Function<? super T, ? extends K> classifier,
-            Supplier<M> mapFactory, Supplier<C> collectionFactory) {
-        return groupTo(classifier, mapFactory, Collectors.toCollection(collectionFactory));
+            Supplier<C> collectionFactory, Supplier<M> mapFactory) {
+        return groupTo(classifier, Collectors.toCollection(collectionFactory), mapFactory);
     }
 
     /**
@@ -1360,7 +1358,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return
      * @since 0.8.5
      */
-    public  <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
+    public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, M map) {
         forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
         return map;
@@ -1375,7 +1373,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return
      * @since 0.8.5
      */
-    public  <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
+    public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
         forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
         return map;
@@ -1920,10 +1918,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             private boolean toInsert = false;
 
             @Override
-            public boolean hasNext() {    
+            public boolean hasNext() {
                 return iter.hasNext();
             }
- 
+
             @Override
             public T next() {
                 if (hasNext() == false) {
@@ -1939,7 +1937,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                     return res;
                 }
             }
-        }), this.context);    
+        }), this.context);
     }
 
     /**
@@ -2093,7 +2091,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     /**
      * Collapses adjacent elements are grouped according to supplied predicate
-     * and returns an {@link EntryStream} where keys are input elements and values specify how many elements were collapsed.
+     * and returns an {@link EntryStream} where keys are input elements and
+     * values specify how many elements were collapsed.
      * 
      * <p>
      * This is a <a href="package-summary.html#StreamOps">quasi-intermediate</a>
@@ -2440,10 +2439,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         spliterator.context = context = context.detach();
         return new StreamEx<>(spliterator, context);
     }
-    
 
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
      * @param size
      * @return
@@ -2452,9 +2451,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public StreamEx<StreamEx<T>> split(int size) {
         return splitToList(size).map(l -> StreamEx.of(l));
     }
-    
+
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
      * @param size
      * @return
@@ -2477,21 +2477,22 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             public List<T> next() {
                 final List<T> list = new ArrayList<>(Math.min(256, size));
                 list.add(iter.next());
-                
+
                 while (iter.hasNext() && list.size() < size) {
                     list.add(iter.next());
                 }
-                
+
                 return list;
-            }            
+            }
         }), context);
     }
 
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
-     * <p>Example:
-     * <pre>
+     * <p>
+     * Example: <pre>
      * windowSize: 3
      * stream: [1, 2, 3, 4, 5]
      * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
@@ -2506,10 +2507,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
-     * <p>Example:
-     * <pre>
+     * <p>
+     * Example: <pre>
      * windowSize: 3, increment: 3
      * stream: [1, 1, 1, 2, 2, 2, 3, 3, ]
      * result: [[1, 1, 1], [2, 2, 2] [3, 3]]
@@ -2533,10 +2535,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
-     * <p>Example:
-     * <pre>
+     * <p>
+     * Example: <pre>
      * windowSize: 3
      * stream: [1, 2, 3, 4, 5]
      * result: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
@@ -2549,12 +2552,13 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public StreamEx<List<T>> slidingToList(int windowSize) {
         return slidingToList(windowSize, 1);
     }
-    
+
     /**
-     * Always run sequentially, even under parallel Streams because it can't and unnecessary mostly.
+     * Always run sequentially, even under parallel Streams because it can't and
+     * unnecessary mostly.
      * 
-     * <p>Example:
-     * <pre>
+     * <p>
+     * Example: <pre>
      * windowSize: 3, increment: 3
      * stream: [1, 1, 1, 2, 2, 2, 3, 3]
      * result: [[1, 1, 1], [2, 2, 2] [3, 3]]
@@ -2575,9 +2579,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public StreamEx<List<T>> slidingToList(int windowSize, int increment) {
         if (windowSize < 1 || increment < 1) {
-            throw new IllegalArgumentException("'windowSize' and 'increment' must be bigger than 0, can't be: " + windowSize + ", " + increment);
+            throw new IllegalArgumentException("'windowSize' and 'increment' must be bigger than 0, can't be: "
+                + windowSize + ", " + increment);
         }
-        
+
         return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<List<T>>() {
             private final Iterator<T> iter = StreamEx.this.iterator();
 
@@ -3066,7 +3071,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.5.0
      * @see Files#lines(Path)
      */
-    public static StreamEx<String> ofLines(Path path) throws IOException {   
+    public static StreamEx<String> ofLines(Path path) throws IOException {
         return of(UnknownSizeSpliterator.optimize(Files.lines(path)));
     }
 

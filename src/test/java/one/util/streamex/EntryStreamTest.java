@@ -363,7 +363,7 @@ public class EntryStreamTest {
         Map<String, List<Integer>> data = new HashMap<>();
         data.put("aaa", asList(1, 2, 3));
         data.put("bb", asList(2, 3, 4));
-        Map<Integer, List<String>> result = EntryStream.of(data).invert().flatMapKeys(List::stream).groupTo();
+        Map<Integer, List<String>> result = EntryStream.of(data).inversed().flatMapKeys(List::stream).groupTo();
         Map<Integer, List<String>> expected = new HashMap<>();
         expected.put(1, asList("aaa"));
         expected.put(2, asList("aaa", "bb"));
@@ -432,7 +432,7 @@ public class EntryStreamTest {
             assertEquals(EntryStream.of(0, 500, 1, 500).toMap(), supplier.get().mapToEntry(i -> i / 500, i -> i)
                     .groupTo(MoreCollectors.countingInt()));
             ConcurrentSkipListMap<Integer, Integer> map = supplier.get().mapToEntry(i -> i / 500, i -> i).groupTo(
-                ConcurrentSkipListMap::new, MoreCollectors.countingInt());
+                MoreCollectors.countingInt(), ConcurrentSkipListMap::new);
             assertEquals(EntryStream.of(0, 500, 1, 500).toMap(), map);
         });
     }
@@ -454,13 +454,13 @@ public class EntryStreamTest {
 //        result = s.get().parallel().groupingTo(LinkedList::new);
 //        assertEquals(expected, result);
 //        assertTrue(result.get("a") instanceof LinkedList);
-        SortedMap<String, List<Integer>> resultTree = s.get().groupTo(TreeMap::new, LinkedList::new);
+        SortedMap<String, List<Integer>> resultTree = s.get().groupTo(LinkedList::new, TreeMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
-        resultTree = s.get().parallel().groupTo(TreeMap::new, LinkedList::new);
+        resultTree = s.get().parallel().groupTo(LinkedList::new, TreeMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
-        resultTree = s.get().parallel().groupTo(ConcurrentSkipListMap::new, LinkedList::new);
+        resultTree = s.get().parallel().groupTo(LinkedList::new, ConcurrentSkipListMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
     }
@@ -520,7 +520,7 @@ public class EntryStreamTest {
 
     @Test
     public void testInvert() {
-        Map<Integer, String> result = EntryStream.of(createMap()).invert().toMap();
+        Map<Integer, String> result = EntryStream.of(createMap()).inversed().toMap();
         Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(1, "a");
         expected.put(22, "bb");

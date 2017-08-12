@@ -57,7 +57,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
     }
 
     private <A> A collectSized(Supplier<A> supplier, ObjIntConsumer<A> accumulator, BiConsumer<A, A> combiner,
-                               IntFunction<A> sizedSupplier, ObjIntConsumer<A> sizedAccumulator) {
+            IntFunction<A> sizedSupplier, ObjIntConsumer<A> sizedAccumulator) {
         if (isParallel())
             return collect(supplier, accumulator, combiner);
         java.util.Spliterator.OfInt spliterator = spliterator();
@@ -338,15 +338,16 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
     }
 
     /**
-     * Returns a new stream containing all the elements of the original stream interspersed with
-     * given delimiter.
+     * Returns a new stream containing all the elements of the original stream
+     * interspersed with given delimiter.
      * 
      * <p>
-     * For example, {@code IntStreamEx.of(1, 2, 3).intersperse(4)} will yield a stream containing
-     * five elements: 1, 4, 2, 4, 3.
+     * For example, {@code IntStreamEx.of(1, 2, 3).intersperse(4)} will yield a
+     * stream containing five elements: 1, 4, 2, 4, 3.
      * 
      * <p>
-     * This is an <a href="package-summary.html#StreamOps">intermediate operation</a>.
+     * This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
      * 
      * @param delimiter a delimiter to be inserted between each pair of elements
      * @return the new stream
@@ -360,7 +361,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
             private boolean toInsert = false;
 
             @Override
-            public boolean hasNext() {    
+            public boolean hasNext() {
                 return iter.hasNext();
             }
 
@@ -374,7 +375,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
                     toInsert = false;
                     return delimiter;
                 } else {
-                    final int res = iter.nextInt(); 
+                    final int res = iter.nextInt();
                     toInsert = true;
                     return res;
                 }
@@ -548,10 +549,9 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * <p>
      * This method exists mainly to support debugging.
      *
-     * @param action a
-     *        <a href="package-summary.html#NonInterference"> non-interfering
-     *        </a> action to perform on the first stream element as it is
-     *        consumed from the stream
+     * @param action a <a href="package-summary.html#NonInterference">
+     *        non-interfering </a> action to perform on the first stream element
+     *        as it is consumed from the stream
      * @return the new stream
      * @since 0.6.0
      */
@@ -585,10 +585,9 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * <p>
      * This method exists mainly to support debugging.
      *
-     * @param action a
-     *        <a href="package-summary.html#NonInterference"> non-interfering
-     *        </a> action to perform on the first stream element as it is
-     *        consumed from the stream
+     * @param action a <a href="package-summary.html#NonInterference">
+     *        non-interfering </a> action to perform on the first stream element
+     *        as it is consumed from the stream
      * @return the new stream
      * @since 0.6.0
      */

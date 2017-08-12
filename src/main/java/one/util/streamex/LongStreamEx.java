@@ -362,15 +362,16 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
     }
 
     /**
-     * Returns a new stream containing all the elements of the original stream interspersed with
-     * given delimiter.
+     * Returns a new stream containing all the elements of the original stream
+     * interspersed with given delimiter.
      * 
      * <p>
-     * For example, {@code LongStreamEx.of(1, 2, 3).intersperse(4)} will yield a stream containing
-     * five elements: 1, 4, 2, 4, 3.
+     * For example, {@code LongStreamEx.of(1, 2, 3).intersperse(4)} will yield a
+     * stream containing five elements: 1, 4, 2, 4, 3.
      * 
      * <p>
-     * This is an <a href="package-summary.html#StreamOps">intermediate operation</a>.
+     * This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
      * 
      * @param delimiter a delimiter to be inserted between each pair of elements
      * @return the new stream
@@ -384,7 +385,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
             private boolean toInsert = false;
 
             @Override
-            public boolean hasNext() {    
+            public boolean hasNext() {
                 return iter.hasNext();
             }
 
@@ -398,7 +399,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
                     toInsert = false;
                     return delimiter;
                 } else {
-                    final long res = iter.nextLong(); 
+                    final long res = iter.nextLong();
                     toInsert = true;
                     return res;
                 }
@@ -572,10 +573,9 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * <p>
      * This method exists mainly to support debugging.
      *
-     * @param action a
-     *        <a href="package-summary.html#NonInterference"> non-interfering
-     *        </a> action to perform on the first stream element as it is
-     *        consumed from the stream
+     * @param action a <a href="package-summary.html#NonInterference">
+     *        non-interfering </a> action to perform on the first stream element
+     *        as it is consumed from the stream
      * @return the new stream
      * @since 0.6.0
      */
@@ -609,10 +609,9 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * <p>
      * This method exists mainly to support debugging.
      *
-     * @param action a
-     *        <a href="package-summary.html#NonInterference"> non-interfering
-     *        </a> action to perform on the first stream element as it is
-     *        consumed from the stream
+     * @param action a <a href="package-summary.html#NonInterference">
+     *        non-interfering </a> action to perform on the first stream element
+     *        as it is consumed from the stream
      * @return the new stream
      * @since 0.6.0
      */

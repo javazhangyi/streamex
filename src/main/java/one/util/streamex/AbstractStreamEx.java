@@ -25,7 +25,8 @@ import java.util.stream.Collector.Characteristics;
 import static one.util.streamex.StreamExInternals.*;
 
 /**
- * Base class providing common functionality for {@link StreamEx} and {@link EntryStream}. 
+ * Base class providing common functionality for {@link StreamEx} and
+ * {@link EntryStream}.
  * 
  * @author Tagir Valeev
  *
@@ -36,12 +37,12 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         BaseStreamEx<T, Stream<T>, Spliterator<T>, S> implements Stream<T>, Iterable<T> {
     @SuppressWarnings("unchecked")
     AbstractStreamEx(Stream<? extends T> stream, StreamContext context) {
-        super((Stream<T>)stream, context);
+        super((Stream<T>) stream, context);
     }
 
     @SuppressWarnings("unchecked")
     AbstractStreamEx(Spliterator<? extends T> spliterator, StreamContext context) {
-        super((Spliterator<T>)spliterator, context);
+        super((Spliterator<T>) spliterator, context);
     }
 
     @Override
@@ -166,9 +167,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * flattening the resulting elements into a new stream.
      *
      * @param <R> The element type of the new stream
-     * @param mapper a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param mapper a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to apply to each element which produces a
      *        {@link Collection} of new values
      * @return the new stream
@@ -182,8 +183,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
 
     /**
      * Returns a stream consisting of the results of replacing each element of
-     * this stream with the contents of a mapped array produced by applying
-     * the provided mapping function to each element. (If a mapped array is
+     * this stream with the contents of a mapped array produced by applying the
+     * provided mapping function to each element. (If a mapped array is
      * {@code null} nothing is added for given element to the resulting stream.)
      *
      * <p>
@@ -196,11 +197,11 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * flattening the resulting elements into a new stream.
      *
      * @param <R> The element type of the new stream
-     * @param mapper a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
-     *        function to apply to each element which produces an
-     *        array of new values
+     * @param mapper a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
+     *        function to apply to each element which produces an array of new
+     *        values
      * @return the new stream
      * @since 0.6.5
      */
@@ -286,9 +287,10 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      */
     public <K> EntryStream<K, T> mapToEntryKey(Function<? super T, ? extends K> keyMapper) {
-        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e), e)), context);
+        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e), e)),
+                context);
     }
-    
+
     /**
      * Returns an {@link EntryStream} consisting of the {@link Entry} objects
      * which keys are elements of this stream and values are results of applying
@@ -304,7 +306,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      */
     public <V> EntryStream<T, V> mapToEntryValue(Function<? super T, ? extends V> valueMapper) {
-        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(e, valueMapper.apply(e))), context);
+        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(e, valueMapper.apply(e))),
+                context);
     }
 
     /**
@@ -324,7 +327,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     @SuppressWarnings("unchecked")
     public <K, V> EntryStream<K, V> mapToEntry(Function<? super T, ? extends Map.Entry<K, V>> mapper) {
         final Function<?, ?> mapper2 = Function.identity();
-        
+
         if (mapper == mapper2) {
             return new EntryStream<>((StreamEx<Map.Entry<K, V>>) this, context);
         } else {
@@ -351,19 +354,21 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      */
     public <K, V> EntryStream<K, V> mapToEntry(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper) {
-        return new EntryStream<>(stream()
-                .map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e), valueMapper.apply(e))), context);
+        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e),
+                valueMapper.apply(e))), context);
     }
+
     /**
-     * Returns a new stream containing all the elements of the original stream interspersed with
-     * given delimiter.
+     * Returns a new stream containing all the elements of the original stream
+     * interspersed with given delimiter.
      * 
      * <p>
-     * For example, {@code StreamEx.of("a", "b", "c").intersperse("x")} will yield a stream containing
-     * five elements: a, x, b, x, c.
+     * For example, {@code StreamEx.of("a", "b", "c").intersperse("x")} will
+     * yield a stream containing five elements: a, x, b, x, c.
      * 
      * <p>
-     * This is an <a href="package-summary.html#StreamOps">intermediate operation</a>.
+     * This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
      * 
      * @param delimiter a delimiter to be inserted between each pair of elements
      * @return the new stream
@@ -502,8 +507,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * {@inheritDoc}
      * 
      * <p>
-     * If special <a
-     * href="package-summary.html#ShortCircuitReduction">short-circuiting
+     * If special
+     * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
      * collector</a> is passed, this operation becomes short-circuiting as well.
      */
     @SuppressWarnings("resource")
@@ -533,19 +538,19 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
                 return collector.finisher().apply(a);
             }
             Spliterator<A> spltr;
-            if (!spliterator.hasCharacteristics(Spliterator.ORDERED)
-                || collector.characteristics().contains(Characteristics.UNORDERED)) {
+            if (!spliterator.hasCharacteristics(Spliterator.ORDERED) || collector.characteristics().contains(
+                Characteristics.UNORDERED)) {
                 spltr = new UnorderedCancellableSpliterator<>(spliterator, collector.supplier(), acc, combiner,
                         finished);
             } else {
                 spltr = new OrderedCancellableSpliterator<>(spliterator, collector.supplier(), acc, combiner, finished);
             }
-            return collector.finisher().apply(
-                new StreamEx<>(StreamSupport.stream(spltr, true), context).findFirst().get());
+            return collector.finisher().apply(new StreamEx<>(StreamSupport.stream(spltr, true), context).findFirst()
+                    .get());
         }
         return rawCollect(collector);
     }
-    
+
     /**
      * 
      * @param downstream
@@ -635,9 +640,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * <p>
      * This is a short-circuiting terminal operation.
      *
-     * @param predicate a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param predicate a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        predicate which returned value should match
      * @return an {@code OptionalLong} describing the index of the first
      *         matching element of this stream, or an empty {@code OptionalLong}
@@ -675,9 +680,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
      *
-     * @param predicate a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param predicate a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        predicate to apply to each element to determine if it should be
      *        excluded
      * @return the new stream
@@ -715,9 +720,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * on the same source may not return the same result. (If a stable result is
      * desired, use {@link #findFirst(Predicate)} instead.)
      *
-     * @param predicate a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param predicate a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        predicate which returned value should match
      * @return an {@code Optional} describing some matching element of this
      *         stream, or an empty {@code Optional} if there's no matching
@@ -738,9 +743,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * <p>
      * This is a short-circuiting terminal operation.
      *
-     * @param predicate a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param predicate a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        predicate which returned value should match
      * @return an {@code Optional} describing the first matching element of this
      *         stream, or an empty {@code Optional} if there's no matching
@@ -764,9 +769,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This is a <a href="package-summary.html#StreamOps">stateful intermediate
      * operation</a>.
      *
-     * @param comparator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param comparator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        {@code Comparator} to be used to compare stream elements
      * @return the new stream
      */
@@ -788,9 +793,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * operation</a>.
      *
      * @param <V> the type of the {@code Comparable} sort key
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to be used to extract sorting keys
      * @return the new stream
      */
@@ -810,9 +815,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This is a <a href="package-summary.html#StreamOps">stateful intermediate
      * operation</a>.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to be used to extract sorting keys
      * @return the new stream
      */
@@ -832,9 +837,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This is a <a href="package-summary.html#StreamOps">stateful intermediate
      * operation</a>.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to be used to extract sorting keys
      * @return the new stream
      */
@@ -854,9 +859,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This is a <a href="package-summary.html#StreamOps">stateful intermediate
      * operation</a>.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to be used to extract sorting keys
      * @return the new stream
      */
@@ -878,27 +883,26 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * keyExtractor function is applied only once per each input element.
      *
      * @param <V> the type of the comparable keys
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the comparable keys from this stream elements
      * @return an {@code Optional} describing the minimum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
      * @throws NullPointerException if the minimum element is null
      */
     public <V extends Comparable<? super V>> Optional<T> minBy(Function<? super T, ? extends V> keyExtractor) {
-        return Box
-                .asOptional(reduce(null, (PairBox<T, V> acc, T t) -> {
-                    V val = keyExtractor.apply(t);
-                    if (acc == null)
-                        return new PairBox<>(t, val);
-                    if (val.compareTo(acc.b) < 0) {
-                        acc.b = val;
-                        acc.a = t;
-                    }
-                    return acc;
-                }, (PairBox<T, V> acc1, PairBox<T, V> acc2) -> (acc1 == null || acc2 != null
-                    && acc1.b.compareTo(acc2.b) > 0) ? acc2 : acc1));
+        return Box.asOptional(reduce(null, (PairBox<T, V> acc, T t) -> {
+            V val = keyExtractor.apply(t);
+            if (acc == null)
+                return new PairBox<>(t, val);
+            if (val.compareTo(acc.b) < 0) {
+                acc.b = val;
+                acc.a = t;
+            }
+            return acc;
+        }, (PairBox<T, V> acc1, PairBox<T, V> acc2) -> (acc1 == null || acc2 != null && acc1.b.compareTo(acc2.b) > 0)
+                ? acc2 : acc1));
     }
 
     /**
@@ -913,9 +917,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * {@code min(Comparator.comparingInt(keyExtractor))}, but may work faster
      * as keyExtractor function is applied only once per each input element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the int keys from this stream elements
      * @return an {@code Optional} describing the minimum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
@@ -946,27 +950,26 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * {@code min(Comparator.comparingLong(keyExtractor))}, but may work faster
      * as keyExtractor function is applied only once per each input element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the long keys from this stream elements
      * @return an {@code Optional} describing the minimum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
      * @throws NullPointerException if the minimum element is null
      */
     public Optional<T> minByLong(ToLongFunction<? super T> keyExtractor) {
-        return Box
-                .asOptional(reduce(null, (ObjLongBox<T> acc, T t) -> {
-                    long val = keyExtractor.applyAsLong(t);
-                    if (acc == null)
-                        return new ObjLongBox<>(t, val);
-                    if (val < acc.b) {
-                        acc.b = val;
-                        acc.a = t;
-                    }
-                    return acc;
-                }, (ObjLongBox<T> acc1, ObjLongBox<T> acc2) -> (acc1 == null || acc2 != null && acc1.b > acc2.b) ? acc2
-                        : acc1));
+        return Box.asOptional(reduce(null, (ObjLongBox<T> acc, T t) -> {
+            long val = keyExtractor.applyAsLong(t);
+            if (acc == null)
+                return new ObjLongBox<>(t, val);
+            if (val < acc.b) {
+                acc.b = val;
+                acc.a = t;
+            }
+            return acc;
+        }, (ObjLongBox<T> acc1, ObjLongBox<T> acc2) -> (acc1 == null || acc2 != null && acc1.b > acc2.b) ? acc2
+                : acc1));
     }
 
     /**
@@ -982,9 +985,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * faster as keyExtractor function is applied only once per each input
      * element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the double keys from this stream elements
      * @return an {@code Optional} describing the minimum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
@@ -1000,8 +1003,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
                 acc.a = t;
             }
             return acc;
-        }, (ObjDoubleBox<T> acc1, ObjDoubleBox<T> acc2) -> (acc1 == null || acc2 != null
-            && Double.compare(acc1.b, acc2.b) > 0) ? acc2 : acc1));
+        }, (ObjDoubleBox<T> acc1, ObjDoubleBox<T> acc2) -> (acc1 == null || acc2 != null && Double.compare(acc1.b,
+            acc2.b) > 0) ? acc2 : acc1));
     }
 
     /**
@@ -1018,27 +1021,26 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * keyExtractor function is applied only once per each input element.
      *
      * @param <V> the type of the comparable keys
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the comparable keys from this stream elements
      * @return an {@code Optional} describing the maximum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
      * @throws NullPointerException if the maximum element is null
      */
     public <V extends Comparable<? super V>> Optional<T> maxBy(Function<? super T, ? extends V> keyExtractor) {
-        return Box
-                .asOptional(reduce(null, (PairBox<T, V> acc, T t) -> {
-                    V val = keyExtractor.apply(t);
-                    if (acc == null)
-                        return new PairBox<>(t, val);
-                    if (val.compareTo(acc.b) > 0) {
-                        acc.b = val;
-                        acc.a = t;
-                    }
-                    return acc;
-                }, (PairBox<T, V> acc1, PairBox<T, V> acc2) -> (acc1 == null || acc2 != null
-                    && acc1.b.compareTo(acc2.b) < 0) ? acc2 : acc1));
+        return Box.asOptional(reduce(null, (PairBox<T, V> acc, T t) -> {
+            V val = keyExtractor.apply(t);
+            if (acc == null)
+                return new PairBox<>(t, val);
+            if (val.compareTo(acc.b) > 0) {
+                acc.b = val;
+                acc.a = t;
+            }
+            return acc;
+        }, (PairBox<T, V> acc1, PairBox<T, V> acc2) -> (acc1 == null || acc2 != null && acc1.b.compareTo(acc2.b) < 0)
+                ? acc2 : acc1));
     }
 
     /**
@@ -1053,9 +1055,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * {@code min(Comparator.comparingInt(keyExtractor))}, but may work faster
      * as keyExtractor function is applied only once per each input element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the int keys from this stream elements
      * @return an {@code Optional} describing the maximum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
@@ -1086,27 +1088,26 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * {@code min(Comparator.comparingLong(keyExtractor))}, but may work faster
      * as keyExtractor function is applied only once per each input element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the long keys from this stream elements
      * @return an {@code Optional} describing the maximum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
      * @throws NullPointerException if the maximum element is null
      */
     public Optional<T> maxByLong(ToLongFunction<? super T> keyExtractor) {
-        return Box
-                .asOptional(reduce(null, (ObjLongBox<T> acc, T t) -> {
-                    long val = keyExtractor.applyAsLong(t);
-                    if (acc == null)
-                        return new ObjLongBox<>(t, val);
-                    if (val > acc.b) {
-                        acc.b = val;
-                        acc.a = t;
-                    }
-                    return acc;
-                }, (ObjLongBox<T> acc1, ObjLongBox<T> acc2) -> (acc1 == null || acc2 != null && acc1.b < acc2.b) ? acc2
-                        : acc1));
+        return Box.asOptional(reduce(null, (ObjLongBox<T> acc, T t) -> {
+            long val = keyExtractor.applyAsLong(t);
+            if (acc == null)
+                return new ObjLongBox<>(t, val);
+            if (val > acc.b) {
+                acc.b = val;
+                acc.a = t;
+            }
+            return acc;
+        }, (ObjLongBox<T> acc1, ObjLongBox<T> acc2) -> (acc1 == null || acc2 != null && acc1.b < acc2.b) ? acc2
+                : acc1));
     }
 
     /**
@@ -1122,9 +1123,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * faster as keyExtractor function is applied only once per each input
      * element.
      *
-     * @param keyExtractor a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param keyExtractor a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function to extract the double keys from this stream elements
      * @return an {@code Optional} describing the maximum element of this
      *         stream, or an empty {@code Optional} if the stream is empty
@@ -1140,8 +1141,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
                 acc.a = t;
             }
             return acc;
-        }, (ObjDoubleBox<T> acc1, ObjDoubleBox<T> acc2) -> (acc1 == null || acc2 != null
-            && Double.compare(acc1.b, acc2.b) < 0) ? acc2 : acc1));
+        }, (ObjDoubleBox<T> acc1, ObjDoubleBox<T> acc2) -> (acc1 == null || acc2 != null && Double.compare(acc1.b,
+            acc2.b) < 0) ? acc2 : acc1));
     }
 
     /**
@@ -1208,7 +1209,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public List<T> toList() {
         return new ArrayList<>((Collection<T>) new ArrayCollection(toArray(Object[]::new)));
     }
-    
+
     /**
      * Returns an immutable {@link List} containing the elements of this stream.
      * There's no guarantees on exact type of the returned {@code List}. The
@@ -1225,7 +1226,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     @SuppressWarnings("unchecked")
     public List<T> toImmutableList() {
         Object[] array = toArray(Object[]::new);
-        switch(array.length) {
+        switch (array.length) {
         case 0:
             return Collections.emptyList();
         case 1:
@@ -1273,7 +1274,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public Set<T> toSet() {
         return rawCollect(Collectors.toSet());
     }
-    
+
     /**
      * Returns an immutable {@link Set} containing the elements of this stream.
      * There's no guarantees on exact type of the returned {@code Set}. In
@@ -1362,9 +1363,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *
      * @param <U> The type of the result
      * @param seed the starting value
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the result of the folding
      * @see #foldRight(Object, BiFunction)
@@ -1410,9 +1411,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * For parallel stream it's not guaranteed that accumulator will always be
      * executed in the same thread.
      *
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the result of the folding
      * @see #foldLeft(Object, BiFunction)
@@ -1447,9 +1448,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *
      * @param <U> The type of the result
      * @param seed the starting value
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the result of the folding
      * @see #foldLeft(Object, BiFunction)
@@ -1484,9 +1485,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * For parallel stream it's not guaranteed that accumulator will always be
      * executed in the same thread.
      *
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the result of the folding
      * @see #foldRight(Object, BiFunction)
@@ -1526,9 +1527,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *
      * @param <U> The type of the result
      * @param seed the starting value
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the {@code List} where the first element is the seed and every
      *         successor element is the result of applying accumulator function
@@ -1564,9 +1565,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This method cannot take all the advantages of parallel streams as it must
      * process elements strictly left to right.
      *
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the {@code List} where the first element is the first element of
      *         this stream and every successor element is the result of applying
@@ -1609,9 +1610,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *
      * @param <U> The type of the result
      * @param seed the starting value
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the {@code List} where the last element is the seed and every
      *         predecessor element is the result of applying accumulator
@@ -1653,9 +1654,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * This method cannot take all the advantages of parallel streams as it must
      * process elements strictly right to left.
      *
-     * @param accumulator a <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
+     * @param accumulator a
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
      *        function for incorporating an additional element into a result
      * @return the {@code List} where the last element is the last element of
      *         this stream and every predecessor element is the result of
@@ -1676,18 +1677,53 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     }
 
     /**
+     * Returns a stream containing cumulative results of applying the
+     * accumulation function going left to right.
+     * 
+     * <p>
+     * This is a stateful
+     * <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * operation.
+     *
+     * <p>
+     * This operation resembles {@link #scanLeft(BinaryOperator)}, but unlike
+     * {@code scanLeft} this operation is intermediate and accumulation function
+     * must be associative.
+     * 
+     * <p>
+     * This method cannot take all the advantages of parallel streams as it must
+     * process elements strictly left to right. Using an unordered source or
+     * removing the ordering constraint with {@link #unordered()} may improve
+     * the parallel processing speed.
+     *
+     * @param op an
+     *        <a href="package-summary.html#Associativity">associative</a>,
+     *        <a href="package-summary.html#NonInterference">non-interfering
+     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
+     *        function for computing the next element based on the previous one
+     * @return the new stream.
+     * @see #scanLeft(BinaryOperator)
+     * @since 0.6.1
+     */
+    public S prefix(BinaryOperator<T> op) {
+        Spliterator<T> spltr = spliterator();
+        return supply(spltr.hasCharacteristics(Spliterator.ORDERED) ? new PrefixOps.OfRef<>(spltr, op)
+                : new PrefixOps.OfUnordRef<>(spltr, op));
+    }
+
+    /**
      * Returns a stream consisting of the remaining elements of this stream
      * after discarding the first {@code n} elements of the stream even if the
      * stream is unordered. If this stream contains fewer than {@code n}
      * elements then an empty stream will be returned.
      *
      * <p>
-     * This is a stateful <a
-     * href="package-summary.html#StreamOps">quasi-intermediate</a> operation.
-     * Unlike {@link #skip(long)} it skips the first elements even if the stream
-     * is unordered. The main purpose of this method is to workaround the
-     * problem of skipping the first elements from non-sized source with further
-     * parallel processing and unordered terminal operation (such as
+     * This is a stateful
+     * <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * operation. Unlike {@link #skip(long)} it skips the first elements even if
+     * the stream is unordered. The main purpose of this method is to workaround
+     * the problem of skipping the first elements from non-sized source with
+     * further parallel processing and unordered terminal operation (such as
      * {@link #forEach(Consumer)}). For example,
      * {@code StreamEx.ofLines(br).skip(1).parallel().toSet()} will skip
      * arbitrary line, but
@@ -1716,17 +1752,17 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * first element which does not match the given predicate is found.
      * 
      * <p>
-     * This is a short-circuiting stateful operation. It can be either <a
-     * href="package-summary.html#StreamOps">intermediate or
+     * This is a short-circuiting stateful operation. It can be either
+     * <a href="package-summary.html#StreamOps">intermediate or
      * quasi-intermediate</a>. When using with JDK 1.9 or higher it calls the
      * corresponding JDK 1.9 implementation. When using with JDK 1.8 it uses own
      * implementation.
      * 
      * <p>
      * While this operation is quite cheap for sequential stream, it can be
-     * quite expensive on parallel pipelines. Using unordered source or making it
-     * explicitly unordered with {@link #unordered()} call may improve the parallel
-     * processing performance if semantics permit.
+     * quite expensive on parallel pipelines. Using unordered source or making
+     * it explicitly unordered with {@link #unordered()} call may improve the
+     * parallel processing performance if semantics permit.
      * 
      * @param predicate a non-interfering, stateless predicate to apply to
      *        elements.
@@ -1751,9 +1787,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * 
      * <p>
      * While this operation is quite cheap for sequential stream, it can be
-     * quite expensive on parallel pipelines. Using unordered source or making it
-     * explicitly unordered with {@link #unordered()} call may improve the parallel
-     * processing performance if semantics permit.
+     * quite expensive on parallel pipelines. Using unordered source or making
+     * it explicitly unordered with {@link #unordered()} call may improve the
+     * parallel processing performance if semantics permit.
      * 
      * @param predicate a non-interfering, stateless predicate to apply to
      *        elements.
@@ -1764,9 +1800,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public S takeWhileInclusive(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
         Spliterator<T> spltr = spliterator();
-        return supply(
-            spltr.hasCharacteristics(Spliterator.ORDERED) ? new TakeDrop.TDOfRef<>(spltr, false, true, predicate)
-                    : new TakeDrop.UnorderedTDOfRef<>(spltr, false, true, predicate));
+        return supply(spltr.hasCharacteristics(Spliterator.ORDERED) ? new TakeDrop.TDOfRef<>(spltr, false, true,
+                predicate) : new TakeDrop.UnorderedTDOfRef<>(spltr, false, true, predicate));
     }
 
     /**
@@ -1775,17 +1810,17 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * predicate is true for all stream elements, an empty stream is returned.
      * 
      * <p>
-     * This is a stateful operation. It can be either <a
-     * href="package-summary.html#StreamOps">intermediate or
+     * This is a stateful operation. It can be either
+     * <a href="package-summary.html#StreamOps">intermediate or
      * quasi-intermediate</a>. When using with JDK 1.9 or higher it calls the
      * corresponding JDK 1.9 implementation. When using with JDK 1.8 it uses own
      * implementation.
      * 
      * <p>
      * While this operation is quite cheap for sequential stream, it can be
-     * quite expensive on parallel pipelines. Using unordered source or making it
-     * explicitly unordered with {@link #unordered()} call may improve the parallel
-     * processing performance if semantics permit.
+     * quite expensive on parallel pipelines. Using unordered source or making
+     * it explicitly unordered with {@link #unordered()} call may improve the
+     * parallel processing performance if semantics permit.
      * 
      * @param predicate a non-interfering, stateless predicate to apply to
      *        elements.
@@ -1796,46 +1831,12 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         Objects.requireNonNull(predicate);
         return VER_SPEC.callWhile(this, predicate, true);
     }
-    
-    /**
-     * Returns a stream containing cumulative results of applying the
-     * accumulation function going left to right.
-     * 
-     * <p>
-     * This is a stateful <a
-     * href="package-summary.html#StreamOps">quasi-intermediate</a> operation.
-     *
-     * <p>
-     * This operation resembles {@link #scanLeft(BinaryOperator)}, but unlike
-     * {@code scanLeft} this operation is intermediate and accumulation function
-     * must be associative.
-     * 
-     * <p>
-     * This method cannot take all the advantages of parallel streams as it must
-     * process elements strictly left to right. Using an unordered source or
-     * removing the ordering constraint with {@link #unordered()} may improve
-     * the parallel processing speed.
-     *
-     * @param op an <a
-     *        href="package-summary.html#Associativity">associative</a>, <a
-     *        href="package-summary.html#NonInterference">non-interfering </a>,
-     *        <a href="package-summary.html#Statelessness">stateless</a>
-     *        function for computing the next element based on the previous one
-     * @return the new stream.
-     * @see #scanLeft(BinaryOperator)
-     * @since 0.6.1
-     */
-    public S prefix(BinaryOperator<T> op) {
-        Spliterator<T> spltr = spliterator();
-        return supply(spltr.hasCharacteristics(Spliterator.ORDERED) ? new PrefixOps.OfRef<>(spltr, op)
-                : new PrefixOps.OfUnordRef<>(spltr, op));
-    }
 
     // Necessary to generate proper JavaDoc
     @SuppressWarnings("unchecked")
     @Override
     public <U> U chain(Function<? super S, U> mapper) {
-        return mapper.apply((S)this);
+        return mapper.apply((S) this);
     }
 
     public void println() {

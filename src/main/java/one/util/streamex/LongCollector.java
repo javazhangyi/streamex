@@ -94,7 +94,8 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      *        result, for the new collector
      * @return the new {@code LongCollector}
      */
-    static <R> LongCollector<R, R> of(Supplier<R> supplier, ObjLongConsumer<R> longAccumulator, BiConsumer<R, R> merger) {
+    static <R> LongCollector<R, R> of(Supplier<R> supplier, ObjLongConsumer<R> longAccumulator,
+            BiConsumer<R, R> merger) {
         return new LongCollectorImpl<>(supplier, longAccumulator, merger, Function.identity(), ID_CHARACTERISTICS);
     }
 
@@ -147,8 +148,8 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      *         separated by the specified delimiter, in encounter order
      */
     static LongCollector<?, String> joining(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-        return PartialCollector.joining(delimiter, prefix, suffix, true).asLong(
-            StreamExInternals.joinAccumulatorLong(delimiter));
+        return PartialCollector.joining(delimiter, prefix, suffix, true).asLong(StreamExInternals.joinAccumulatorLong(
+            delimiter));
     }
 
     /**
@@ -161,8 +162,8 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      *         separated by the specified delimiter, in encounter order
      */
     static LongCollector<?, String> joining(CharSequence delimiter) {
-        return PartialCollector.joining(delimiter, null, null, false).asLong(
-            StreamExInternals.joinAccumulatorLong(delimiter));
+        return PartialCollector.joining(delimiter, null, null, false).asLong(StreamExInternals.joinAccumulatorLong(
+            delimiter));
     }
 
     /**
@@ -318,8 +319,8 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      * @return a {@code LongCollector} which implements the reduction operation
      */
     static LongCollector<?, Long> reducing(long identity, LongBinaryOperator op) {
-        return of(() -> new long[] { identity }, (box, i) -> box[0] = op.applyAsLong(box[0], i),
-            (box1, box2) -> box1[0] = op.applyAsLong(box1[0], box2[0]), UNBOX_LONG);
+        return of(() -> new long[] { identity }, (box, i) -> box[0] = op.applyAsLong(box[0], i), (box1,
+                box2) -> box1[0] = op.applyAsLong(box1[0], box2[0]), UNBOX_LONG);
     }
 
     /**
@@ -370,8 +371,8 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
     static <A, D> LongCollector<?, Map<Boolean, D>> partitioningBy(LongPredicate predicate,
             LongCollector<A, D> downstream) {
         ObjLongConsumer<A> downstreamAccumulator = downstream.longAccumulator();
-        ObjLongConsumer<BooleanMap<A>> accumulator = (result, t) -> downstreamAccumulator.accept(
-            predicate.test(t) ? result.trueValue : result.falseValue, t);
+        ObjLongConsumer<BooleanMap<A>> accumulator = (result, t) -> downstreamAccumulator.accept(predicate.test(t)
+                ? result.trueValue : result.falseValue, t);
         return BooleanMap.partialCollector(downstream).asLong(accumulator);
     }
 
@@ -426,7 +427,7 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      */
     static <K, D, A> LongCollector<?, Map<K, D>> groupingBy(LongFunction<? extends K> classifier,
             LongCollector<A, D> downstream) {
-        return groupingBy(classifier, HashMap::new, downstream);
+        return groupingBy(classifier, downstream, HashMap::new);
     }
 
     /**
@@ -455,7 +456,7 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      *         operation
      */
     static <K, D, A, M extends Map<K, D>> LongCollector<?, M> groupingBy(LongFunction<? extends K> classifier,
-            Supplier<M> mapFactory, LongCollector<A, D> downstream) {
+            LongCollector<A, D> downstream, Supplier<M> mapFactory) {
         Supplier<A> downstreamSupplier = downstream.supplier();
         Function<K, A> supplier = k -> downstreamSupplier.get();
         ObjLongConsumer<A> downstreamAccumulator = downstream.longAccumulator();
