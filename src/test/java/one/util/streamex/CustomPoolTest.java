@@ -90,7 +90,7 @@ public class CustomPoolTest {
         assertEquals("{ccc={bb={a={}}}}", StreamEx.of("a", "bb", "ccc").parallel(pool).peek(this::checkThread)
                 .foldLeft(Collections.emptyMap(),
                     (Map<String, Object> acc, String v) -> Collections.singletonMap(v, acc)).toString());
-        assertEquals(1000, IntStreamEx.constant(1, 1000).boxed().parallel(pool).peek(this::checkThread).foldLeft(0,
+        assertEquals(1000, IntStreamEx.repeat(1, 1000).boxed().parallel(pool).peek(this::checkThread).foldLeft(0,
             Integer::sum).intValue());
 
         assertEquals(2, StreamEx.of("aa", "bbb", "cccc").parallel(pool).peek(this::checkThread).filter(

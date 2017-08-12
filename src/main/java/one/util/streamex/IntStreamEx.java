@@ -2775,12 +2775,12 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * elements are equal to supplied value.
      * 
      * @param value the constant value
-     * @param length the length of the stream
+     * @param n the length of the stream
      * @return a new {@code IntStreamEx}
      * @since 0.1.2
      */
-    public static IntStreamEx constant(int value, long length) {
-        return of(new ConstSpliterator.OfInt(value, length, false));
+    public static IntStreamEx repeat(int value, long n) {
+        return of(new ConstSpliterator.OfInt(value, n, false));
     }
 
     /**

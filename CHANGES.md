@@ -20,6 +20,9 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `StreamEx<U> scan(final U seed, final BiFunction<? super U, ? super T, U> op)`
 
+* Rename `constant` to `repeat`.
+
+
 ### 0.8.6:
 
 * Add `println` to `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx`.

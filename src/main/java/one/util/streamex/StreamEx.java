@@ -3530,7 +3530,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return a new {@code StreamEx}
      * @since 0.1.2
      */
-    public static <T> StreamEx<T> constant(T value, long length) {
+    public static <T> StreamEx<T> repeat(T value, long length) {
         return of(new ConstSpliterator.OfRef<>(value, length, false));
     }
 

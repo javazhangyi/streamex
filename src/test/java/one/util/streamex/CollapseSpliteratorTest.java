@@ -80,7 +80,7 @@ public class CollapseSpliteratorTest {
             result.addAll(resultRight);
             assertEquals(IntStreamEx.range(1, 10).boxed().toList(), result);
         });
-        input = IntStreamEx.constant(100, 100).append(2).prepend(1).boxed().toList();
+        input = IntStreamEx.repeat(100, 100).append(2).prepend(1).boxed().toList();
         splitEquals(StreamEx.of(input).without(100).parallel().spliterator(), (left, right) -> {
             List<Integer> result = new ArrayList<>();
             left.forEachRemaining(result::add);

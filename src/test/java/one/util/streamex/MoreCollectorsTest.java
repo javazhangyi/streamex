@@ -253,7 +253,7 @@ public class MoreCollectorsTest {
 
         for (int size : new int[] { 1, 10, 20, 40, 60, 80, 90, 98, 99, 100 }) {
             checkShortCircuitCollector("head-unordered-" + size, Collections.nCopies(size, "test"), size,
-                () -> StreamEx.constant("test", 100), MoreCollectors.head(size));
+                () -> StreamEx.repeat("test", 100), MoreCollectors.head(size));
         }
     }
 

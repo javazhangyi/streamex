@@ -377,14 +377,14 @@ public class EntryStreamTest {
     public void testFlatMapToValue() {
         checkAsString("a->a;a->aa;a->aaa;b->b;b->bb", EntryStream.of("a", 3, "b", 2, "c", 0).flatMapValues(
             (str, cnt) -> cnt == 0 ? null : IntStream.rangeClosed(1, cnt).mapToObj(
-                idx -> StreamEx.constant(str, idx).join())));
+                idx -> StreamEx.repeat(str, idx).join())));
     }
 
     @Test
     public void testFlatMapToKey() {
         checkAsString("a->3;aa->3;aaa->3;b->2;bb->2", EntryStream.of("a", 3, "c", 0, "b", 2).flatMapKeys(
             (str, cnt) -> cnt == 0 ? null : IntStream.rangeClosed(1, cnt).mapToObj(
-                idx -> StreamEx.constant(str, idx).join())));
+                idx -> StreamEx.repeat(str, idx).join())));
     }
 
     @Test
@@ -622,7 +622,7 @@ public class EntryStreamTest {
         // batches by 3
         Stream<String> s = Stream.of("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
         assertEquals(asList(asList("a", "b", "c"), asList("d", "e", "f"), asList("g", "h", "i"), asList("j")),
-            IntStreamEx.ints().flatMapToObj(i -> StreamEx.constant(i, 3)).zipWith(s).collapseKeys().values().toList());
+            IntStreamEx.ints().flatMapToObj(i -> StreamEx.repeat(i, 3)).zipWith(s).collapseKeys().values().toList());
     }
     
     @Test

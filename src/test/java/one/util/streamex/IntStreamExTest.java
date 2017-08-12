@@ -66,7 +66,7 @@ public class IntStreamExTest {
         assertArrayEquals(new int[] { 1, 2, 3 }, IntStreamEx.range(1, 4).toArray());
         assertArrayEquals(new int[] { 1, 2, 3 }, IntStreamEx.rangeClosed(1, 3).toArray());
         assertArrayEquals(new int[] { 1, 1, 1, 1 }, IntStreamEx.generate(() -> 1).limit(4).toArray());
-        assertArrayEquals(new int[] { 1, 1, 1, 1 }, IntStreamEx.constant(1, 4).toArray());
+        assertArrayEquals(new int[] { 1, 1, 1, 1 }, IntStreamEx.repeat(1, 4).toArray());
         assertArrayEquals(new int[] { 'a', 'b', 'c' }, IntStreamEx.ofChars("abc").toArray());
         assertEquals(10, IntStreamEx.of(new Random(), 10).count());
         assertTrue(IntStreamEx.of(new Random(), 100, 1, 10).allMatch(x -> x >= 1 && x < 10));
@@ -503,7 +503,7 @@ public class IntStreamExTest {
         assertEquals(1, IntStreamEx.range(1000).map(x -> x * x).pairMap((a, b) -> b - a).pairMap((a, b) -> b - a)
                 .distinct().count());
 
-        assertArrayEquals(IntStreamEx.constant(1, 100).toArray(), IntStreamEx.iterate(0, i -> i + 1).parallel()
+        assertArrayEquals(IntStreamEx.repeat(1, 100).toArray(), IntStreamEx.iterate(0, i -> i + 1).parallel()
                 .pairMap((a, b) -> b - a).limit(100).toArray());
 
         assertFalse(IntStreamEx.range(1000).greater(2000).parallel().pairMap((a, b) -> a).findFirst().isPresent());
@@ -650,8 +650,8 @@ public class IntStreamExTest {
     public void testFoldLeft() {
         // non-associative
         IntBinaryOperator accumulator = (x, y) -> (x + y) * (x + y);
-        assertEquals(2322576, IntStreamEx.constant(3, 4).foldLeft(accumulator).orElse(-1));
-        assertEquals(2322576, IntStreamEx.constant(3, 4).parallel().foldLeft(accumulator).orElse(-1));
+        assertEquals(2322576, IntStreamEx.repeat(3, 4).foldLeft(accumulator).orElse(-1));
+        assertEquals(2322576, IntStreamEx.repeat(3, 4).parallel().foldLeft(accumulator).orElse(-1));
         assertFalse(IntStreamEx.empty().foldLeft(accumulator).isPresent());
         assertEquals(144, IntStreamEx.rangeClosed(1, 3).foldLeft(0, accumulator));
         assertEquals(144, IntStreamEx.rangeClosed(1, 3).parallel().foldLeft(0, accumulator));

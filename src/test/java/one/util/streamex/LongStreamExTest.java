@@ -56,7 +56,7 @@ public class LongStreamExTest {
         assertArrayEquals(new long[] { 0, 1, 2 }, LongStreamEx.range(3L).toArray());
         assertArrayEquals(new long[] { 1, 2, 3 }, LongStreamEx.rangeClosed(1, 3).toArray());
         assertArrayEquals(new long[] { 1, 1, 1, 1 }, LongStreamEx.generate(() -> 1).limit(4).toArray());
-        assertArrayEquals(new long[] { 1, 1, 1, 1 }, LongStreamEx.constant(1L, 4).toArray());
+        assertArrayEquals(new long[] { 1, 1, 1, 1 }, LongStreamEx.repeat(1L, 4).toArray());
         assertEquals(10, LongStreamEx.of(new Random(), 10).count());
         assertTrue(LongStreamEx.of(new Random(), 100, 1, 10).allMatch(x -> x >= 1 && x < 10));
         assertArrayEquals(LongStreamEx.of(new Random(1), 100, 1, 10).toArray(), LongStreamEx.of(new Random(1), 1, 10)
@@ -497,8 +497,8 @@ public class LongStreamExTest {
     public void testFoldLeft() {
         // non-associative
         LongBinaryOperator accumulator = (x, y) -> (x + y) * (x + y);
-        assertEquals(2322576, LongStreamEx.constant(3, 4).foldLeft(accumulator).orElse(-1));
-        assertEquals(2322576, LongStreamEx.constant(3, 4).parallel().foldLeft(accumulator).orElse(-1));
+        assertEquals(2322576, LongStreamEx.repeat(3, 4).foldLeft(accumulator).orElse(-1));
+        assertEquals(2322576, LongStreamEx.repeat(3, 4).parallel().foldLeft(accumulator).orElse(-1));
         assertFalse(LongStreamEx.empty().foldLeft(accumulator).isPresent());
         assertEquals(144, LongStreamEx.rangeClosed(1, 3).foldLeft(0L, accumulator));
         assertEquals(144, LongStreamEx.rangeClosed(1, 3).parallel().foldLeft(0L, accumulator));

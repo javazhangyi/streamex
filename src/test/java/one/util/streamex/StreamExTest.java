@@ -105,7 +105,7 @@ public class StreamExTest {
         assertEquals(asList("a", "b"), StreamEx.ofLines(new BufferedReader(new StringReader("a\nb"))).toList());
         assertEquals(asList("a", "b"), StreamEx.ofLines(getReader()).toList());
         assertEquals(asList("a", "a", "a", "a"), StreamEx.generate(() -> "a").limit(4).toList());
-        assertEquals(asList("a", "a", "a", "a"), StreamEx.constant("a", 4).toList());
+        assertEquals(asList("a", "a", "a", "a"), StreamEx.repeat("a", 4).toList());
         assertEquals(asList("c", "d", "e"), StreamEx.of("abcdef".split(""), 2, 5).toList());
 
         StreamEx<String> stream = StreamEx.of("foo", "bar");
@@ -527,7 +527,7 @@ public class StreamExTest {
                 assertEquals(asList("d", "e", "a", "b", "c", "dd"), s.get().prepend(asList("d", "e")).toList());
             });
         }
-        assertArrayEquals(new Object[] { 1, 2, 3, 1, 1 }, StreamEx.constant(1, Long.MAX_VALUE - 1).prepend(1, 2, 3)
+        assertArrayEquals(new Object[] { 1, 2, 3, 1, 1 }, StreamEx.repeat(1, Long.MAX_VALUE - 1).prepend(1, 2, 3)
                 .limit(5).toArray());
 
         assertEquals(asList(4, 3, 2, 1), StreamEx.just(1).prepend(2).prepend(StreamEx.just(3).prepend(4)).toList());
@@ -580,7 +580,7 @@ public class StreamExTest {
     @Test
     public void testMinMax() {
         withRandom(random -> {
-            List<String> data = IntStreamEx.of(random, 1000, 1, 100).mapToObj(len -> IntStreamEx.constant(random
+            List<String> data = IntStreamEx.of(random, 1000, 1, 100).mapToObj(len -> IntStreamEx.repeat(random
                     .nextInt('z' - 'a' + 1) + 'a', len).charsToString()).toList();
             String minStr = Collections.min(data, Comparator.comparingInt(String::length)), maxStr = Collections.max(
                 data, Comparator.comparingInt(String::length));
@@ -675,7 +675,7 @@ public class StreamExTest {
     public void testFoldLeftOptional() {
         // non-associative
         BinaryOperator<Integer> accumulator = (x, y) -> (x + y) * (x + y);
-        streamEx(() -> StreamEx.constant(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldLeft(
+        streamEx(() -> StreamEx.repeat(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldLeft(
             accumulator).orElse(-1)));
         streamEx(() -> StreamEx.of(1, 2, 3), supplier -> assertEquals(144, (int) supplier.get().foldLeft(accumulator)
                 .orElse(-1)));
@@ -695,7 +695,7 @@ public class StreamExTest {
     public void testFoldRightOptional() {
         // non-associative
         BinaryOperator<Integer> accumulator = (x, y) -> (x + y) * (x + y);
-        streamEx(() -> StreamEx.constant(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldRight(
+        streamEx(() -> StreamEx.repeat(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldRight(
             accumulator).orElse(-1)));
         streamEx(() -> StreamEx.of(1, 2, 3, 0), supplier -> assertEquals(14884, (int) supplier.get().foldRight(
             accumulator).orElse(-1)));
@@ -1125,7 +1125,7 @@ public class StreamExTest {
 
     @Test
     public void testCollapse() {
-        streamEx(() -> StreamEx.constant(1, 1000), supplier -> assertEquals(Collections.singletonList(1), supplier.get()
+        streamEx(() -> StreamEx.repeat(1, 1000), supplier -> assertEquals(Collections.singletonList(1), supplier.get()
                 .collapse(Objects::equals).toList()));
     }
 
@@ -1947,12 +1947,12 @@ public class StreamExTest {
         streamEx(input::stream, s -> assertEquals(Optional.of("abcd"), s.get().scan(String::concat).findFirst(
             str -> str.length() > 3)));
 
-        streamEx(() -> StreamEx.constant("a", 5), s -> assertEquals(new HashSet<>(asList("a", "aa", "aaa", "aaaa",
+        streamEx(() -> StreamEx.repeat("a", 5), s -> assertEquals(new HashSet<>(asList("a", "aa", "aaa", "aaaa",
             "aaaaa")), s.get().scan(String::concat).toSet()));
-        streamEx(() -> StreamEx.constant("a", 5), s -> assertEquals(Optional.of("aaaaa"), s.get().scan(String::concat)
+        streamEx(() -> StreamEx.repeat("a", 5), s -> assertEquals(Optional.of("aaaaa"), s.get().scan(String::concat)
                 .findFirst(str -> str.length() > 4)));
 
-        streamEx(() -> StreamEx.constant(100L, 10000), s -> assertEquals(5000500000L, (long) s.get().scan(Long::sum)
+        streamEx(() -> StreamEx.repeat(100L, 10000), s -> assertEquals(5000500000L, (long) s.get().scan(Long::sum)
                 .reduce(0L, Long::sum)));
 
         streamEx(() -> IntStreamEx.range(10000).boxed().unordered(), s -> assertEquals(49995000, s.get().scan(
@@ -2047,7 +2047,7 @@ public class StreamExTest {
                 return size;
             }
         };
-        assertSame(c, StreamEx.constant("a", 20).into(c));
+        assertSame(c, StreamEx.repeat("a", 20).into(c));
         //noinspection NumericOverflow
         assertEquals(Integer.MAX_VALUE + 10, c.size());
     }

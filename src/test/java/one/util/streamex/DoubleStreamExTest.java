@@ -62,7 +62,7 @@ public class DoubleStreamExTest {
         assertArrayEquals(new double[] { 1, 2, 4, 8, 16 }, DoubleStreamEx.iterate(1, x -> x * 2).limit(5).toArray(),
             0.0);
         assertArrayEquals(new double[] { 1, 1, 1, 1 }, DoubleStreamEx.generate(() -> 1).limit(4).toArray(), 0.0);
-        assertArrayEquals(new double[] { 1, 1, 1, 1 }, DoubleStreamEx.constant(1.0, 4).toArray(), 0.0);
+        assertArrayEquals(new double[] { 1, 1, 1, 1 }, DoubleStreamEx.repeat(1.0, 4).toArray(), 0.0);
         assertEquals(10, DoubleStreamEx.of(new Random(), 10).count());
         assertArrayEquals(DoubleStreamEx.of(new Random(1), 10).toArray(), DoubleStreamEx.of(new Random(1)).limit(10)
                 .toArray(), 0.0);
@@ -406,8 +406,8 @@ public class DoubleStreamExTest {
     public void testFoldLeft() {
         // non-associative
         DoubleBinaryOperator accumulator = (x, y) -> (x + y) * (x + y);
-        assertEquals(2322576, DoubleStreamEx.constant(3, 4).foldLeft(accumulator).orElse(-1), 0.0);
-        assertEquals(2322576, DoubleStreamEx.constant(3, 4).parallel().foldLeft(accumulator).orElse(-1), 0.0);
+        assertEquals(2322576, DoubleStreamEx.repeat(3, 4).foldLeft(accumulator).orElse(-1), 0.0);
+        assertEquals(2322576, DoubleStreamEx.repeat(3, 4).parallel().foldLeft(accumulator).orElse(-1), 0.0);
         assertFalse(DoubleStreamEx.empty().foldLeft(accumulator).isPresent());
         assertEquals(144, DoubleStreamEx.of(1, 2, 3).foldLeft(0.0, accumulator), 144);
         assertEquals(144, DoubleStreamEx.of(1, 2, 3).parallel().foldLeft(0.0, accumulator), 144);

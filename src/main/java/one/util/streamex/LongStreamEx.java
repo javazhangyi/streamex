@@ -2131,12 +2131,12 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * elements are equal to supplied value.
      * 
      * @param value the constant value
-     * @param length the length of the stream
+     * @param n the length of the stream
      * @return a new {@code LongStreamEx}
      * @since 0.1.2
      */
-    public static LongStreamEx constant(long value, long length) {
-        return of(new ConstSpliterator.OfLong(value, length, false));
+    public static LongStreamEx repeat(long value, long n) {
+        return of(new ConstSpliterator.OfLong(value, n, false));
     }
 
     /**

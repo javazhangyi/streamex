@@ -2061,12 +2061,12 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * which elements are equal to supplied value.
      * 
      * @param value the constant value
-     * @param length the length of the stream
+     * @param n the length of the stream
      * @return a new {@code DoubleStreamEx}
      * @since 0.1.2
      */
-    public static DoubleStreamEx constant(double value, long length) {
-        return of(new ConstSpliterator.OfDouble(value, length, false));
+    public static DoubleStreamEx repeat(double value, long n) {
+        return of(new ConstSpliterator.OfDouble(value, n, false));
     }
 
     /**
