@@ -14,6 +14,7 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Improve `maxAll(Comparator<? super T> comparator)` and `minAll(Comparator<? super T> comparator)` in `MoreCollectors`.
 
+* Add `mapToEntry(Int/Long/DoubleFunction<? extends Map.Entry<K, V>> mapper)` to `Int/Long/Double/StreamEx`.
 
 ### 0.8.6:
 

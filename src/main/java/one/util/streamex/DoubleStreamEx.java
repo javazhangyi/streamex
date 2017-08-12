@@ -276,6 +276,16 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
     }
 
     /**
+     * 
+     * @param mapper
+     * @return
+     * @since 0.8.7
+     */
+    public <K, V> EntryStream<K, V> mapToEntry(DoubleFunction<? extends Map.Entry<K, V>> mapper) {
+        return new EntryStream<>(stream().mapToObj(t -> mapper.apply(t)), context);
+    }
+
+    /**
      * Returns an {@link EntryStream} consisting of the {@link Entry} objects
      * which keys and values are results of applying the given functions to the
      * elements of this stream.
