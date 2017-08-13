@@ -23,6 +23,7 @@ StreamEx library main points are following:
 * Friendliness for parallel processing: any new feature takes the advantage on parallel streams as much as possible.
 * Performance and minimal overhead. If StreamEx allows to solve the task using less code compared to standard Stream, it
 should not be significantly slower than the standard way (and sometimes it's even faster).
+* Almost 100% compatibility with original JDK streams except not [throwing exception in `StreamEx.toMap/Collectors.toMap` for `null` entry values](https://stackoverflow.com/questions/24630963/java-8-nullpointerexception-in-collectors-tomap).
 
 ### Examples
 
