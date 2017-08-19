@@ -2,7 +2,7 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
-### 0.8.8:
+### 0.8.9:
 
 * Bug fix: Change: `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, M map)` To: `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, Supplier<M> mapSupplier)` in `StreamEx`.         
 
