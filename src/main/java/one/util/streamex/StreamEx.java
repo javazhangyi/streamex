@@ -1304,9 +1304,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final Map<K, V> map = isParallel() ? new ConcurrentHashMap<>() : new HashMap<>();
+        final Supplier<Map<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentHashMap<>() : () -> new HashMap<>();
 
-        return toMap(keyMapper, valMapper, map);
+        return toMap(keyMapper, valMapper, mapSupplier);
     }
 
     /**
@@ -1345,9 +1345,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final Map<K, V> map = isParallel() ? new ConcurrentHashMap<>() : new HashMap<>();
+        final Supplier<Map<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentHashMap<>() : () -> new HashMap<>();
 
-        return toMap(keyMapper, valMapper, mergeFunction, map);
+        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
     }
 
     /**
@@ -1359,7 +1359,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.5
      */
     public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valMapper, M map) {
+            Function<? super T, ? extends V> valMapper, Supplier<M> mapSupplier) {
+        final M map = mapSupplier.get();
         forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
         return map;
     }
@@ -1374,7 +1375,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.5
      */
     public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
+            Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
+        final M map = mapSupplier.get();
         forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
         return map;
     }
@@ -1449,9 +1451,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+        final Supplier<SortedMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
 
-        return toMap(keyMapper, valMapper, map);
+        return toMap(keyMapper, valMapper, mapSupplier);
     }
 
     /**
@@ -1490,9 +1492,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+        final Supplier<SortedMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
 
-        return toMap(keyMapper, valMapper, mergeFunction, map);
+        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
     }
 
     /**
@@ -1563,9 +1565,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+        final Supplier<NavigableMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
 
-        return toMap(keyMapper, valMapper, map);
+        return toMap(keyMapper, valMapper, mapSupplier);
     }
 
     /**
@@ -1605,9 +1607,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+        final Supplier<NavigableMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
 
-        return toMap(keyMapper, valMapper, mergeFunction, map);
+        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
     }
 
     /**

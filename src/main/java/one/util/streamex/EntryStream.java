@@ -1229,7 +1229,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public SortedMap<K, V> toSortedMap() {
-        return toNavigableMap();
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+
+        return toMap(keyMapper, valueMapper, map);
     }
 
     /**
@@ -1259,7 +1263,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public SortedMap<K, V> toSortedMap(BinaryOperator<V> mergeFunction) {
-        return toNavigableMap(mergeFunction);
+        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
+        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
+        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
+
+        return toMap(keyMapper, valueMapper, mergeFunction, map);
     }
 
     /**
