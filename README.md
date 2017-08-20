@@ -27,7 +27,7 @@ should not be significantly slower than the standard way (and sometimes it's eve
 
 ### Examples
 
-Collector shortcut methods (toList, toSet, groupingBy, joining, etc.)
+Collector shortcut methods (toList, toSet, toMap, join, etc.)
 ```java
 List<String> userNames = StreamEx.of(users).map(User::getName).toList();
 Map<Role, List<User>> role2users = StreamEx.of(users).groupTo(User::getRole);
