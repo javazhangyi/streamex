@@ -436,6 +436,14 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return prependSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
     }
 
+    public EntryStream<K, V> sortedByKey() {
+        return sortedBy(Entry::getKey);
+    }
+
+    public EntryStream<K, V> sortedByVlaue() {
+        return sortedBy(Entry::getValue);
+    }
+
     /**
      * Returns a stream consisting of the elements of this stream which have
      * distinct keys (according to object equality).
@@ -453,7 +461,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      * @since 0.3.8
      */
-    public EntryStream<K, V> distinctKeys() {
+    public EntryStream<K, V> distinctByKey() {
         return distinctBy(Entry::getKey);
     }
 
@@ -474,7 +482,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      * @since 0.3.8
      */
-    public EntryStream<K, V> distinctValues() {
+    public EntryStream<K, V> distinctByValue() {
         return distinctBy(Entry::getValue);
     }
 
@@ -581,7 +589,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        the key of each element to determine if it should be included
      * @return the new stream
      */
-    public EntryStream<K, V> filterKeys(Predicate<? super K> keyPredicate) {
+    public EntryStream<K, V> filterByKey(Predicate<? super K> keyPredicate) {
         return filter(e -> keyPredicate.test(e.getKey()));
     }
 
@@ -597,7 +605,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        the value of each element to determine if it should be included
      * @return the new stream
      */
-    public EntryStream<K, V> filterValues(Predicate<? super V> valuePredicate) {
+    public EntryStream<K, V> filterByValue(Predicate<? super V> valuePredicate) {
         return filter(e -> valuePredicate.test(e.getValue()));
     }
 
@@ -631,8 +639,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        the key of each element to determine if it should be excluded
      * @return the new stream
      */
-    public EntryStream<K, V> removeKeys(Predicate<? super K> keyPredicate) {
-        return filterKeys(keyPredicate.negate());
+    public EntryStream<K, V> removeByKey(Predicate<? super K> keyPredicate) {
+        return filterByKey(keyPredicate.negate());
     }
 
     /**
@@ -647,8 +655,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      *        the value of each element to determine if it should be excluded
      * @return the new stream
      */
-    public EntryStream<K, V> removeValues(Predicate<? super V> valuePredicate) {
-        return filterValues(valuePredicate.negate());
+    public EntryStream<K, V> removeByValue(Predicate<? super V> valuePredicate) {
+        return filterByValue(valuePredicate.negate());
     }
 
     /**

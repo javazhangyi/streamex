@@ -2,6 +2,15 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+
+### 0.8.10:
+
+* Rename `distinctKeys/distinctValues/filterKeys/filterValues/removeKeys/removeValues` to `distinctByKey/distinctByValue/filterByKey/filterByValue/removeByKey/removeByValue`.
+
+* Remove `filterBy` and `removeBy` from `StreamEx`.
+
+* Add `sortedByKey` and `sortedByValue` to `EntryStream`.
+
 ### 0.8.9:
 
 * Bug fix: Change: `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, M map)` To: `toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valMapper, Supplier<M> mapSupplier)` in `StreamEx`.         

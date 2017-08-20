@@ -186,9 +186,9 @@ public class EntryStreamTest {
 
     @Test
     public void testFilter() {
-        assertEquals(Collections.singletonMap("a", 1), EntryStream.of(createMap()).filterKeys(s -> s.length() < 2)
+        assertEquals(Collections.singletonMap("a", 1), EntryStream.of(createMap()).filterByKey(s -> s.length() < 2)
                 .toMap());
-        assertEquals(Collections.singletonMap("bb", 22), EntryStream.of(createMap()).filterValues(v -> v % 2 == 0)
+        assertEquals(Collections.singletonMap("bb", 22), EntryStream.of(createMap()).filterByValue(v -> v % 2 == 0)
                 .toMap());
         assertEquals(Collections.singletonMap("ccc", 33), EntryStream.of(createMap()).filter(
             (str, num) -> !str.equals("a") && num != 22).toMap());
@@ -214,8 +214,8 @@ public class EntryStreamTest {
         Map<String, List<Integer>> data = new HashMap<>();
         data.put("aaa", Collections.emptyList());
         data.put("bbb", Collections.singletonList(1));
-        assertEquals(asList("bbb"), EntryStream.of(data).removeValues(List::isEmpty).keys().toList());
-        assertEquals(asList("aaa"), EntryStream.of(data).removeKeys(Pattern.compile("bbb").asPredicate()).keys()
+        assertEquals(asList("bbb"), EntryStream.of(data).removeByValue(List::isEmpty).keys().toList());
+        assertEquals(asList("aaa"), EntryStream.of(data).removeByKey(Pattern.compile("bbb").asPredicate()).keys()
                 .toList());
         assertEquals(EntryStream.of("a", 1, "bb", 22).toMap(), EntryStream.of(createMap()).removeIf(
             (str, num) -> !str.equals("a") && num != 22).toMap());
@@ -279,7 +279,7 @@ public class EntryStreamTest {
     @Test
     public void testAppend() {
         assertEquals(asList(22, 33, 5, 22, 33), EntryStream.of(createMap()).append("dddd", 5).append(createMap())
-                .filterKeys(k -> k.length() > 1).values().toList());
+                .filterByKey(k -> k.length() > 1).values().toList());
         assertEquals(EntryStream.of(createMap()).toList(), EntryStream.empty().append("a", 1, "bb", 22, "ccc", 33)
                 .toList());
         checkAsString("bb->22;a->1;ccc->33", EntryStream.of("bb", 22).append("a", 1, "ccc", 33));
@@ -292,7 +292,7 @@ public class EntryStreamTest {
     @Test
     public void testPrepend() {
         assertEquals(asList(5, 22, 33, 22, 33), EntryStream.of(createMap()).prepend(createMap()).prepend("dddd", 5)
-                .filterKeys(k -> k.length() > 1).values().toList());
+                .filterByKey(k -> k.length() > 1).values().toList());
         checkAsString("a->1;ccc->33;bb->22", EntryStream.of("bb", 22).prepend("a", 1, "ccc", 33));
         checkAsString("a->1;ccc->33;dddd->40;bb->22", EntryStream.of("bb", 22).prepend("a", 1, "ccc", 33, "dddd", 40));
 
@@ -561,8 +561,8 @@ public class EntryStreamTest {
     @Test
     public void testDistinctKeysValues() {
         entryStream(() -> EntryStream.of(1, "a", 1, "b", 2, "b", 2, "c", 1, "c", 3, "c"), s -> {
-            checkAsString("1->a;2->b;3->c", s.get().distinctKeys());
-            checkAsString("1->a;1->b;2->c", s.get().distinctValues());
+            checkAsString("1->a;2->b;3->c", s.get().distinctByKey());
+            checkAsString("1->a;1->b;2->c", s.get().distinctByValue());
         });
     }
 

@@ -130,14 +130,14 @@ public class CustomPoolTest {
         assertTrue(EntryStream.of("a", 1).parallel(pool).peek(this::checkThread).allMatch(e -> e.getKey().equals("a")));
         assertFalse(EntryStream.of("a", 1).parallel(pool).peek(this::checkThread)
                 .noneMatch(e -> e.getKey().equals("a")));
-        assertEquals(2, EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread).filterValues(
+        assertEquals(2, EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread).filterByValue(
             v -> v > 1).count());
         List<Integer> res = new ArrayList<>();
-        EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread).filterValues(v -> v > 1)
+        EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread).filterByValue(v -> v > 1)
                 .forEachOrdered(entry -> res.add(entry.getValue()));
         assertEquals(Arrays.asList(2, 3), res);
         assertEquals(2L, (long) EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread)
-                .filterValues(v -> v > 1).collect(Collectors.counting()));
+                .filterByValue(v -> v > 1).collect(Collectors.counting()));
         assertEquals(6, (int) EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread).reduce(0,
             (sum, e) -> sum + e.getValue(), Integer::sum));
         assertEquals(Arrays.asList(1, 2, 3), EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(
@@ -145,19 +145,19 @@ public class CustomPoolTest {
             (List<Integer> list, Entry<String, Integer> e) -> list.add(e.getValue()), List::addAll));
         @SuppressWarnings("unchecked")
         Entry<String, Integer>[] array = EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(this::checkThread)
-                .filterValues(v -> v > 1).toArray(Entry[]::new);
+                .filterByValue(v -> v > 1).toArray(Entry[]::new);
         assertEquals(2, array.length);
         assertEquals(new SimpleEntry<>("b", 2), array[0]);
         assertEquals(new SimpleEntry<>("c", 3), array[1]);
 
         List<Entry<String, Integer>> list = EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(
-            this::checkThread).filterValues(v -> v > 1).toListAndThen(l -> {
+            this::checkThread).filterByValue(v -> v > 1).toListAndThen(l -> {
             this.checkThread(l);
             return l;
         });
         assertEquals(Arrays.asList(array), list);
         Map<String, Integer> map = EntryStream.of("a", 1, "b", 2, "c", 3).parallel(pool).peek(
-            this::checkThread).filterValues(v -> v > 1).toMapAndThen(m -> {
+            this::checkThread).filterByValue(v -> v > 1).toMapAndThen(m -> {
             this.checkThread(m);
             return m;
         });
