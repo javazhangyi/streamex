@@ -34,6 +34,29 @@ Map<Role, List<User>> role2users = StreamEx.of(users).groupTo(User::getRole);
 StreamEx.of(1,2,3).join("; "); // "1; 2; 3"
 ```
 
+Intermediate operations: groupBy/groupByToEntry
+
+```java
+// By native Java Stream APIs:
+accounts.stream()
+    .collect(Collectors.groupingBy(e -> e.getFirstName(), Collectors.counting()))
+    .entrySet().stream()
+    .sorted(Entry.comparingByValue())
+    .collect(Collectors.toMap(Function.identity(), Function.identity(), () -> new LinkedHashMap<>()));
+
+// groupBy. Less steps and more clear.
+StreamEx.of(accounts)
+    .groupBy(e -> e.getFirstName(), Collectors.counting())
+    .sorted(Entry.comparingByValue())
+    .toMap(Function.identity(), Function.identity(), () -> new LinkedHashMap<>());
+
+// even shorter and clearer with: groupByToEntry.
+StreamEx.of(accounts)
+    .groupByToEntry(e -> e.getFirstName(), Collectors.counting())
+    .sortedByValue()
+    .toMap(LinkedHashMap::new);
+```
+
 Selecting stream elements of specific type
 ```java
 public List<Element> elementsOf(NodeList nodeList) {
