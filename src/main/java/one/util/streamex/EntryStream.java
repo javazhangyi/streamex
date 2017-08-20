@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -440,8 +441,16 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return sortedBy(Entry::getKey);
     }
 
+    public EntryStream<K, V> sortedByKey(final Comparator<? super K> cmp) {
+        return sorted(Comparators.comparingByKey(cmp));
+    }
+
     public EntryStream<K, V> sortedByVlaue() {
         return sortedBy(Entry::getValue);
+    }
+
+    public EntryStream<K, V> sortedByVlaue(final Comparator<? super V> cmp) {
+        return sorted(Comparators.comparingByValue(cmp));
     }
 
     /**
