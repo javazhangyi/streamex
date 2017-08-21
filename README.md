@@ -53,7 +53,7 @@ StreamEx.of(accounts)
 // even shorter and clearer with: groupByToEntry.
 StreamEx.of(accounts)
     .groupByToEntry(e -> e.getFirstName(), Collectors.counting())
-    .sortedByValue()
+    .sorted(Entry.comparingByValue())
     .toMap(LinkedHashMap::new);
 ```
 
