@@ -437,16 +437,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return prependSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
     }
 
-    public EntryStream<K, V> sortedByKey() {
-        return sortedBy(Entry::getKey);
-    }
-
     public EntryStream<K, V> sortedByKey(final Comparator<? super K> cmp) {
         return sorted(Comparators.comparingByKey(cmp));
-    }
-
-    public EntryStream<K, V> sortedByVlaue() {
-        return sortedBy(Entry::getValue);
     }
 
     public EntryStream<K, V> sortedByVlaue(final Comparator<? super V> cmp) {
