@@ -3,7 +3,7 @@
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 
-### 0.8.11:
+### 0.8.12:
 
 * Add `Pair` and `Triple`
 
