@@ -2688,6 +2688,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2724,6 +2726,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2751,6 +2755,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2792,6 +2798,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2835,6 +2843,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2871,6 +2881,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2906,6 +2918,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
@@ -2954,6 +2968,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * 
      * <pre>
      * <code>
      * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
