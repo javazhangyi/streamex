@@ -177,7 +177,7 @@ public final class Fn {
     private static final BinaryOperator THROWING_MERGER = new BinaryOperator() {
         @Override
         public Object apply(Object t, Object u) {
-            throw new IllegalStateException(String.format("Duplicate key (attempted merging values %s and %s)", t, u));}
+            throw new IllegalStateException(String.format("Duplicate entry for key (attempt to merge values '%s' and '%s')", t, u));}
     };
 
     @SuppressWarnings("rawtypes")
@@ -198,10 +198,6 @@ public final class Fn {
 
     private Fn() {
         // Singleton.
-    }
-
-    public static <T> T get(final Supplier<T> supplier) {
-        return supplier.get();
     }
 
     public static <T> Comparator<T> naturalOrder() {

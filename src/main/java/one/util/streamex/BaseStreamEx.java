@@ -143,6 +143,15 @@ import java.util.stream.BaseStream;
         context.close();
     }
 
+//    /**
+//     * Short-cut to <code>parallel().xxx().sequential()</code>
+//     * 
+//     * @param op
+//     * @return
+//     */
+//    @SuppressWarnings({ "rawtypes" })
+//    public abstract <SS extends BaseStream> SS p_s(Function<? super B, SS> op);
+ 
     /**
      * Applies the supplied function to this stream and returns the result of
      * the function.
@@ -167,5 +176,5 @@ import java.util.stream.BaseStream;
      * @return the result of the function invocation.
      * @since 0.5.4
      */
-    abstract public <U> U chain(Function<? super B, U> mapper);
+    public abstract <U> U __(Function<? super B, U> mapper);
 }

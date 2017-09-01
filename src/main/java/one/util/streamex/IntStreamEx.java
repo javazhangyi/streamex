@@ -1844,11 +1844,17 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return delegate(new PairSpliterator.PSOfInt((a, b) -> a, mapper, spliterator(), PairSpliterator.MODE_MAP_LAST));
     }
 
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    @Override
+//    public  <SS extends BaseStream> SS p_s(Function<? super IntStreamEx, SS> op) {
+//        return (SS) parallel().__(op).sequential();
+//    }
+
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
     @Override
-    public <U> U chain(Function<? super IntStreamEx, U> mapper) {
-        return mapper.apply(this);
+    public <U> U __(Function<? super IntStreamEx, U> transfer) {
+        return transfer.apply(this);
     }
 
     public void println() {

@@ -110,8 +110,8 @@ public class BaseStreamExTest {
     
     @Test
     public void testChain() {
-        assertArrayEquals(new double[] { 2, 2, 6, 2, 6 }, IntStreamEx.of(3, 4, 5).chain(IntStreamEx::boxed).chain(
-            s -> s.flatMapToLong(LongStreamEx::range)).chain(s -> s.filter(n -> n % 2 != 0).asDoubleStream()).chain(
+        assertArrayEquals(new double[] { 2, 2, 6, 2, 6 }, IntStreamEx.of(3, 4, 5).__(IntStreamEx::boxed).__(
+            s -> s.flatMapToLong(LongStreamEx::range)).__(s -> s.filter(n -> n % 2 != 0).asDoubleStream()).__(
             s -> s.map(x -> x * 2)).toArray(), 0.0);
     }
 }

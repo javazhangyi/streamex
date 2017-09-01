@@ -1614,10 +1614,16 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
         return VER_SPEC.callWhile(this, Objects.requireNonNull(predicate), true);
     }
 
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    @Override
+//    public  <SS extends BaseStream> SS p_s(Function<? super LongStreamEx, SS> op) {
+//        return (SS) parallel().__(op).sequential();
+//    }
+
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
     @Override
-    public <U> U chain(Function<? super LongStreamEx, U> mapper) {
+    public <U> U __(Function<? super LongStreamEx, U> mapper) {
         return mapper.apply(this);
     }
 

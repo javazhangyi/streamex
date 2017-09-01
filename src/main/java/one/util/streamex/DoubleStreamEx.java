@@ -1620,10 +1620,16 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
         return VER_SPEC.callWhile(this, Objects.requireNonNull(predicate), true);
     }
 
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    @Override
+//    public  <SS extends BaseStream> SS p_s(Function<? super DoubleStreamEx, SS> op) {
+//        return (SS) parallel().__(op).sequential();
+//    }
+
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
     @Override
-    public <U> U chain(Function<? super DoubleStreamEx, U> mapper) {
+    public <U> U __(Function<? super DoubleStreamEx, U> mapper) {
         return mapper.apply(this);
     }
 

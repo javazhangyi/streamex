@@ -50,24 +50,6 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         return StreamSupport.stream(spliterator, context.parallel);
     }
 
-    final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val) {
-        V oldVal = map.putIfAbsent(key, val);
-        if (oldVal != null) {
-            throw new IllegalStateException("Duplicate entry for key '" + key + "' (attempt to merge values '" + oldVal
-                + "' and '" + val + "')");
-        }
-    }
-
-    final <K, V, M extends Map<K, V>> void addToMap(M map, K key, V val, BinaryOperator<V> mergeFunction) {
-        final V oldValue = map.get(key);
-
-        if (oldValue == null && map.containsKey(key) == false) {
-            map.put(key, val);
-        } else {
-            map.put(key, mergeFunction.apply(oldValue, val));
-        }
-    }
-
     <R, A> R rawCollect(Collector<? super T, A, R> collector) {
         if (context.fjp != null)
             return context.terminate(collector, stream()::collect);
@@ -356,26 +338,6 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
             Function<? super T, ? extends V> valueMapper) {
         return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e),
                 valueMapper.apply(e))), context);
-    }
-
-    /**
-     * Returns a new stream containing all the elements of the original stream
-     * interspersed with given delimiter.
-     * 
-     * <p>
-     * For example, {@code StreamEx.of("a", "b", "c").intersperse("x")} will
-     * yield a stream containing five elements: a, x, b, x, c.
-     * 
-     * <p>
-     * This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
-     * 
-     * @param delimiter a delimiter to be inserted between each pair of elements
-     * @return the new stream
-     * @since 0.6.6
-     */
-    public S intersperse(T delimiter) {
-        return supply(stream().flatMap(s -> StreamEx.of(delimiter, s)).skip(1));
     }
 
     @Override
@@ -1832,11 +1794,17 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         return VER_SPEC.callWhile(this, predicate, true);
     }
 
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    @Override
+//    public  <SS extends BaseStream> SS p_s(Function<? super S, SS> op) {
+//        return (SS) parallel().__(op).sequential();
+//    }
+    
     // Necessary to generate proper JavaDoc
     @SuppressWarnings("unchecked")
     @Override
-    public <U> U chain(Function<? super S, U> mapper) {
-        return mapper.apply((S) this);
+    public <U> U __(Function<? super S, U> transfer) {
+        return transfer.apply((S) this);
     }
 
     public void println() {

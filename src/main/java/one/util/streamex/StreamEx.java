@@ -28,9 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -104,60 +102,60 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return (StreamEx<TT>) filter(clazz::isInstance);
     }
 
-//    /**
-//     * Returns a stream consisting of the elements of this stream for which the
-//     * supplied mapper function returns the given value.
-//     *
-//     * <p>
-//     * This is an <a href="package-summary.html#StreamOps">intermediate
-//     * operation</a>.
-//     * 
-//     * <p>
-//     * This method behaves like
-//     * {@code filter(t -> Objects.equals(value, mapper.apply(t)))}.
-//     *
-//     * @param <K> type of the value returned by mapper function.
-//     * @param mapper a
-//     *        <a href="package-summary.html#NonInterference">non-interfering
-//     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
-//     *        function which is applied to the stream element and its returned
-//     *        value is compared with the supplied value.
-//     * @param value a value the mapper function must return to pass the filter.
-//     * @return the new stream
-//     * @since 0.6.4
-//     * @see #filter(Predicate)
-//     */
-//    public <K> StreamEx<T> filterBy(Function<? super T, ? extends K> mapper, K value) {
-//        return value == null ? filter(t -> mapper.apply(t) == null) : filter(t -> value.equals(mapper.apply(t)));
-//    }
-//
-//    /**
-//     * Returns a stream consisting of the elements of this stream except those
-//     * for which the supplied mapper function returns the given value.
-//     *
-//     * <p>
-//     * This is an <a href="package-summary.html#StreamOps">intermediate
-//     * operation</a>.
-//     * 
-//     * <p>
-//     * This method behaves like
-//     * {@code filter(t -> !Objects.equals(value, mapper.apply(t)))}.
-//     *
-//     * @param <K> type of the value returned by mapper function.
-//     * @param mapper a
-//     *        <a href="package-summary.html#NonInterference">non-interfering
-//     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
-//     *        function which is applied to the stream element and its returned
-//     *        value is compared with the supplied value.
-//     * @param value a value the mapper function must not return to pass the
-//     *        filter.
-//     * @return the new stream
-//     * @since 0.6.4
-//     * @see #removeIf(Predicate)
-//     */
-//    public <K> StreamEx<T> removeBy(Function<? super T, ? extends K> mapper, K value) {
-//        return value == null ? filter(t -> mapper.apply(t) != null) : filter(t -> !value.equals(mapper.apply(t)));
-//    }
+    //    /**
+    //     * Returns a stream consisting of the elements of this stream for which the
+    //     * supplied mapper function returns the given value.
+    //     *
+    //     * <p>
+    //     * This is an <a href="package-summary.html#StreamOps">intermediate
+    //     * operation</a>.
+    //     * 
+    //     * <p>
+    //     * This method behaves like
+    //     * {@code filter(t -> Objects.equals(value, mapper.apply(t)))}.
+    //     *
+    //     * @param <K> type of the value returned by mapper function.
+    //     * @param mapper a
+    //     *        <a href="package-summary.html#NonInterference">non-interfering
+    //     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
+    //     *        function which is applied to the stream element and its returned
+    //     *        value is compared with the supplied value.
+    //     * @param value a value the mapper function must return to pass the filter.
+    //     * @return the new stream
+    //     * @since 0.6.4
+    //     * @see #filter(Predicate)
+    //     */
+    //    public <K> StreamEx<T> filterBy(Function<? super T, ? extends K> mapper, K value) {
+    //        return value == null ? filter(t -> mapper.apply(t) == null) : filter(t -> value.equals(mapper.apply(t)));
+    //    }
+    //
+    //    /**
+    //     * Returns a stream consisting of the elements of this stream except those
+    //     * for which the supplied mapper function returns the given value.
+    //     *
+    //     * <p>
+    //     * This is an <a href="package-summary.html#StreamOps">intermediate
+    //     * operation</a>.
+    //     * 
+    //     * <p>
+    //     * This method behaves like
+    //     * {@code filter(t -> !Objects.equals(value, mapper.apply(t)))}.
+    //     *
+    //     * @param <K> type of the value returned by mapper function.
+    //     * @param mapper a
+    //     *        <a href="package-summary.html#NonInterference">non-interfering
+    //     *        </a>, <a href="package-summary.html#Statelessness">stateless</a>
+    //     *        function which is applied to the stream element and its returned
+    //     *        value is compared with the supplied value.
+    //     * @param value a value the mapper function must not return to pass the
+    //     *        filter.
+    //     * @return the new stream
+    //     * @since 0.6.4
+    //     * @see #removeIf(Predicate)
+    //     */
+    //    public <K> StreamEx<T> removeBy(Function<? super T, ? extends K> mapper, K value) {
+    //        return value == null ? filter(t -> mapper.apply(t) != null) : filter(t -> !value.equals(mapper.apply(t)));
+    //    }
 
     /**
      * Returns a stream where the first element is the replaced with the result
@@ -1272,7 +1270,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #toMap(Function, Function)
      */
     public <K> Map<K, T> toMap(Function<? super T, ? extends K> keyMapper) {
-        return toMap(keyMapper, Function.identity());
+        return toMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -1304,9 +1302,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final Supplier<Map<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentHashMap<>() : () -> new HashMap<>();
-
-        return toMap(keyMapper, valMapper, mapSupplier);
+        return toMap(keyMapper, valMapper, Fn.Suppliers.ofMap());
     }
 
     /**
@@ -1345,9 +1341,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final Supplier<Map<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentHashMap<>() : () -> new HashMap<>();
-
-        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
+        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofMap());
     }
 
     /**
@@ -1360,9 +1354,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, Supplier<M> mapSupplier) {
-        final M map = mapSupplier.get();
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
-        return map;
+        return toMap(keyMapper, valMapper, Fn.throwingMerger(), mapSupplier);
     }
 
     /**
@@ -1376,9 +1368,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
-        final M map = mapSupplier.get();
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
-        return map;
+//        final M map = mapSupplier.get();
+//        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
+//        return map;
+        
+        return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
     }
 
     /**
@@ -1414,7 +1408,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.1.0
      */
     public <K> SortedMap<K, T> toSortedMap(Function<? super T, ? extends K> keyMapper) {
-        return toSortedMap(keyMapper, Function.identity());
+        return toSortedMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -1451,9 +1445,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final Supplier<SortedMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
-
-        return toMap(keyMapper, valMapper, mapSupplier);
+        return toMap(keyMapper, valMapper, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1492,9 +1484,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final Supplier<SortedMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
-
-        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
+        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1529,7 +1519,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.6.5
      */
     public <K> NavigableMap<K, T> toNavigableMap(Function<? super T, ? extends K> keyMapper) {
-        return toNavigableMap(keyMapper, Function.identity());
+        return toNavigableMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -1565,9 +1555,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        final Supplier<NavigableMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
-
-        return toMap(keyMapper, valMapper, mapSupplier);
+        return toMap(keyMapper, valMapper, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1607,9 +1595,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        final Supplier<NavigableMap<K, V>> mapSupplier = isParallel() ? () -> new ConcurrentSkipListMap<>() : () -> new TreeMap<>();
-
-        return toMap(keyMapper, valMapper, mergeFunction, mapSupplier);
+        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1910,8 +1896,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             result = new DistinctSpliterator<>(spliterator, atLeast);
         return supply(result);
     }
-
-    @Override
+ 
     public StreamEx<T> intersperse(T delimiter) {
         // return supply(stream().flatMap(s -> StreamEx.of(delimiter, s)).skip(1));        
 
@@ -2441,13 +2426,13 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         spliterator.context = context = context.detach();
         return new StreamEx<>(spliterator, context);
     }
-    
+
     public <U> StreamEx<U> scan(final U seed, final BiFunction<? super U, ? super T, U> op) {
         return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<U>() {
             private final Iterator<T> iter = iterator();
             private boolean isFirst = true;
             private U val = null;
-            
+
             @Override
             public boolean hasNext() {
                 return iter.hasNext() || isFirst;
@@ -2458,16 +2443,16 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 if (!(iter.hasNext() || isFirst)) {
                     throw new NoSuchElementException();
                 }
- 
+
                 if (isFirst) {
                     val = seed;
                     isFirst = false;
                 } else {
                     val = op.apply(val, iter.next());
                 }
-                
+
                 return val;
-            }            
+            }
         }), this.context);
     }
 
@@ -2700,6 +2685,312 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 }
             }).distinct().limit(set.size()).count() == set.size();
         }
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).innerJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
+     * StreamEx.of(listA).innerJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param leftKeyMapper
+     * @param rightKeyMapper
+     * @return
+     */
+    public <U, K> StreamEx<Pair<T, U>> innerJoin(final Collection<U> b,
+            final Function<? super T, ? extends K> leftKeyMapper,
+            final Function<? super U, ? extends K> rightKeyMapper) {
+        if (b == null || b.size() == 0) {
+            return StreamEx.<Pair<T, U>> empty();
+        }
+
+        final Map<Object, List<U>> rightKeyMap = StreamEx.of(b).groupTo(rightKeyMapper);
+
+        return flatMap(new Function<T, Stream<Pair<T, U>>>() {
+            @Override
+            public Stream<Pair<T, U>> apply(final T t) {
+                final List<U> v = rightKeyMap.get(leftKeyMapper.apply(t));
+
+                return v == null ? StreamEx.<Pair<T, U>> empty() : StreamEx.of(v).map(u -> Pair.of(t, u));
+            }
+        });
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).innerJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
+     * StreamEx.of(listA).innerJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param predicate
+     * @return
+     */
+    public <U> StreamEx<Pair<T, U>> innerJoin(final Collection<U> b,
+            final BiPredicate<? super T, ? super U> predicate) {
+        if (b == null || b.size() == 0) {
+            return StreamEx.<Pair<T, U>> empty();
+        }
+
+        return flatMap(t -> {
+            return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> Pair.of(t, u));
+        });
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).fullJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
+     * StreamEx.of(listA).fullJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param leftKeyMapper
+     * @param rightKeyMapper
+     * @return
+     */
+    public <U, K> StreamEx<Pair<T, U>> fullJoin(final Collection<U> b,
+            final Function<? super T, ? extends K> leftKeyMapper,
+            final Function<? super U, ? extends K> rightKeyMapper) {
+        final Map<Object, List<U>> rightKeyMap = StreamEx.of(b).groupTo(rightKeyMapper);
+        final Map<U, U> joinedRights = new IdentityHashMap<>();
+        final boolean isParallelStream = this.isParallel();
+
+        return flatMap(t -> {
+            final List<U> v = rightKeyMap.get(leftKeyMapper.apply(t));
+
+            return v == null ? StreamEx.just(Pair.of(t, (U) null)) : StreamEx.of(v).map(u -> {
+                if (isParallelStream) {
+                    synchronized (joinedRights) {
+                        joinedRights.put(u, u);
+                    }
+                } else {
+                    joinedRights.put(u, u);
+                }
+
+                return Pair.of(t, u);
+            });
+        }).append(StreamEx.of(b).filter(u -> !joinedRights.containsKey(u)).map(u -> Pair.of((T) null, u)));
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).fullJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
+     * StreamEx.of(listA).fullJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param predicate
+     * @return
+     */
+    public <U> StreamEx<Pair<T, U>> fullJoin(final Collection<U> b, final BiPredicate<? super T, ? super U> predicate) {
+        final Map<U, U> joinedRights = new IdentityHashMap<>();
+        final boolean isParallelStream = this.isParallel();
+
+        return flatMap(new Function<T, Stream<Pair<T, U>>>() {
+            @Override
+            public StreamEx<Pair<T, U>> apply(final T t) {
+                final boolean[] joined = new boolean[1];
+                
+                return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> {
+                    joined[0] = true;
+
+                    if (isParallelStream) {
+                        synchronized (joinedRights) {
+                            joinedRights.put(u, u);
+                        }
+                    } else {
+                        joinedRights.put(u, u);
+                    }
+
+                    return Pair.of(t, u);
+                }).append(StreamEx.iterate(joined, f -> f[0] == false ? (f[0] = true) : false, f -> f).map(f -> Pair.of(
+                    t, (U) null)));
+            }
+        }).append(StreamEx.of(b).filter(u -> !joinedRights.containsKey(u)).map(u -> Pair.of((T) null, u)));
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).leftJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
+     * StreamEx.of(listA).leftJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param leftKeyMapper
+     * @param rightKeyMapper
+     * @return
+     */
+    public <U, K> StreamEx<Pair<T, U>> leftJoin(final Collection<U> b,
+            final Function<? super T, ? extends K> leftKeyMapper,
+            final Function<? super U, ? extends K> rightKeyMapper) {
+        if (b == null || b.size() == 0) {
+            return map(t -> Pair.of(t, (U) null));
+        }
+
+        final Map<Object, List<U>> rightKeyMap = StreamEx.of(b).groupTo(rightKeyMapper);
+
+        return flatMap(new Function<T, Stream<Pair<T, U>>>() {
+            @Override
+            public Stream<Pair<T, U>> apply(final T t) {
+                final List<U> v = rightKeyMap.get(leftKeyMapper.apply(t));
+
+                return v == null ? StreamEx.just(Pair.of(t, (U) null)) : StreamEx.of(v).map(u -> Pair.of(t, u));
+            }
+        });
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).leftJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
+     * StreamEx.of(listA).leftJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param predicate
+     * @return
+     */
+    public <U> StreamEx<Pair<T, U>> leftJoin(final Collection<U> b, final BiPredicate<? super T, ? super U> predicate) {
+        if (b == null || b.size() == 0) {
+            return map(t -> Pair.of(t, (U) null));
+        }
+
+        return flatMap(new Function<T, Stream<Pair<T, U>>>() {
+            @Override
+            public Stream<Pair<T, U>> apply(final T t) {
+                final boolean[] joined = new boolean[1];
+                
+                return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> {
+                    joined[0] = true;
+                    return Pair.of(t, u);
+                }).append(StreamEx.iterate(joined, f -> f[0] == false ? (f[0] = true) : false, f -> f).map(f -> Pair.of(
+                    t, (U) null)));
+            }
+        });
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).rightJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
+     * StreamEx.of(listA).rightJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param leftKeyMapper
+     * @param rightKeyMapper
+     * @return
+     */
+    public <U, K> StreamEx<Pair<T, U>> rightJoin(final Collection<U> b,
+            final Function<? super T, ? extends K> leftKeyMapper,
+            final Function<? super U, ? extends K> rightKeyMapper) {
+        if (b == null || b.size() == 0) {
+            return StreamEx.<Pair<T, U>> empty();
+        }
+
+        final Map<Object, List<U>> rightKeyMap = StreamEx.of(b).groupTo(rightKeyMapper);
+        final Map<U, U> joinedRights = new IdentityHashMap<>();
+        final boolean isParallelStream = this.isParallel();
+
+        return flatMap(new Function<T, Stream<Pair<T, U>>>() {
+            @Override
+            public Stream<Pair<T, U>> apply(final T t) {
+                final List<U> v = rightKeyMap.get(leftKeyMapper.apply(t));
+
+                return v == null ? StreamEx.<Pair<T, U>> empty() : StreamEx.of(v).map(u -> {
+                    if (isParallelStream) {
+                        synchronized (joinedRights) {
+                            joinedRights.put(u, u);
+                        }
+                    } else {
+                        joinedRights.put(u, u);
+                    }
+
+                    return Pair.of(t, u);
+                });
+            }
+        }).append(StreamEx.of(b).filter(u -> !joinedRights.containsKey(u)).map(u -> Pair.of((T) null, u)));
+    }
+
+    /**
+     * <pre>
+     * <code>
+     * List<String> listA = Arrays.asList("a", "b", "c", "aa", "bb", "ccc");
+     * List<Integer> listB = Arrays.asList(1, 2, 5);
+     * StreamEx.of(listA).rightJoin(listB, (a, b) -> a.length() == b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
+     * StreamEx.of(listA).rightJoin(listB, a -> a.length(), b -> b).println();
+     * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
+     * </code>
+     * </pre>
+     * 
+     * @param b
+     * @param predicate
+     * @return
+     */
+    public <U> StreamEx<Pair<T, U>> rightJoin(final Collection<U> b,
+            final BiPredicate<? super T, ? super U> predicate) {
+        if (b == null || b.size() == 0) {
+            return StreamEx.<Pair<T, U>> empty();
+        }
+
+        final Map<U, U> joinedRights = new IdentityHashMap<>();
+        final boolean isParallelStream = this.isParallel();
+
+        return flatMap(t -> {
+            return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> {
+                if (isParallelStream) {
+                    synchronized (joinedRights) {
+                        joinedRights.put(u, u);
+                    }
+                } else {
+                    joinedRights.put(u, u);
+                }
+
+                return Pair.of(t, u);
+            });
+        }).append(StreamEx.of(b).filter(u -> !joinedRights.containsKey(u)).map(u -> Pair.of((T) null, u)));
     }
 
     /**
@@ -3566,6 +3857,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.3.6
      */
     public static <U, T> StreamEx<T> ofPairs(List<U> list, BiFunction<? super U, ? super U, ? extends T> mapper) {
+        if (list == null || list.size() == 0) {
+            return StreamEx.<T> empty();
+        }
+
         return of(new PairPermutationSpliterator<>(list, mapper));
     }
 
@@ -3594,14 +3889,18 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.3.6
      */
     public static <U, T> StreamEx<T> ofPairs(U[] array, BiFunction<? super U, ? super U, ? extends T> mapper) {
+        if (array == null || array.length == 0) {
+            return StreamEx.<T> empty();
+        }
+
         return ofPairs(Arrays.asList(array), mapper);
     }
 
     /**
      * Returns a sequential {@code StreamEx} containing the results of applying
      * the given function to the corresponding pairs of values in given two
-     * lists.
-     * 
+     * lists. The size of the returned {@code StreamEx} is <code>Math.min(first.size(), second.size())</code>.
+     *
      * <p>
      * The list values are accessed using {@link List#get(int)}, so the lists
      * should provide fast random access. The lists are assumed to be
@@ -3615,20 +3914,23 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param mapper a non-interfering, stateless function to apply to each pair
      *        of the corresponding list elements.
      * @return a new {@code StreamEx}
-     * @throws IllegalArgumentException if length of the lists differs.
      * @see EntryStream#zip(List, List)
      * @since 0.2.1
      */
     public static <U, V, T> StreamEx<T> zip(List<U> first, List<V> second,
             BiFunction<? super U, ? super V, ? extends T> mapper) {
-        return of(new RangeBasedSpliterator.ZipRef<>(0, checkLength(first.size(), second.size()), mapper, first,
+        if ((first == null || first.size() == 0) || (second == null || second.size() == 0)) {
+            return StreamEx.<T> empty();
+        }
+        
+        return of(new RangeBasedSpliterator.ZipRef<>(0, Math.min(first.size(), second.size()), mapper, first,
                 second));
     }
 
     /**
      * Returns a sequential {@code StreamEx} containing the results of applying
      * the given function to the corresponding pairs of values in given two
-     * arrays.
+     * arrays. The size of the returned {@code StreamEx} is <code>Math.min(first.length, second.length)</code>.
      * 
      * @param <U> the type of the first array elements
      * @param <V> the type of the second array elements
@@ -3638,12 +3940,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param mapper a non-interfering, stateless function to apply to each pair
      *        of the corresponding array elements.
      * @return a new {@code StreamEx}
-     * @throws IllegalArgumentException if length of the arrays differs.
      * @see EntryStream#zip(Object[], Object[])
      * @since 0.2.1
      */
     public static <U, V, T> StreamEx<T> zip(U[] first, V[] second,
             BiFunction<? super U, ? super V, ? extends T> mapper) {
+        if ((first == null || first.length == 0) || (second == null || second.length == 0)) {
+            return StreamEx.<T> empty();
+        }
+
         return zip(Arrays.asList(first), Arrays.asList(second), mapper);
     }
 
@@ -3798,7 +4103,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.3.8
      */
     public static <T> StreamEx<List<T>> cartesianProduct(Collection<? extends Collection<T>> source) {
-        if (source.isEmpty())
+        if (source == null || source.isEmpty())
             return StreamEx.of(new ConstSpliterator.OfRef<>(Collections.emptyList(), 1, true));
         return of(new CrossSpliterator.ToList<>(source));
     }
@@ -3847,7 +4152,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public static <T, U> StreamEx<U> cartesianProduct(Collection<? extends Collection<T>> source, U identity,
             BiFunction<U, ? super T, U> accumulator) {
-        if (source.isEmpty())
+        if (source == null || source.isEmpty())
             return just(identity);
         return of(new CrossSpliterator.Reducing<>(source, identity, accumulator));
     }

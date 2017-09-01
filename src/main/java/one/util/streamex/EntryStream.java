@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +30,7 @@ import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.SortedMap;
 import java.util.Spliterators;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -90,9 +86,15 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     <M extends Map<K, V>> Consumer<? super Entry<K, V>> toMapConsumer(M map) {
-        return entry -> addToMap(map, entry.getKey(), entry.getValue());
+        return entry -> {
+            V oldVal = map.putIfAbsent(entry.getKey(), entry.getValue());
+            if (oldVal != null) {
+                throw new IllegalStateException("Duplicate entry for key '" + entry.getKey() + "' (attempt to merge values '" + oldVal
+                    + "' and '" + entry.getValue() + "')");
+            }
+        };
     }
-
+ 
     BiPredicate<? super Entry<K, V>, ? super Entry<K, V>> equalKeys() {
         return (e1, e2) -> Objects.equals(e1.getKey(), e2.getKey());
     }
@@ -463,7 +465,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.3.8
      */
     public EntryStream<K, V> distinctByKey() {
-        return distinctBy(Entry::getKey);
+        return distinctBy(Fn.key());
     }
 
     /**
@@ -484,7 +486,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.3.8
      */
     public EntryStream<K, V> distinctByValue() {
-        return distinctBy(Entry::getValue);
+        return distinctBy(Fn.value());
     }
 
     /**
@@ -1048,9 +1050,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #toImmutableMap()
      */
     public Map<K, V> toMap() {
-        Map<K, V> map = isParallel() ? new ConcurrentHashMap<>() : new HashMap<>();
-        forEach(toMapConsumer(map));
-        return map;
+        return toMap(Fn.throwingMerger(), Fn.Suppliers.ofMap());
     }
 
     /**
@@ -1132,11 +1132,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public Map<K, V> toMap(BinaryOperator<V> mergeFunction) {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final Map<K, V> map = isParallel() ? new ConcurrentHashMap<>() : new HashMap<>();
-
-        return toMap(keyMapper, valueMapper, mergeFunction, map);
+        return toMap(mergeFunction, Fn.Suppliers.ofMap());
     }
 
     /**
@@ -1157,15 +1153,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toConcurrentMap(Function, Function)
      */
     public <M extends Map<K, V>> M toMap(Supplier<M> mapSupplier) {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final M map = mapSupplier.get();
-
-        if (this.isParallel() == false || map instanceof ConcurrentMap) {
-            return toMap(keyMapper, valueMapper, map);
-        } else {
-            return this.sequential().toMap(mapSupplier);
-        }
+        return toMap(Fn.throwingMerger(), mapSupplier);
     }
 
     /**
@@ -1192,27 +1180,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toConcurrentMap(Function, Function)
      */
     public <M extends Map<K, V>> M toMap(BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final M map = mapSupplier.get();
-
-        if (this.isParallel() == false || map instanceof ConcurrentMap) {
-            return toMap(keyMapper, valueMapper, mergeFunction, map);
-        } else {
-            return this.sequential().toMap(mergeFunction, mapSupplier);
-        }
-    }
-
-    final <M extends Map<K, V>> M toMap(Function<? super Map.Entry<K, V>, ? extends K> keyMapper,
-            Function<? super Map.Entry<K, V>, ? extends V> valMapper, M map) {
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t)));
-        return map;
-    }
-
-    final <M extends Map<K, V>> M toMap(Function<? super Map.Entry<K, V>, ? extends K> keyMapper,
-            Function<? super Map.Entry<K, V>, ? extends V> valMapper, BinaryOperator<V> mergeFunction, M map) {
-        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
-        return map;
+        return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
     }
 
     /**
@@ -1238,11 +1206,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public SortedMap<K, V> toSortedMap() {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
-
-        return toMap(keyMapper, valueMapper, map);
+        return toSortedMap(Fn.throwingMerger());
     }
 
     /**
@@ -1272,11 +1236,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public SortedMap<K, V> toSortedMap(BinaryOperator<V> mergeFunction) {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final SortedMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
-
-        return toMap(keyMapper, valueMapper, mergeFunction, map);
+        return toMap(mergeFunction, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1303,11 +1263,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.6.5
      */
     public NavigableMap<K, V> toNavigableMap() {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
-
-        return toMap(keyMapper, valueMapper, map);
+        return toNavigableMap(Fn.throwingMerger());
     }
 
     /**
@@ -1337,11 +1293,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.6.5
      */
     public NavigableMap<K, V> toNavigableMap(BinaryOperator<V> mergeFunction) {
-        final Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        final Function<Entry<K, V>, V> valueMapper = Entry::getValue;
-        final NavigableMap<K, V> map = isParallel() ? new ConcurrentSkipListMap<>() : new TreeMap<>();
-
-        return toMap(keyMapper, valueMapper, mergeFunction, map);
+        return toMap(mergeFunction, Fn.Suppliers.ofTreeMap());
     }
 
     /**
@@ -1639,9 +1591,16 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         forEach(toConsumer(action));
     }
 
-    @Override
-    public EntryStream<K, V> intersperse(Map.Entry<K, V> delimiter) {
-        return chain(s -> s.intersperse(delimiter));
+    /**
+     * short-cut for:
+     * <code>entries().xxx().mapToEntry(Function.Identity())</code>
+     * 
+     * @param transfer
+     * @return
+     */
+    public <K2, V2> EntryStream<K2, V2> chain(
+            Function<? super StreamEx<Map.Entry<K, V>>, StreamEx<Map.Entry<K2, V2>>> transfer) {
+        return transfer.apply(entries()).mapToEntry(Function.identity());
     }
 
     /**
@@ -2022,11 +1981,13 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
 
     /**
      * Returns a sequential {@code EntryStream} containing {@code Entry} objects
-     * composed from corresponding key and value in given two lists.
-     * 
+     * composed from corresponding key and value in given two lists. The size of
+     * the returned {@code EntryStream} is
+     * <code>Math.min(first.size(), second.size())</code>.
+     *
      * <p>
-     * The keys and values are accessed using {@link List#get(int)}, so the
-     * lists should provide fast random access. The lists are assumed to be
+     * The list values are accessed using {@link List#get(int)}, so the lists
+     * should provide fast random access. The lists are assumed to be
      * unmodifiable during the stream operations.
      * 
      * @param <K> the type of stream element keys
@@ -2034,7 +1995,6 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @param keys the list of keys, assumed to be unmodified during use
      * @param values the list of values, assumed to be unmodified during use
      * @return a new {@code EntryStream}
-     * @throws IllegalArgumentException if length of the lists differs.
      * @see StreamEx#zip(List, List, BiFunction)
      * @since 0.2.1
      */
@@ -2043,20 +2003,21 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
             return EntryStream.empty();
         }
 
-        return of(new RangeBasedSpliterator.ZipRef<>(0, checkLength(keys.size(), values.size()),
+        return of(new RangeBasedSpliterator.ZipRef<>(0, Math.min(keys.size(), values.size()),
                 SimpleImmutableEntry<K, V>::new, keys, values));
     }
 
     /**
      * Returns a sequential {@code EntryStream} containing {@code Entry} objects
-     * composed from corresponding key and value in given two arrays.
+     * composed from corresponding key and value in given two arrays. The size
+     * of the returned {@code EntryStream} is
+     * <code>Math.min(first.length, second.length)</code>.
      * 
      * @param <K> the type of stream element keys
      * @param <V> the type of stream element values
      * @param keys the array of keys
      * @param values the array of values
      * @return a new {@code EntryStream}
-     * @throws IllegalArgumentException if length of the arrays differs.
      * @see StreamEx#zip(Object[], Object[], BiFunction)
      * @since 0.2.1
      */

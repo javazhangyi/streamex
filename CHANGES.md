@@ -3,6 +3,21 @@
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 
+### 0.8.11:
+
+* Add `Pair` and `Triple`
+
+* Add `innerJoin/fullJoin/leftJoin/rightJoin` to `StreamEx`
+
+* Remove `intersperse` from `EntryStream`
+
+* Rename `chain` to `__`
+
+* Add `<K2, V2> EntryStream<K2, V2> chain(Function<? super StreamEx<Map.Entry<K, V>>, StreamEx<Map.Entry<K2, V2>>> transfer)` to `EntryStream`
+
+* Refactoring `StreamEx.zip` and `EntryStream.zip`  to support zipping Array/Collection with different lengths.
+
+
 ### 0.8.10:
 
 * Rename `distinctKeys/distinctValues/filterKeys/filterValues/removeKeys/removeValues` to `distinctByKey/distinctByValue/filterByKey/filterByValue/removeByKey/removeByValue`.
