@@ -2,6 +2,10 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 0.8.13:
+
+* Add `countingBy/countingIntBy/...` more useful methods to `Fn`.
+
 
 ### 0.8.12:
 
