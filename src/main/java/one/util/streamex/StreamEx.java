@@ -2727,6 +2727,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     /**
      * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * <code>innerJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
      * <code>
@@ -2742,6 +2743,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param b
      * @param predicate
      * @return
+     * @see StreamEx#innerJoin(Collection, Function, Function)
      */
     public <U> StreamEx<Pair<T, U>> innerJoin(final Collection<U> b,
             final BiPredicate<? super T, ? super U> predicate) {
@@ -2799,6 +2801,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     /**
      * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * <code>fullJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
      * <code>
@@ -2814,6 +2817,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param b
      * @param predicate
      * @return
+     * @see StreamEx#fullJoin(Collection, Function, Function)
      */
     public <U> StreamEx<Pair<T, U>> fullJoin(final Collection<U> b, final BiPredicate<? super T, ? super U> predicate) {
         final Map<U, U> joinedRights = new IdentityHashMap<>();
@@ -2882,6 +2886,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     /**
      * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * <code>leftJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
      * <code>
@@ -2897,6 +2902,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param b
      * @param predicate
      * @return
+     * @see StreamEx#leftJoin(Collection, Function, Function)
      */
     public <U> StreamEx<Pair<T, U>> leftJoin(final Collection<U> b, final BiPredicate<? super T, ? super U> predicate) {
         if (b == null || b.size() == 0) {
@@ -2969,6 +2975,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     /**
      * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * <code>rightJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
      * <code>
@@ -2984,6 +2991,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param b
      * @param predicate
      * @return
+     * @see StreamEx#rightJoin(Collection, Function, Function)
      */
     public <U> StreamEx<Pair<T, U>> rightJoin(final Collection<U> b,
             final BiPredicate<? super T, ? super U> predicate) {
