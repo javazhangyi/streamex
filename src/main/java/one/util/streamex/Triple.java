@@ -20,10 +20,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
+
+import one.util.streamex.function.QuadPredicate;
 
 /**
  * @author haiyangl
@@ -138,6 +141,118 @@ public final class Triple<L, M, R> {
         this.right = right;
 
         return this;
+    }
+
+    public L getAndSetLeft(L newLeft) {
+        final L res = left;
+        left = newLeft;
+        return res;
+    }
+
+    public L setAndGetLeft(L newLeft) {
+        left = newLeft;
+        return left;
+    }
+
+    public M getAndSetMiddle(M newMiddle) {
+        final M res = middle;
+        middle = newMiddle;
+        return res;
+    }
+
+    public M setAndGetMiddle(M newMiddle) {
+        middle = newMiddle;
+        return middle;
+    }
+
+    public R getAndSetRight(R newRight) {
+        final R res = newRight;
+        right = newRight;
+        return res;
+    }
+
+    public R setAndGetRight(R newRight) {
+        right = newRight;
+        return right;
+    }
+
+    /**
+     * Set to the specified <code>newLeft</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newLeft</code>
+     * @return
+     */
+    public boolean setLeftIf(final L newLeft, BiPredicate<? super Triple<L, M, R>, ? super L> predicate) {
+        if (predicate.test(this, newLeft)) {
+            this.left = newLeft;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Set to the specified <code>newMiddle</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newMiddle</code>
+     * @return
+     */
+    public boolean setMiddleIf(final M newMiddle, BiPredicate<? super Triple<L, M, R>, ? super M> predicate) {
+        if (predicate.test(this, newMiddle)) {
+            this.middle = newMiddle;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Set to the specified <code>newRight</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newRight</code>
+     * @return
+     */
+    public boolean setRightIf(final R newRight, BiPredicate<? super Triple<L, M, R>, ? super R> predicate) {
+        if (predicate.test(this, newRight)) {
+            this.right = newRight;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Set to the specified <code>newLeft</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newLeft</code>
+     * @return
+     */
+    public boolean setIf(final L newLeft, final M newMiddle, final R newRight,
+            QuadPredicate<? super Triple<L, M, R>, ? super L, ? super M, ? super R> predicate) {
+        if (predicate.test(this, newLeft, newMiddle, newRight)) {
+            this.left = newLeft;
+            this.middle = newMiddle;
+            this.right = newRight;
+            return true;
+        }
+
+        return false;
     }
 
     //    /**

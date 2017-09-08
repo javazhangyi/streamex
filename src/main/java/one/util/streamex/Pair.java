@@ -21,10 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
+import one.util.streamex.function.TriPredicate;
 
 /**
  * @author haiyangl
@@ -115,6 +117,87 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         return this;
     }
 
+    public L getAndSetLeft(L newLeft) {
+        final L res = left;
+        left = newLeft;
+        return res;
+    }
+
+    public L setAndGetLeft(L newLeft) {
+        left = newLeft;
+        return left;
+    }
+
+    public R getAndSetRight(R newRight) {
+        final R res = newRight;
+        right = newRight;
+        return res;
+    }
+
+    public R setAndGetRight(R newRight) {
+        right = newRight;
+        return right;
+    }
+
+    /**
+     * Set to the specified <code>newLeft</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newLeft</code>
+     * @return
+     */
+    public boolean setLeftIf(final L newLeft, BiPredicate<? super Pair<L, R>, ? super L> predicate) {
+        if (predicate.test(this, newLeft)) {
+            this.left = newLeft;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Set to the specified <code>newRight</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newRight</code>
+     * @return
+     */
+    public boolean setRightIf(final R newRight, BiPredicate<? super Pair<L, R>, ? super R> predicate) {
+        if (predicate.test(this, newRight)) {
+            this.right = newRight;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Set to the specified <code>newLeft</code> and returns <code>true</code>
+     * if <code>predicate</code> returns true. Otherwise returns
+     * <code>false</code> without setting the value to new value.
+     * 
+     * @param newValue
+     * @param predicate - the first parameter is current pair, the second
+     *        parameter is the <code>newLeft</code>
+     * @return
+     */
+    public boolean setIf(final L newLeft, final R newRight,
+            TriPredicate<? super Pair<L, R>, ? super L, ? super R> predicate) {
+        if (predicate.test(this, newLeft, newRight)) {
+            this.left = newLeft;
+            this.right = newRight;
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public L getKey() {
         return left;
@@ -132,6 +215,25 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
 
         return oldValue;
     }
+
+    //    public R getAndSetValue(R newRight) {
+    //        return getAndSetRight(newRight);
+    //    }
+    //
+    //    public R setAndGetValue(R newRight) {
+    //        return setAndGetRight(newRight);
+    //    }
+    //
+    //    /**
+    //     * 
+    //     * @param newRight
+    //     * @param predicate
+    //     * @return
+    //     * @see #setRightIf(Object, BiPredicate)
+    //     */
+    //    public boolean setValueIf(final R newRight, BiPredicate<? super Pair<L, R>, ? super R> predicate) {
+    //        return setRightIf(newRight, predicate);
+    //    }
 
     /**
      * 

@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -35,6 +36,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -50,6 +53,8 @@ import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import one.util.streamex.function.TriPredicate;
 
 /**
  * Factory utility class for functional interfaces.
@@ -520,6 +525,120 @@ public final class Fn {
             @Override
             public R apply(Entry<K, V> entry) {
                 return func.apply(entry.getKey(), entry.getValue());
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <T> Predicate<T> limited(final Predicate<T> predicate, final int limit) {
+        Objects.requireNonNull(predicate);
+
+        return new Predicate<T>() {
+            private final AtomicInteger counter = new AtomicInteger(limit);
+
+            @Override
+            public boolean test(T t) {
+                return predicate.test(t) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <T> Predicate<T> limited(final Predicate<T> predicate, final long limit) {
+        Objects.requireNonNull(predicate);
+
+        return new Predicate<T>() {
+            private final AtomicLong counter = new AtomicLong(limit);
+
+            @Override
+            public boolean test(T t) {
+                return predicate.test(t) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <T, U> BiPredicate<T, U> limited(final BiPredicate<T, U> predicate, final int limit) {
+        Objects.requireNonNull(predicate);
+
+        return new BiPredicate<T, U>() {
+            private final AtomicInteger counter = new AtomicInteger(limit);
+
+            @Override
+            public boolean test(T t, U u) {
+                return predicate.test(t, u) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <T, U> BiPredicate<T, U> limited(final BiPredicate<T, U> predicate, final long limit) {
+        Objects.requireNonNull(predicate);
+
+        return new BiPredicate<T, U>() {
+            private final AtomicLong counter = new AtomicLong(limit);
+
+            @Override
+            public boolean test(T t, U u) {
+                return predicate.test(t, u) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <A, B, C> TriPredicate<A, B, C> limited(final TriPredicate<A, B, C> predicate, final int limit) {
+        Objects.requireNonNull(predicate);
+
+        return new TriPredicate<A, B, C>() {
+            private final AtomicInteger counter = new AtomicInteger(limit);
+
+            @Override
+            public boolean test(A a, B b, C c) {
+                return predicate.test(a, b, c) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param predicate
+     * @param limit
+     * @return
+     */
+    public static <A, B, C> TriPredicate<A, B, C> limited(final TriPredicate<A, B, C> predicate, final long limit) {
+        Objects.requireNonNull(predicate);
+
+        return new TriPredicate<A, B, C>() {
+            private final AtomicLong counter = new AtomicLong(limit);
+
+            @Override
+            public boolean test(A a, B b, C c) {
+                return predicate.test(a, b, c) && counter.decrementAndGet() >= 0;
             }
         };
     }

@@ -4,8 +4,13 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 0.8.13:
 
-* Add `countingBy/countingIntBy/...` more useful methods to `Fn`.
+* Add `limited/countingBy/countingIntBy/...` more useful methods to `Fn`.
 
+* Add `TriPredicate/QuadPredicate/TriFunction/QuadFunction/TriConsumer/QuadConsumer`
+
+* Add `Holder`
+
+* Add `setXXXIf/setIf/getAndSetXXX/setAndGetXXX` to `Pair/Triple`.
 
 ### 0.8.12:
 
