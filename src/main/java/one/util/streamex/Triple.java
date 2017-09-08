@@ -181,7 +181,7 @@ public final class Triple<L, M, R> {
      * if <code>predicate</code> returns true. Otherwise returns
      * <code>false</code> without setting the value to new value.
      * 
-     * @param newValue
+     * @param newLeft
      * @param predicate - the first parameter is current pair, the second
      *        parameter is the <code>newLeft</code>
      * @return
@@ -200,7 +200,7 @@ public final class Triple<L, M, R> {
      * if <code>predicate</code> returns true. Otherwise returns
      * <code>false</code> without setting the value to new value.
      * 
-     * @param newValue
+     * @param newMiddle
      * @param predicate - the first parameter is current pair, the second
      *        parameter is the <code>newMiddle</code>
      * @return
@@ -219,7 +219,7 @@ public final class Triple<L, M, R> {
      * if <code>predicate</code> returns true. Otherwise returns
      * <code>false</code> without setting the value to new value.
      * 
-     * @param newValue
+     * @param newRight
      * @param predicate - the first parameter is current pair, the second
      *        parameter is the <code>newRight</code>
      * @return
@@ -234,13 +234,18 @@ public final class Triple<L, M, R> {
     }
 
     /**
-     * Set to the specified <code>newLeft</code> and returns <code>true</code>
-     * if <code>predicate</code> returns true. Otherwise returns
-     * <code>false</code> without setting the value to new value.
+     * Set to the specified <code>newLeft</code> and <code>newRight</code> and
+     * returns <code>true</code> if <code>predicate</code> returns true.
+     * Otherwise returns <code>false</code> without setting the left/right to
+     * new values.
      * 
-     * @param newValue
+     * @param newLeft
+     * @param newMiddle
+     * @param newRight
      * @param predicate - the first parameter is current pair, the second
-     *        parameter is the <code>newLeft</code>
+     *        parameter is the <code>newLeft</code>, the third parameter is the
+     *        <code>newMiddle</code>, the fourth parameter is the
+     *        <code>newRight</code>
      * @return
      */
     public boolean setIf(final L newLeft, final M newMiddle, final R newRight,

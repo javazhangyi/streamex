@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
+
 import one.util.streamex.function.TriPredicate;
 
 /**
@@ -144,7 +145,7 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
      * if <code>predicate</code> returns true. Otherwise returns
      * <code>false</code> without setting the value to new value.
      * 
-     * @param newValue
+     * @param newLeft
      * @param predicate - the first parameter is current pair, the second
      *        parameter is the <code>newLeft</code>
      * @return
@@ -163,7 +164,7 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
      * if <code>predicate</code> returns true. Otherwise returns
      * <code>false</code> without setting the value to new value.
      * 
-     * @param newValue
+     * @param newRight
      * @param predicate - the first parameter is current pair, the second
      *        parameter is the <code>newRight</code>
      * @return
@@ -178,13 +179,16 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
     }
 
     /**
-     * Set to the specified <code>newLeft</code> and returns <code>true</code>
-     * if <code>predicate</code> returns true. Otherwise returns
-     * <code>false</code> without setting the value to new value.
+     * Set to the specified <code>newLeft</code> and <code>newRight</code> and
+     * returns <code>true</code> if <code>predicate</code> returns true.
+     * Otherwise returns <code>false</code> without setting the left/right to
+     * new values.
      * 
-     * @param newValue
+     * @param newLeft
+     * @param newRight
      * @param predicate - the first parameter is current pair, the second
-     *        parameter is the <code>newLeft</code>
+     *        parameter is the <code>newLeft</code>, the third parameter is the
+     *        <code>newRight</code>.
      * @return
      */
     public boolean setIf(final L newLeft, final R newRight,
