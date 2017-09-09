@@ -4,9 +4,11 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 0.8.13:
 
-* Add `limited/countingBy/countingIntBy/...` more useful methods to `Fn`.
+* Add `limited/indexed/countingBy/countingIntBy/...` more useful methods to `Fn`.
 
 * Add `TriPredicate/QuadPredicate/TriFunction/QuadFunction/TriConsumer/QuadConsumer`
+
+* Add `IndexedPredicate/IndexedConsumer/IndexedFunction/IndexedBiPredicate/IndexedBiConsumer/IndexedBiFunction`
 
 * Add `Holder`
 

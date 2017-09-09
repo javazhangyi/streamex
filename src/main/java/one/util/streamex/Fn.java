@@ -54,6 +54,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import one.util.streamex.function.IndexedBiConsumer;
+import one.util.streamex.function.IndexedBiFunction;
+import one.util.streamex.function.IndexedBiPredicate;
+import one.util.streamex.function.IndexedConsumer;
+import one.util.streamex.function.IndexedFunction;
+import one.util.streamex.function.IndexedPredicate;
 import one.util.streamex.function.TriPredicate;
 
 /**
@@ -639,6 +645,126 @@ public final class Fn {
             @Override
             public boolean test(A a, B b, C c) {
                 return predicate.test(a, b, c) && counter.decrementAndGet() >= 0;
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>Predicate</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param predicate
+     * @return
+     */
+    public static <T> Predicate<T> indexed(final IndexedPredicate<T> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return new Predicate<T>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public boolean test(T t) {
+                return predicate.test(idx.getAndIncrement(), t);
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>BiPredicate</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param predicate
+     * @return
+     */
+    public static <U, T> BiPredicate<U, T> indexed(final IndexedBiPredicate<U, T> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return new BiPredicate<U, T>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public boolean test(U u, T t) {
+                return predicate.test(u, idx.getAndIncrement(), t);
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>Function</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param func
+     * @return
+     */
+    public static <T, R> Function<T, R> indexeD(final IndexedFunction<T, R> func) {
+        Objects.requireNonNull(func);
+
+        return new Function<T, R>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public R apply(T t) {
+                return func.apply(idx.getAndIncrement(), t);
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>BiFunction</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param func
+     * @return
+     */
+    public static <U, T, R> BiFunction<U, T, R> indexeD(final IndexedBiFunction<U, T, R> func) {
+        Objects.requireNonNull(func);
+
+        return new BiFunction<U, T, R>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public R apply(U u, T t) {
+                return func.apply(u, idx.getAndIncrement(), t);
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>Consumer</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param action
+     * @return
+     */
+    public static <T> Consumer<T> indeXed(final IndexedConsumer<T> action) {
+        Objects.requireNonNull(action);
+
+        return new Consumer<T>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public void accept(T t) {
+                action.accept(idx.getAndIncrement(), t);
+            }
+        };
+    }
+
+    /**
+     * Returns a stateful <code>BiConsumer</code> which should not be used in
+     * parallel stream.
+     * 
+     * @param action
+     * @return
+     */
+    public static <U, T> BiConsumer<U, T> indeXed(final IndexedBiConsumer<U, T> action) {
+        Objects.requireNonNull(action);
+
+        return new BiConsumer<U, T>() {
+            private final AtomicInteger idx = new AtomicInteger(0);
+
+            @Override
+            public void accept(U u, T t) {
+                action.accept(u, idx.getAndIncrement(), t);
             }
         };
     }
