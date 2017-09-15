@@ -2,6 +2,17 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 1.0
+
+* Rename the package from `one.util.streamex` to `com.landawn.streamex` to void confusion, suggested by [Tagir Valeev, creator of StreamEx](https://github.com/amaembo/streamex/issues/157#issuecomment-328252566)
+
+* correct typo: sortedByVlaue.
+
+* Rename `prefixKeys/prefixValues` to `scanKeys/scanValues`
+
+* Remove join from `EntryStream`, replaced by `stream.map(Fn.join(delimiter))`.
+
+
 ### 0.8.13:
 
 * Add `limited/indexed/countingBy/countingIntBy/...` more useful methods to `Fn`.

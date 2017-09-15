@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>one.util</groupId>
+  <groupId>com.landawn</groupId>
   <artifactId>streamex</artifactId>
   <version>0.8-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -27,8 +27,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.package>one.util.streamex</project.package>
-    <project.package.path>one/util/streamex</project.package.path>
+    <project.package>com.landawn.streamex</project.package>
+    <project.package.path>com/landawn/streamex</project.package.path>
   </properties>
 
   <dependencies>
