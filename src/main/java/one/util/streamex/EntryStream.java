@@ -443,7 +443,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return sorted(Comparators.comparingByKey(cmp));
     }
 
-    public EntryStream<K, V> sortedByVlaue(final Comparator<? super V> cmp) {
+    public EntryStream<K, V> sortedByValue(final Comparator<? super V> cmp) {
         return sorted(Comparators.comparingByValue(cmp));
     }
 
