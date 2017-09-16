@@ -73,10 +73,10 @@
 		<mkdir dir="${docs.dir}/${project-name}-${version}-javadoc" />
 		<javadoc packagenames="Abacus" access="public" destdir="${docs.dir}/${project-name}-${version}-javadoc" use="true" protected="false" version="true" windowtitle="${project-name} API Documentation" Overview="${docs}/${project-name}-${version}-javadoc/package.html" doctitle="${project-name} API Documentation" Locale="en_US" link="${javadoc}">
 			<packageset dir="${src.dir}" defaultexcludes="yes">
-				<include name="one/util/streamex" />
+				<include name="com/landawn/streamex" />
 			</packageset>
 			<fileset dir="${src.dir}" defaultexcludes="yes">
-				<include name="one/util/streamex/StreamEx.java" />
+				<include name="com/landawnstreamex/StreamEx.java" />
 			</fileset>
 		</javadoc>		
 
