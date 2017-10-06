@@ -1,18 +1,19 @@
 /*
- * Copyright 2015, 2016 Tagir Valeev
+ * Copyright (c) 2015, Haiyang Li.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.landawn.streamex;
 
 import java.util.Arrays;
@@ -21,21 +22,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
-
+import java.util.function.Function;
+import java.util.function.Predicate;
 import com.landawn.streamex.function.TriPredicate;
 
 /**
- * @author haiyangl
+ * 
+ * @since 0.8
+ * 
+ * @author Haiyang Li
  *
+ * @param <L>
+ * @param <R>
  */
 public final class Pair<L, R> implements Map.Entry<L, R> {
-    private volatile L left;
-    private volatile R right;
+    public volatile L left;
+    public volatile R right;
 
     public Pair() {
     }
@@ -59,13 +66,13 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Pair<T, T> from(Collection<? extends T> c) {
         if (c == null || c.size() == 0) {
             return new Pair<>(null, null);
         }
 
-        @SuppressWarnings("unchecked")
-        List<T> list = c instanceof List ? (List<T>) c : null;
+        final List<T> list = c instanceof List ? (List<T>) c : null;
 
         if (c.size() == 1) {
             if (list != null) {
@@ -275,6 +282,30 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         objComsumer.accept(right);
     }
 
+    public void accept(final BiConsumer<? super L, ? super R> action) {
+        action.accept(left, right);
+    }
+
+    public void accept(final Consumer<Pair<L, R>> action) {
+        action.accept(this);
+    }
+
+    public <U> U map(final BiFunction<? super L, ? super R, U> mapper) {
+        return mapper.apply(left, right);
+    }
+
+    public <U> U map(final Function<Pair<L, R>, U> mapper) {
+        return mapper.apply(this);
+    }
+
+    public Optional<Pair<L, R>> filter(final BiPredicate<? super L, ? super R> predicate) {
+        return predicate.test(left, right) ? Optional.of(this) : Optional.<Pair<L, R>> empty();
+    }
+
+    public Optional<Pair<L, R>> filter(final Predicate<Pair<L, R>> predicate) {
+        return predicate.test(this) ? Optional.of(this) : Optional.<Pair<L, R>> empty();
+    }
+
     public StreamEx<Pair<L, R>> stream() {
         return StreamEx.of(this);
     }
@@ -288,7 +319,6 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -296,6 +326,7 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         }
 
         if (obj instanceof Pair) {
+            @SuppressWarnings("unchecked")
             final Pair<L, R> other = (Pair<L, R>) obj;
 
             return Objects.equals(left, other.left) && Objects.equals(right, other.right);
@@ -307,212 +338,5 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
     @Override
     public String toString() {
         return "[" + Objects.toString(left) + ", " + Objects.toString(right) + "]";
-    }
-
-    public static final class IntPair {
-        public final int _1;
-        public final int _2;
-
-        private IntPair(int _1, int _2) {
-            this._1 = _1;
-            this._2 = _2;
-        }
-
-        public static IntPair of(int _1, int _2) {
-            return new IntPair(_1, _2);
-        }
-
-        public int min() {
-            return Math.min(_1, _2);
-        }
-
-        public int max() {
-            return Math.max(_1, _2);
-        }
-
-        public int sum() {
-            return _1 + _2;
-        }
-
-        public double average() {
-            return sum() / 2;
-        }
-
-        public IntPair reversed() {
-            return new IntPair(_2, _1);
-        }
-
-        public int[] toArray() {
-            return new int[] { _1, _2 };
-        }
-
-        public void forEach(IntConsumer comsumer) {
-            comsumer.accept(this._1);
-            comsumer.accept(this._2);
-        }
-
-        public StreamEx<IntPair> stream() {
-            return StreamEx.of(this);
-        }
-
-        @Override
-        public int hashCode() {
-            return 31 * _1 + this._2;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (!(obj instanceof IntPair)) {
-                return false;
-            } else {
-                IntPair other = (IntPair) obj;
-                return this._1 == other._1 && this._2 == other._2;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "[" + this._1 + ", " + this._2 + "]";
-        }
-    }
-
-    public static final class LongPair {
-        public final long _1;
-        public final long _2;
-
-        private LongPair(long _1, long _2) {
-            this._1 = _1;
-            this._2 = _2;
-        }
-
-        public static LongPair of(long _1, long _2) {
-            return new LongPair(_1, _2);
-        }
-
-        public long min() {
-            return Math.min(_1, _2);
-        }
-
-        public long max() {
-            return Math.max(_1, _2);
-        }
-
-        public long sum() {
-            return _1 + _2;
-        }
-
-        public double average() {
-            return sum() / 2;
-        }
-
-        public LongPair reversed() {
-            return new LongPair(_2, _1);
-        }
-
-        public long[] toArray() {
-            return new long[] { _1, _2 };
-        }
-
-        public void forEach(LongConsumer comsumer) {
-            comsumer.accept(this._1);
-            comsumer.accept(this._2);
-        }
-
-        public StreamEx<LongPair> stream() {
-            return StreamEx.of(this);
-        }
-
-        @Override
-        public int hashCode() {
-            return (int) (31 * _1 + this._2);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (!(obj instanceof LongPair)) {
-                return false;
-            } else {
-                LongPair other = (LongPair) obj;
-                return this._1 == other._1 && this._2 == other._2;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "[" + this._1 + ", " + this._2 + "]";
-        }
-    }
-
-    public static final class DoublePair {
-        public final double _1;
-        public final double _2;
-
-        private DoublePair(double _1, double _2) {
-            this._1 = _1;
-            this._2 = _2;
-        }
-
-        public static DoublePair of(double _1, double _2) {
-            return new DoublePair(_1, _2);
-        }
-
-        public double min() {
-            return Math.min(_1, _2);
-        }
-
-        public double max() {
-            return Math.max(_1, _2);
-        }
-
-        public double sum() {
-            return _1 + _2;
-        }
-
-        public double average() {
-            return sum() / 2;
-        }
-
-        public DoublePair reversed() {
-            return new DoublePair(_2, _1);
-        }
-
-        public double[] toArray() {
-            return new double[] { _1, _2 };
-        }
-
-        public void forEach(DoubleConsumer comsumer) {
-            comsumer.accept(this._1);
-            comsumer.accept(this._2);
-        }
-
-        public StreamEx<DoublePair> stream() {
-            return StreamEx.of(this);
-        }
-
-        @Override
-        public int hashCode() {
-            return (int) (31 * _1 + this._2);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (!(obj instanceof DoublePair)) {
-                return false;
-            } else {
-                DoublePair other = (DoublePair) obj;
-                return this._1 == other._1 && this._2 == other._2;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "[" + this._1 + ", " + this._2 + "]";
-        }
     }
 }

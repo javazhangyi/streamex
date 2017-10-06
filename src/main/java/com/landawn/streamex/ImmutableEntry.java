@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 HaiYang Li
+ * Copyright (C) 2017 HaiYang Li
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,36 +14,27 @@
 
 package com.landawn.streamex;
 
+import java.util.Map;
+
 /**
  * 
- * @since 0.8
+ * @since 0.9
  * 
  * @author Haiyang Li
  */
-public final class Holder<T> extends Reference<T, Holder<T>> {
-    public Holder() {
-        this(null);
+public interface ImmutableEntry<K, V> extends Map.Entry<K, V> {
+
+    public static <K, V> ImmutableEntry<K, V> of(K key, V value) {
+        return Tuple.of(key, value);
     }
 
-    Holder(T value) {
-        super(value);
-    }
-
-    public static <T> Holder<T> of(T value) {
-        return new Holder<>(value);
-    }
-
-    public static final class R<T> extends Reference<T, R<T>> {
-        public R() {
-            this(null);
-        }
-
-        R(T value) {
-            super(value);
-        }
-
-        public static <T> R<T> of(T value) {
-            return new R<>(value);
-        }
-    }
+    /**
+     * Should always throw UnsupportedOperationException.
+     * 
+     * @deprecated
+     * @throws UnsupportedOperationException
+     */
+    @Deprecated
+    @Override
+    V setValue(V v);
 }

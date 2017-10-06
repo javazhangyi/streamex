@@ -2,6 +2,14 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 1.0.1
+
+* Refactoring `Holder`.
+
+* Add `Tuple` and `ImmutableEntry`.
+
+
+
 ### 1.0
 
 * Rename the package from `one.util.streamex` to `com.landawn.streamex` to void confusion, suggested by [Tagir Valeev, creator of StreamEx](https://github.com/amaembo/streamex/issues/157#issuecomment-328252566)
