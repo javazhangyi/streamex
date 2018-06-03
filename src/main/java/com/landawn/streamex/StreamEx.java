@@ -27,10 +27,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.*;
 import java.util.regex.Pattern;
+import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
@@ -499,6 +501,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
         return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
     }
+
 
     /**
      * Returns a {@code StreamEx<Map.Entry<K, C>>} whose keys are the values
@@ -1774,6 +1777,26 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * Returns a stream which contents is the same as this stream, except the
+     * case when this stream is empty. In this case its contents is replaced
+     * with supplied values.
+     *
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a>.
+     *
+     * @param values values to replace the contents of this stream if this
+     *        stream is empty.
+     * @return the stream which contents is replaced by supplied values only if
+     *         this stream is empty.
+     * @since 0.6.6
+     */
+    @SafeVarargs
+    public final StreamEx<T> ifEmpty(T... values) {
+        return ifEmpty(null, Spliterators.spliterator(values, Spliterator.ORDERED));
+    }
+
+    /**
      * Returns true if this stream contains the specified value.
      *
      * <p>
@@ -1873,41 +1896,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     @SuppressWarnings("unchecked")
     public StreamEx<T> reverseSorted() {
         return sorted((Comparator<? super T>) Comparator.reverseOrder());
-    }
-
-    /**
-     * Returns a {@code StreamEx} consisting of the distinct elements (according
-     * to {@link Object#equals(Object)}) which appear at least specified number
-     * of times in this stream.
-     *
-     * <p>
-     * This operation is not guaranteed to be stable: any of equal elements can
-     * be selected for the output. However if this stream is ordered then order
-     * is preserved.
-     *
-     * <p>
-     * This is a stateful
-     * <a href="package-summary.html#StreamOps">quasi-intermediate</a>
-     * operation.
-     *
-     * @param atLeast minimal number of occurrences required to select the
-     *        element. If atLeast is 1 or less, then this method is equivalent
-     *        to {@link #distinct()}.
-     * @return the new stream
-     * @see #distinct()
-     * @since 0.3.1
-     */
-    public StreamEx<T> distinct(long atLeast) {
-        if (atLeast <= 1)
-            return distinct();
-        Spliterator<T> spliterator = spliterator();
-        Spliterator<T> result;
-        if (spliterator.hasCharacteristics(Spliterator.DISTINCT))
-            // already distinct: cannot have any repeating elements
-            result = Spliterators.emptySpliterator();
-        else
-            result = new DistinctSpliterator<>(spliterator, atLeast);
-        return supply(result);
     }
 
     public StreamEx<T> intersperse(T delimiter) {
@@ -2242,7 +2230,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public EntryStream<T, T> withFirst() {
         WithFirstSpliterator<T, Entry<T, T>> spliterator = new WithFirstSpliterator<>(spliterator(),
-                AbstractMap.SimpleImmutableEntry<T, T>::new);
+                 SimpleImmutableEntry::new);
         return new EntryStream<>(spliterator, context);
     }
 
@@ -2282,8 +2270,47 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #zipWith(Stream)
      */
     public <V, R> StreamEx<R> zipWith(Stream<V> other, BiFunction<? super T, ? super V, ? extends R> mapper) {
-        return new StreamEx<>(new ZipSpliterator<>(spliterator(), other.spliterator(), mapper, true), context.combine(
-            other));
+        return zipWith((BaseStream<V, ?>) other, mapper);
+    }
+
+    /**
+     * Creates a new {@link StreamEx} which is the result of applying of the
+     * mapper {@code BiFunction} to the corresponding elements of this stream
+     * and the supplied other stream. The resulting stream is ordered if both of
+     * the input streams are ordered, and parallel if either of the input
+     * streams is parallel. When the resulting stream is closed, the close
+     * handlers for both input streams are invoked.
+     *
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a>.
+     *
+     * <p>
+     * The resulting stream finishes when either of the input streams finish:
+     * the rest of the longer stream is discarded. It's unspecified whether the
+     * rest elements of the longer stream are actually consumed.
+     *
+     * <p>
+     * The stream created by this operation may have poor characteristics and
+     * parallelize badly, so it should be used only when there's no other
+     * choice. If both input streams are random-access lists or arrays, consider
+     * using {@link #zip(List, List, BiFunction)} or
+     * {@link #zip(Object[], Object[], BiFunction)} respectively. If you want to
+     * zip the stream with the stream of indices, consider using
+     * {@link EntryStream#of(List)} instead.
+     *
+     * @param <V> the type of the other stream elements
+     * @param <R> the type of the resulting stream elements
+     * @param other the stream to zip this stream with
+     * @param mapper a non-interfering, stateless function to apply to the
+     *        corresponding pairs of this stream and other stream elements
+     * @return the new stream
+     * @since 0.6.7
+     * @see #zipWith(BaseStream)
+     */
+    public <V, R> StreamEx<R> zipWith(BaseStream<V, ?> other, BiFunction<? super T, ? super V, ? extends R> mapper) {
+        return new StreamEx<>(new ZipSpliterator<>(spliterator(), other.spliterator(), mapper, true), context
+                .combine(other));
     }
 
     /**
@@ -2319,10 +2346,45 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.5.5
      */
     public <V> EntryStream<T, V> zipWith(Stream<V> other) {
-        return new EntryStream<>(new ZipSpliterator<>(spliterator(), other.spliterator(),
-                AbstractMap.SimpleImmutableEntry<T, V>::new, true), context.combine(other));
+        return zipWith((BaseStream<V, ?>)other);
     }
 
+    /**
+     * Creates a new {@link EntryStream} which keys are elements of this stream
+     * and values are the corresponding elements of the supplied other stream.
+     * The resulting stream is ordered if both of the input streams are ordered,
+     * and parallel if either of the input streams is parallel. When the
+     * resulting stream is closed, the close handlers for both input streams are
+     * invoked.
+     *
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a>.
+     *
+     * <p>
+     * The resulting stream finishes when either of the input streams finish:
+     * the rest of the longer stream is discarded. It's unspecified whether the
+     * rest elements of the longer stream are actually consumed.
+     *
+     * <p>
+     * The stream created by this operation may have poor characteristics and
+     * parallelize badly, so it should be used only when there's no other
+     * choice. If both input streams are random-access lists or arrays, consider
+     * using {@link EntryStream#zip(List, List)} or
+     * {@link EntryStream#zip(Object[], Object[])} respectively. If you want to
+     * zip the stream with the stream of indices, consider using
+     * {@link EntryStream#of(List)} instead.
+     *
+     * @param <V> the type of the other stream elements
+     * @param other the stream to zip this stream with
+     * @return the new stream
+     * @see #zipWith(BaseStream, BiFunction)
+     * @since 0.6.7
+     */
+    public <V> EntryStream<T, V> zipWith(BaseStream<V, ?> other) {
+        return new EntryStream<>(new ZipSpliterator<>(spliterator(), other.spliterator(),
+                SimpleImmutableEntry::new, true), context.combine(other));
+    }
     /**
      * Creates a new Stream which is the result of applying of the mapper
      * {@code BiFunction} to the first element of the current stream (head) and
@@ -3803,6 +3865,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param s the {@code Supplier} of generated elements
      * @return a new infinite sequential unordered {@code StreamEx}
      * @see Stream#generate(Supplier)
+     * @see EntryStream#generate(Supplier, Supplier)
      */
     public static <T> StreamEx<T> generate(Supplier<T> s) {
         return new StreamEx<>(Stream.generate(s), StreamContext.SEQUENTIAL);

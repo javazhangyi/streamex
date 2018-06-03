@@ -1,12 +1,12 @@
 /*
- * Copyright 2015, 2016 Tagir Valeev
- * 
+ * Copyright 2015, 2017 StreamEx contributors
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,6 +89,12 @@ import java.util.stream.Collector.Characteristics;
         SPLITERATOR_ITERATOR = fields.poll();
     }
 
+    static void checkNonNegative(String name, int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException(name + " must be non-negative: " + value);
+        }
+    }
+
     static final class ByteBuffer {
         int size = 0;
         byte[] data;
@@ -103,7 +109,7 @@ import java.util.stream.Collector.Characteristics;
 
         void add(int n) {
             if (data.length == size) {
-                data = copy(data, new byte[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = (byte) n;
         }
@@ -114,7 +120,7 @@ import java.util.stream.Collector.Characteristics;
 
         void addAll(ByteBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new byte[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -139,7 +145,7 @@ import java.util.stream.Collector.Characteristics;
 
         void add(int n) {
             if (data.length == size) {
-                data = copy(data, new char[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = (char) n;
         }
@@ -150,7 +156,7 @@ import java.util.stream.Collector.Characteristics;
 
         void addAll(CharBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new char[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -175,7 +181,7 @@ import java.util.stream.Collector.Characteristics;
 
         void add(int n) {
             if (data.length == size) {
-                data = copy(data, new short[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = (short) n;
         }
@@ -186,7 +192,7 @@ import java.util.stream.Collector.Characteristics;
 
         void addAll(ShortBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new short[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -211,7 +217,7 @@ import java.util.stream.Collector.Characteristics;
 
         void add(double n) {
             if (data.length == size) {
-                data = copy(data, new float[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = (float) n;
         }
@@ -222,7 +228,7 @@ import java.util.stream.Collector.Characteristics;
 
         void addAll(FloatBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new float[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -247,14 +253,14 @@ import java.util.stream.Collector.Characteristics;
 
         void add(int n) {
             if (data.length == size) {
-                data = copy(data, new int[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = n;
         }
 
         void addAll(IntBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new int[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -279,14 +285,14 @@ import java.util.stream.Collector.Characteristics;
 
         void add(long n) {
             if (data.length == size) {
-                data = copy(data, new long[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = n;
         }
 
         void addAll(LongBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new long[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -311,14 +317,14 @@ import java.util.stream.Collector.Characteristics;
 
         void add(double n) {
             if (data.length == size) {
-                data = copy(data, new double[data.length * 2], size);
+                data = Arrays.copyOf(data, data.length * 2);
             }
             data[size++] = n;
         }
 
         void addAll(DoubleBuffer buf) {
             if (data.length < buf.size + size) {
-                data = copy(data, new double[buf.size + size], size);
+                data = Arrays.copyOf(data, buf.size + size);
             }
             System.arraycopy(buf.data, 0, data, size, buf.size);
             size += buf.size;
@@ -657,10 +663,6 @@ import java.util.stream.Collector.Characteristics;
             return new PairBox<>(a, a);
         }
 
-        public void setB(B b) {
-            this.b = b;
-        }
-
         @Override
         public int hashCode() {
             return b == null ? 0 : b.hashCode();
@@ -961,11 +963,6 @@ import java.util.stream.Collector.Characteristics;
         }
     }
 
-    static <T> T copy(T src, T dest, int size) {
-        System.arraycopy(src, 0, dest, 0, size);
-        return dest;
-    }
-
     static ObjIntConsumer<StringBuilder> joinAccumulatorInt(CharSequence delimiter) {
         return (sb, i) -> (sb.length() > 0 ? sb.append(delimiter) : sb).append(i);
     }
@@ -1001,6 +998,7 @@ import java.util.stream.Collector.Characteristics;
         }
     }
 
+    @SuppressWarnings("unchecked")
     static <A> Predicate<A> finished(Collector<?, A, ?> collector) {
         if (collector instanceof CancellableCollector)
             return ((CancellableCollector<?, A, ?>) collector).finished();

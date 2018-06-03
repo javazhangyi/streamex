@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
  */
 public class Joining extends CancellableCollector<CharSequence, Joining.Accumulator, String> {
     static final class Accumulator {
-        List<CharSequence> data = new ArrayList<>();
+        final List<CharSequence> data = new ArrayList<>();
         int chars = 0, count = 0;
     }
 

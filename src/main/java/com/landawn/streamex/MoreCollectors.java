@@ -84,7 +84,7 @@ public final class MoreCollectors {
     }
 
     private static <T> Collector<T, ?, List<T>> empty() {
-        return empty(ArrayList<T>::new);
+        return empty(ArrayList::new);
     }
 
     /**
@@ -579,6 +579,27 @@ public final class MoreCollectors {
                 t) -> box.a = box.a == null ? Optional.of(t) : Optional.empty(), (box1, box2) -> box1.a == null ? box2
                         : box2.a == null ? box1 : new Box<>(Optional.empty()), box -> box.a == null ? Optional.empty()
                                 : box.a, box -> box.a != null && !box.a.isPresent(), UNORDERED_CHARACTERISTICS);
+    }
+
+    /**
+     * Returns a {@code Collector} which collects the stream element satisfying
+     * the predicate if there is only one such element.
+     *
+     * <p>
+     * This method returns a
+     * <a href="package-summary.html#ShortCircuitReduction">short-circuiting
+     * collector</a>.
+     *
+     * @param predicate a predicate to be applied to the stream elements
+     * @param <T> the type of the input elements
+     * @return a collector which returns an {@link Optional} describing the only
+     *         element of the stream satisfying the predicate. If stream
+     *         contains no elements satisfying the predicate, or more than one
+     *         such element, an empty {@code Optional} is returned.
+     * @since 0.6.7
+     */
+    public static <T> Collector<T, ?, Optional<T>> onlyOne(Predicate<? super T> predicate) {
+        return filtering(predicate, onlyOne());
     }
 
     /**
