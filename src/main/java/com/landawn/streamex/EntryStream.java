@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.landawn.abacus.util.Fn;
+
 /**
  * A {@link Stream} of {@link Entry} objects which provides additional specific
  * functionality.

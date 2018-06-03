@@ -558,7 +558,7 @@ public class StreamExTest {
     public void testNonNull() {
         List<String> data = asList("a", null, "b");
         assertEquals(asList("a", null, "b"), StreamEx.of(data).toList());
-        assertEquals(asList("a", "b"), StreamEx.of(data).nonNull().toList());
+        assertEquals(asList("a", "b"), StreamEx.of(data).skipNull().toList());
     }
 
     @Test
@@ -785,7 +785,7 @@ public class StreamExTest {
     }
 
     private <T extends Comparable<? super T>> Optional<T> firstMisplaced(Collection<T> c) {
-        return StreamEx.of(c).parallel().pairMap((a, b) -> a.compareTo(b) > 0 ? a : null).nonNull().findFirst();
+        return StreamEx.of(c).parallel().pairMap((a, b) -> a.compareTo(b) > 0 ? a : null).skipNull().findFirst();
     }
 
     static class Point {
@@ -830,7 +830,7 @@ public class StreamExTest {
 
         // Find all numbers where the integer preceded a larger value.
         Collection<Integer> numbers = asList(10, 1, 15, 30, 2, 6);
-        List<Integer> res = StreamEx.of(numbers).pairMap((a, b) -> a < b ? a : null).nonNull().toList();
+        List<Integer> res = StreamEx.of(numbers).pairMap((a, b) -> a < b ? a : null).skipNull().toList();
         assertEquals(asList(1, 15, 2), res);
 
         // Check whether stream is sorted
@@ -863,7 +863,7 @@ public class StreamExTest {
 
     private double interpolate(Point[] points, double x) {
         return StreamEx.of(points).parallel().pairMap((p1, p2) -> p1.x <= x && p2.x >= x ? (x - p1.x) / (p2.x - p1.x)
-            * (p2.y - p1.y) + p1.y : null).nonNull().findAny().orElse(Double.NaN);
+            * (p2.y - p1.y) + p1.y : null).skipNull().findAny().orElse(Double.NaN);
     }
 
     @Test
@@ -1109,17 +1109,17 @@ public class StreamExTest {
 
     @Test
     public void testCross() {
-        assertEquals("a-1, a-2, a-3, b-1, b-2, b-3, c-1, c-2, c-3", StreamEx.of("a", "b", "c").cross(1, 2, 3).map(Fn.join("-"))
+        assertEquals("a-1, a-2, a-3, b-1, b-2, b-3, c-1, c-2, c-3", StreamEx.of("a", "b", "c").cross(1, 2, 3).map((a, b) -> a + "-" + b)
                 .join(", "));
-        assertEquals("a-1, b-1, c-1", StreamEx.of("a", "b", "c").cross(1).map(Fn.join("-")).join(", "));
-        assertEquals("", StreamEx.of("a", "b", "c").cross().map(Fn.join("-")).join(", "));
+        assertEquals("a-1, b-1, c-1", StreamEx.of("a", "b", "c").cross(1).map((a, b) -> a + "-" + b).join(", "));
+        assertEquals("", StreamEx.of("a", "b", "c").cross().map((a, b) -> a + "-" + b).join(", "));
         List<String> inputs = asList("i", "j", "k");
         List<String> outputs = asList("x", "y", "z");
         assertEquals("i->x, i->y, i->z, j->x, j->y, j->z, k->x, k->y, k->z", StreamEx.of(inputs).cross(outputs).map((
                 input, output) -> input + "->" + output).join(", "));
-        assertEquals("", StreamEx.of(inputs).cross(Collections.emptyList()).map(Fn.join("->")).join(", "));
-        assertEquals("i-i, j-j, k-k", StreamEx.of(inputs).cross(Stream::of).map(Fn.join("-")).join(", "));
-        assertEquals("j-j, k-k", StreamEx.of(inputs).cross(x -> x.equals("i") ? null : Stream.of(x)).map(Fn.join("-")).join(
+        assertEquals("", StreamEx.of(inputs).cross(Collections.emptyList()).map((a, b) -> a + "-" + b).join(", "));
+        assertEquals("i-i, j-j, k-k", StreamEx.of(inputs).cross(Stream::of).map((a, b) -> a + "-" + b).join(", "));
+        assertEquals("j-j, k-k", StreamEx.of(inputs).cross(x -> x.equals("i") ? null : Stream.of(x)).map((a, b) -> a + "-" + b).join(
             ", "));
     }
 
@@ -1385,7 +1385,7 @@ public class StreamExTest {
     public void testRunLenghts() {
         Integer[] input = { 1, 2, 2, 4, 2, null, null, 1, 1, 1, null, null };
         streamEx(() -> StreamEx.of(input), s -> {
-            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths(Objects::equals).map(Fn.join(": ")).join(", "));
+            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths(Objects::equals).map((a, b) -> a + ": " + b).join(", "));
             assertEquals("1=1, 2=2, 4=1, 2=1, null=2, 1=3", s.get().runLengths(Objects::equals).distinct().map(
                 String::valueOf).join(", "));
         });

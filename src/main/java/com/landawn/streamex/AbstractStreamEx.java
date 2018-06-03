@@ -663,7 +663,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *
      * @return the new stream
      */
-    public S nonNull() {
+    public S skipNull() {
         return filter(Objects::nonNull);
     }
 

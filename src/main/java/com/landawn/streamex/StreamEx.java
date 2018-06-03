@@ -34,6 +34,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
+import com.landawn.abacus.util.Fn;
+import com.landawn.abacus.util.Pair;
 import com.landawn.streamex.PairSpliterator.PSOfRef;
 
 import java.util.stream.Collectors;
@@ -80,9 +82,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     @Override
-    public StreamEx<T> nonNull() {
+    public StreamEx<T> skipNull() {
         // this overload is useful to make Eclipse external Null annotations working
-        return super.nonNull();
+        return super.skipNull();
     }
 
     /**
@@ -1787,7 +1789,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * operation.
      *
      * @param value the value to remove from the stream. If the value is null
-     *        then all nulls will be removed (like {@link #nonNull()} works).
+     *        then all nulls will be removed (like {@link #skipNull()} works).
      *        Otherwise {@code value.equals()} will be used to test stream
      *        values and matching elements will be removed.
      * @return the new stream
