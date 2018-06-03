@@ -2,6 +2,13 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.0.0
+
+* Remove `Holder/Pair/Triple/Tuple`.
+
+* Improvements.
+
+
 ### 1.0.1
 
 * Refactoring `Holder`.
