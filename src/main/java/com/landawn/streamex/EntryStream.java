@@ -48,7 +48,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.landawn.abacus.util.Comparators;
 import com.landawn.abacus.util.Fn;
+import com.landawn.abacus.util.ImmutableMap;
 
 /**
  * A {@link Stream} of {@link Entry} objects which provides additional specific
@@ -1035,9 +1037,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #toMap()
      * @since 0.6.3
      */
-    public Map<K, V> toImmutableMap() {
+    public ImmutableMap<K, V> toImmutableMap() {
         Map<K, V> map = toMap();
-        return map.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(map);
+        return map.isEmpty() ? ImmutableMap.empty() : ImmutableMap.of(map);
     }
 
     /**
