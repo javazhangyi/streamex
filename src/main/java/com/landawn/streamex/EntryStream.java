@@ -657,8 +657,24 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * operation.
      *
      * @return the new stream
+     * @deprecated replaced by {@code #skipNullKeys()}
      */
+    @Deprecated
     public EntryStream<K, V> nonNullKeys() {
+        return filter(e -> e.getKey() != null);
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream which key is
+     * not null.
+     *
+     * <p>
+     * This is an <a href="package-summary.html#StreamOps">intermediate</a>
+     * operation.
+     *
+     * @return the new stream
+     */
+    public EntryStream<K, V> skipNullKeys() {
         return filter(e -> e.getKey() != null);
     }
 
@@ -671,8 +687,24 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * operation.
      *
      * @return the new stream
+     * @deprecated replaced by {@code #skipNullValues()}
      */
+    @Deprecated
     public EntryStream<K, V> nonNullValues() {
+        return filter(e -> e.getValue() != null);
+    }
+    
+    /**
+     * Returns a stream consisting of the elements of this stream which value is
+     * not null.
+     *
+     * <p>
+     * This is an <a href="package-summary.html#StreamOps">intermediate</a>
+     * operation.
+     *
+     * @return the new stream
+     */
+    public EntryStream<K, V> skipNullValues() {
         return filter(e -> e.getValue() != null);
     }
 
