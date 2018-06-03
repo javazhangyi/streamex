@@ -558,7 +558,7 @@ public class StreamExTest {
     public void testNonNull() {
         List<String> data = asList("a", null, "b");
         assertEquals(asList("a", null, "b"), StreamEx.of(data).toList());
-        assertEquals(asList("a", "b"), StreamEx.of(data).skipNull().toList());
+        assertEquals(asList("a", "b"), StreamEx.of(data).nonNull().toList());
     }
 
     @Test
@@ -785,7 +785,7 @@ public class StreamExTest {
     }
 
     private <T extends Comparable<? super T>> Optional<T> firstMisplaced(Collection<T> c) {
-        return StreamEx.of(c).parallel().pairMap((a, b) -> a.compareTo(b) > 0 ? a : null).skipNull().findFirst();
+        return StreamEx.of(c).parallel().pairMap((a, b) -> a.compareTo(b) > 0 ? a : null).nonNull().findFirst();
     }
 
     static class Point {
@@ -830,7 +830,7 @@ public class StreamExTest {
 
         // Find all numbers where the integer preceded a larger value.
         Collection<Integer> numbers = asList(10, 1, 15, 30, 2, 6);
-        List<Integer> res = StreamEx.of(numbers).pairMap((a, b) -> a < b ? a : null).skipNull().toList();
+        List<Integer> res = StreamEx.of(numbers).pairMap((a, b) -> a < b ? a : null).nonNull().toList();
         assertEquals(asList(1, 15, 2), res);
 
         // Check whether stream is sorted
@@ -863,7 +863,7 @@ public class StreamExTest {
 
     private double interpolate(Point[] points, double x) {
         return StreamEx.of(points).parallel().pairMap((p1, p2) -> p1.x <= x && p2.x >= x ? (x - p1.x) / (p2.x - p1.x)
-            * (p2.y - p1.y) + p1.y : null).skipNull().findAny().orElse(Double.NaN);
+            * (p2.y - p1.y) + p1.y : null).nonNull().findAny().orElse(Double.NaN);
     }
 
     @Test

@@ -81,6 +81,17 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return new StreamEx<>(spliterator, context);
     }
 
+    /**
+     * 
+     * @deprecated replaced by {@code #skipNull()}
+     */
+    @Deprecated
+    @Override
+    public StreamEx<T> nonNull() {
+        // this overload is useful to make Eclipse external Null annotations working
+        return super.nonNull();
+    }
+
     @Override
     public StreamEx<T> skipNull() {
         // this overload is useful to make Eclipse external Null annotations working
@@ -1370,10 +1381,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V, M extends Map<K, V>> M toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
-//        final M map = mapSupplier.get();
-//        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
-//        return map;
-        
+        //        final M map = mapSupplier.get();
+        //        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
+        //        return map;
+
         return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
     }
 
@@ -1789,7 +1800,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * operation.
      *
      * @param value the value to remove from the stream. If the value is null
-     *        then all nulls will be removed (like {@link #skipNull()} works).
+     *        then all nulls will be removed (like {@link #nonNull()} works).
      *        Otherwise {@code value.equals()} will be used to test stream
      *        values and matching elements will be removed.
      * @return the new stream
@@ -1898,7 +1909,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             result = new DistinctSpliterator<>(spliterator, atLeast);
         return supply(result);
     }
- 
+
     public StreamEx<T> intersperse(T delimiter) {
         // return supply(stream().flatMap(s -> StreamEx.of(delimiter, s)).skip(1));        
 
@@ -2690,7 +2701,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n + m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * 
      * <pre>
      * <code>
@@ -2700,8 +2712,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
      * StreamEx.of(listA).innerJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param leftKeyMapper
@@ -2728,7 +2739,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n * m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * <code>innerJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
@@ -2739,8 +2751,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
      * StreamEx.of(listA).innerJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param predicate
@@ -2759,7 +2770,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n + m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * 
      * <pre>
      * <code>
@@ -2769,8 +2781,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
      * StreamEx.of(listA).fullJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param leftKeyMapper
@@ -2802,7 +2813,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n * m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * <code>fullJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
@@ -2813,8 +2825,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
      * StreamEx.of(listA).fullJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null], [null, 5]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param predicate
@@ -2829,7 +2840,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             @Override
             public StreamEx<Pair<T, U>> apply(final T t) {
                 final boolean[] joined = new boolean[1];
-                
+
                 return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> {
                     joined[0] = true;
 
@@ -2849,7 +2860,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n + m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * 
      * <pre>
      * <code>
@@ -2859,8 +2871,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
      * StreamEx.of(listA).leftJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param leftKeyMapper
@@ -2887,7 +2898,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n * m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * <code>leftJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
@@ -2898,8 +2910,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
      * StreamEx.of(listA).leftJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [ccc, null]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param predicate
@@ -2915,7 +2926,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             @Override
             public Stream<Pair<T, U>> apply(final T t) {
                 final boolean[] joined = new boolean[1];
-                
+
                 return StreamEx.of(b).filter(u -> predicate.test(t, u)).map(u -> {
                     joined[0] = true;
                     return Pair.of(t, u);
@@ -2926,7 +2937,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n + m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n + m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * 
      * <pre>
      * <code>
@@ -2936,8 +2948,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
      * StreamEx.of(listA).rightJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param leftKeyMapper
@@ -2976,7 +2987,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
-     * The time complexity is O(n * m) : n is the size of this Stream and m is the size of specified collection b.
+     * The time complexity is O(n * m) : n is the size of this Stream and m is
+     * the size of specified collection b.
      * <code>rightJoin(Collection, Function, Function)>is preferred if possible.
      * 
      * <pre>
@@ -2987,8 +2999,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
      * StreamEx.of(listA).rightJoin(listB, a -> a.length(), b -> b).println();
      * // output: [[a, 1], [b, 1], [c, 1], [aa, 2], [bb, 2], [null, 5]]
-     * </code>
-     * </pre>
+     * </code> </pre>
      * 
      * @param b
      * @param predicate
@@ -3925,7 +3936,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     /**
      * Returns a sequential {@code StreamEx} containing the results of applying
      * the given function to the corresponding pairs of values in given two
-     * lists. The size of the returned {@code StreamEx} is <code>Math.min(first.size(), second.size())</code>.
+     * lists. The size of the returned {@code StreamEx} is
+     * <code>Math.min(first.size(), second.size())</code>.
      *
      * <p>
      * The list values are accessed using {@link List#get(int)}, so the lists
@@ -3948,15 +3960,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         if ((first == null || first.size() == 0) || (second == null || second.size() == 0)) {
             return StreamEx.<T> empty();
         }
-        
-        return of(new RangeBasedSpliterator.ZipRef<>(0, Math.min(first.size(), second.size()), mapper, first,
-                second));
+
+        return of(new RangeBasedSpliterator.ZipRef<>(0, Math.min(first.size(), second.size()), mapper, first, second));
     }
 
     /**
      * Returns a sequential {@code StreamEx} containing the results of applying
      * the given function to the corresponding pairs of values in given two
-     * arrays. The size of the returned {@code StreamEx} is <code>Math.min(first.length, second.length)</code>.
+     * arrays. The size of the returned {@code StreamEx} is
+     * <code>Math.min(first.length, second.length)</code>.
      * 
      * @param <U> the type of the first array elements
      * @param <V> the type of the second array elements

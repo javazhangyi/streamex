@@ -24,6 +24,9 @@ import java.util.function.*;
 import java.util.stream.*;
 import java.util.stream.Collector.Characteristics;
 
+import com.landawn.abacus.util.ImmutableList;
+import com.landawn.abacus.util.ImmutableSet;
+
 /**
  * Base class providing common functionality for {@link StreamEx} and
  * {@link EntryStream}.
@@ -155,8 +158,14 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *        function to apply to each element which produces a
      *        {@link Collection} of new values
      * @return the new stream
+     * @deprecated replaced by {@code #flattMap(Function)}
      */
+    @Deprecated
     public <R> StreamEx<R> flatCollection(Function<? super T, ? extends Collection<? extends R>> mapper) {
+        return flattMap(mapper);
+    }
+    
+    public <R> StreamEx<R> flattMap(Function<? super T, ? extends Collection<? extends R>> mapper) {
         return flatMap(t -> {
             Collection<? extends R> c = mapper.apply(t);
             return c == null ? StreamEx.empty() : StreamEx.of(c.spliterator());
@@ -186,8 +195,14 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *        values
      * @return the new stream
      * @since 0.6.5
+     * @deprecated replaced by {@code #flatMapp(Function)}
      */
+    @Deprecated
     public <R> StreamEx<R> flatArray(Function<? super T, ? extends R[]> mapper) {
+        return flatMapp(mapper);
+    }
+    
+    public <R> StreamEx<R> flatMapp(Function<? super T, ? extends R[]> mapper) {
         return flatMap(t -> {
             R[] a = mapper.apply(t);
             return a == null ? StreamEx.empty() : StreamEx.of(Arrays.spliterator(a));
@@ -662,7 +677,13 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * operation</a>.
      *
      * @return the new stream
+     * @deprecated replaced by {@code #skipNull()}
      */
+    @Deprecated
+    public S nonNull() {
+        return skipNull();
+    }
+    
     public S skipNull() {
         return filter(Objects::nonNull);
     }
@@ -1186,15 +1207,15 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @since 0.6.3
      */
     @SuppressWarnings("unchecked")
-    public List<T> toImmutableList() {
+    public ImmutableList<T> toImmutableList() {
         Object[] array = toArray(Object[]::new);
         switch (array.length) {
         case 0:
-            return Collections.emptyList();
+            return ImmutableList.empty();
         case 1:
-            return Collections.singletonList((T) array[0]);
+            return ImmutableList.of((T) array[0]);
         default:
-            return Collections.unmodifiableList(Arrays.asList((T[]) array));
+            return ImmutableList.of((T[]) array);
         }
     }
 
@@ -1251,11 +1272,11 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @see #toSet()
      * @since 0.6.3
      */
-    public Set<T> toImmutableSet() {
+    public ImmutableSet<T> toImmutableSet() {
         Set<T> result = toSet();
         if (result.size() == 0)
-            return Collections.emptySet();
-        return Collections.unmodifiableSet(result);
+            return ImmutableSet.empty();
+        return ImmutableSet.of(result);
     }
 
     /**
