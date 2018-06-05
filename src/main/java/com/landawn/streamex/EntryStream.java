@@ -1397,9 +1397,15 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.8
      */
     public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream) {
-        final Map<K, D> m = groupTo(downstream);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new EntryStream<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> groupTo(downstream).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(downstream).entrySet().stream();
+        }
+
+        return new EntryStream<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -1423,9 +1429,15 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.8
      */
     public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream, Supplier<Map<K, D>> mapSupplier) {
-        final Map<K, D> m = groupTo(downstream, mapSupplier);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new EntryStream<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> groupTo(downstream, mapSupplier).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(downstream, mapSupplier).entrySet().stream();
+        }
+
+        return new EntryStream<>(ForwardingStream.of(supplier), context);
     }
 
     /**

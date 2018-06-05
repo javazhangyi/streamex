@@ -2,7 +2,7 @@
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
-### 2.0.2
+### 2.0.3
 
 * Remove `Holder/Pair/Triple/Tuple`.
 

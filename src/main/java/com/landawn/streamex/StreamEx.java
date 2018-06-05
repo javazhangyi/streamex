@@ -442,9 +442,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K> StreamEx<Map.Entry<K, List<T>>> groupBy(Function<? super T, ? extends K> classifier) {
-        final Map<K, List<T>> m = groupTo(classifier);
+        Supplier<Stream<Map.Entry<K, List<T>>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<K, List<T>>) groupTo(classifier)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<K, List<T>>) groupTo(classifier)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -468,9 +474,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
-        final Map<K, D> m = groupTo(classifier, downstream);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<K, D>) groupTo(classifier, downstream)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<K, D>) groupTo(classifier, downstream)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -497,31 +509,56 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
-        final Map<K, D> m = groupTo(classifier, downstream, mapFactory);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> groupTo(classifier, downstream, mapFactory).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(classifier, downstream, mapFactory).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
+    @SuppressWarnings("rawtypes")
     public <K, V> StreamEx<Map.Entry<K, List<V>>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper) {
-        final Map<K, List<V>> m = groupTo(classifier, valueMapper);
+        Supplier<Stream<Map.Entry<K, List<V>>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<K, List<V>>) (Map) groupTo(classifier, valueMapper)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<K, List<V>>) (Map) groupTo(classifier, valueMapper)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
-        final Map<K, D> m = groupTo(classifier, valueMapper, downstream);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<K, D>) groupTo(classifier, valueMapper, downstream)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<K, D>) groupTo(classifier, valueMapper, downstream)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
             Supplier<Map<K, D>> mapFactory) {
-        final Map<K, D> m = groupTo(classifier, valueMapper, downstream, mapFactory);
+        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> groupTo(classifier, valueMapper, downstream, mapFactory).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(classifier, valueMapper, downstream, mapFactory).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -547,9 +584,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory) {
-        final Map<K, C> m = groupTo(classifier, collectionFactory);
+        Supplier<Stream<Map.Entry<K, C>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<K, C>) groupTo(classifier, collectionFactory)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<K, C>) groupTo(classifier, collectionFactory)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -578,9 +621,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory, Supplier<Map<K, C>> mapFactory) {
-        final Map<K, C> m = groupTo(classifier, collectionFactory, mapFactory);
+        Supplier<Stream<Map.Entry<K, C>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> groupTo(classifier, collectionFactory, mapFactory).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(classifier, collectionFactory, mapFactory).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -598,9 +647,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public StreamEx<Map.Entry<Boolean, List<T>>> partitionBy(Predicate<? super T> predicate) {
-        final Map<Boolean, List<T>> m = partitionTo(predicate);
+        Supplier<Stream<Map.Entry<Boolean, List<T>>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> partitionTo(predicate).entrySet().parallelStream();
+        } else {
+            supplier = () -> partitionTo(predicate).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -624,9 +679,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <D> StreamEx<Map.Entry<Boolean, D>> partitionBy(Predicate<? super T> predicate,
             Collector<? super T, ?, D> downstream) {
-        final Map<Boolean, D> m = partitionTo(predicate, downstream);
+        Supplier<Stream<Map.Entry<Boolean, D>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> partitionTo(predicate, downstream).entrySet().parallelStream();
+        } else {
+            supplier = () -> partitionTo(predicate, downstream).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
@@ -650,9 +711,15 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <C extends Collection<T>> StreamEx<Map.Entry<Boolean, C>> partitionBy(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
-        final Map<Boolean, C> m = partitionTo(predicate, collectionFactory);
+        Supplier<Stream<Map.Entry<Boolean, C>>> supplier = null;
 
-        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+        if (context.parallel) {
+            supplier = () -> ((Map<Boolean, C>) partitionTo(predicate, collectionFactory)).entrySet().parallelStream();
+        } else {
+            supplier = () -> ((Map<Boolean, C>) partitionTo(predicate, collectionFactory)).entrySet().stream();
+        }
+
+        return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
     /**
