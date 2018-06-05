@@ -3439,7 +3439,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param stream original stream
      * @return the wrapped stream
      */
-    public static <T> StreamEx<T> of(Stream<T> stream) {
+    public static <T> StreamEx<T> of(Stream<? extends T> stream) {
         if (stream instanceof AbstractStreamEx) {
             @SuppressWarnings("unchecked")
             AbstractStreamEx<T, ?> ase = (AbstractStreamEx<T, ?>) stream;
@@ -3447,6 +3447,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 return new StreamEx<>(ase.spliterator(), ase.context);
             return new StreamEx<>(ase.stream(), ase.context);
         }
+        
         return new StreamEx<>(stream, StreamContext.of(stream));
     }
 
