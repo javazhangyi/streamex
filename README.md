@@ -152,7 +152,7 @@ To use from maven add this snippet to the pom.xml `dependencies` section:
 <dependency>
   <groupId>com.landawn</groupId>
   <artifactId>streamex</artifactId>
-  <version>1.0.1</version>
+  <version>2.0.3</version>
 </dependency>
 ```
 
