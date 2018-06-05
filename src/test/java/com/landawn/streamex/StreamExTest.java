@@ -66,6 +66,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 
+import com.landawn.abacus.util.Fn;
 import com.landawn.abacus.util.Fn.Suppliers;
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
@@ -84,6 +85,11 @@ import static java.util.Arrays.asList;
 public class StreamExTest {
     @Rule
     public TemporaryFolder tmp = new TemporaryFolder();
+
+    @Test
+    public void testGroupBy() {
+        StreamEx.of("a", "bb", "c").peek(Fn.println()).groupBy(Fn.length()).count();
+    }
 
     @Test
     public void testCreate() {
@@ -177,10 +183,10 @@ public class StreamExTest {
             "IteratorSpliterator"));
     }
 
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testZipThrows() {
-//        StreamEx.zip(asList("A"), asList("b", "c"), String::concat);
-//    }
+    //    @Test(expected = IllegalArgumentException.class)
+    //    public void testZipThrows() {
+    //        StreamEx.zip(asList("A"), asList("b", "c"), String::concat);
+    //    }
 
     @Test
     public void testBasics() {
@@ -528,8 +534,8 @@ public class StreamExTest {
                 assertEquals(asList("d", "e", "a", "b", "c", "dd"), s.get().prepend(asList("d", "e")).toList());
             });
         }
-        assertArrayEquals(new Object[] { 1, 2, 3, 1, 1 }, StreamEx.repeat(1, Long.MAX_VALUE - 1).prepend(1, 2, 3)
-                .limit(5).toArray());
+        assertArrayEquals(new Object[] { 1, 2, 3, 1, 1 }, StreamEx.repeat(1, Long.MAX_VALUE - 1).prepend(1, 2, 3).limit(
+            5).toArray());
 
         assertEquals(asList(4, 3, 2, 1), StreamEx.just(1).prepend(2).prepend(StreamEx.just(3).prepend(4)).toList());
 
@@ -581,8 +587,8 @@ public class StreamExTest {
     @Test
     public void testMinMax() {
         withRandom(random -> {
-            List<String> data = IntStreamEx.of(random, 1000, 1, 100).mapToObj(len -> IntStreamEx.repeat(random
-                    .nextInt('z' - 'a' + 1) + 'a', len).charsToString()).toList();
+            List<String> data = IntStreamEx.of(random, 1000, 1, 100).mapToObj(len -> IntStreamEx.repeat(random.nextInt(
+                'z' - 'a' + 1) + 'a', len).charsToString()).toList();
             String minStr = Collections.min(data, Comparator.comparingInt(String::length)), maxStr = Collections.max(
                 data, Comparator.comparingInt(String::length));
             streamEx(data::stream, supplier -> {
@@ -1110,8 +1116,8 @@ public class StreamExTest {
 
     @Test
     public void testCross() {
-        assertEquals("a-1, a-2, a-3, b-1, b-2, b-3, c-1, c-2, c-3", StreamEx.of("a", "b", "c").cross(1, 2, 3).map((a, b) -> a + "-" + b)
-                .join(", "));
+        assertEquals("a-1, a-2, a-3, b-1, b-2, b-3, c-1, c-2, c-3", StreamEx.of("a", "b", "c").cross(1, 2, 3).map((a,
+                b) -> a + "-" + b).join(", "));
         assertEquals("a-1, b-1, c-1", StreamEx.of("a", "b", "c").cross(1).map((a, b) -> a + "-" + b).join(", "));
         assertEquals("", StreamEx.of("a", "b", "c").cross().map((a, b) -> a + "-" + b).join(", "));
         List<String> inputs = asList("i", "j", "k");
@@ -1120,8 +1126,8 @@ public class StreamExTest {
                 input, output) -> input + "->" + output).join(", "));
         assertEquals("", StreamEx.of(inputs).cross(Collections.emptyList()).map((a, b) -> a + "-" + b).join(", "));
         assertEquals("i-i, j-j, k-k", StreamEx.of(inputs).cross(Stream::of).map((a, b) -> a + "-" + b).join(", "));
-        assertEquals("j-j, k-k", StreamEx.of(inputs).cross(x -> x.equals("i") ? null : Stream.of(x)).map((a, b) -> a + "-" + b).join(
-            ", "));
+        assertEquals("j-j, k-k", StreamEx.of(inputs).cross(x -> x.equals("i") ? null : Stream.of(x)).map((a, b) -> a
+            + "-" + b).join(", "));
     }
 
     @Test
@@ -1386,7 +1392,8 @@ public class StreamExTest {
     public void testRunLenghts() {
         Integer[] input = { 1, 2, 2, 4, 2, null, null, 1, 1, 1, null, null };
         streamEx(() -> StreamEx.of(input), s -> {
-            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths(Objects::equals).map((a, b) -> a + ": " + b).join(", "));
+            assertEquals("1: 1, 2: 2, 4: 1, 2: 1, null: 2, 1: 3, null: 2", s.get().runLengths(Objects::equals).map((a,
+                    b) -> a + ": " + b).join(", "));
             assertEquals("1=1, 2=2, 4=1, 2=1, null=2, 1=3", s.get().runLengths(Objects::equals).distinct().map(
                 String::valueOf).join(", "));
         });
@@ -1428,8 +1435,8 @@ public class StreamExTest {
      * the corresponding Scala method)
      */
     private long segmentLength(IntStreamEx source, IntPredicate predicate) {
-        return source.mapToObj(predicate::test).runLengths(Objects::equals).removeByKey(Boolean.FALSE::equals).mapToLong(
-            Entry::getValue).max().orElse(0);
+        return source.mapToObj(predicate::test).runLengths(Objects::equals).removeByKey(Boolean.FALSE::equals)
+                .mapToLong(Entry::getValue).max().orElse(0);
     }
 
     @Test
@@ -1944,8 +1951,8 @@ public class StreamExTest {
         List<String> input = asList("a", "b", "c", "d", "e");
         streamEx(input::stream, s -> assertEquals(asList("a", "ab", "abc", "abcd", "abcde"), s.get().scan(
             String::concat).toList()));
-        streamEx(input::stream, s -> assertEquals(Optional.of("abcd"), s.get().scan(String::concat).findFirst(
-            str -> str.length() > 3)));
+        streamEx(input::stream, s -> assertEquals(Optional.of("abcd"), s.get().scan(String::concat).findFirst(str -> str
+                .length() > 3)));
 
         streamEx(() -> StreamEx.repeat("a", 5), s -> assertEquals(new HashSet<>(asList("a", "aa", "aaa", "aaaa",
             "aaaaa")), s.get().scan(String::concat).toSet()));
@@ -2052,17 +2059,17 @@ public class StreamExTest {
         assertEquals(Integer.MAX_VALUE + 10, c.size());
     }
 
-//    @Test
-//    public void testFilterBy() {
-//        assertEquals(3, StreamEx.of("a", "bb", "c", "e", "ddd").filterBy(String::length, 1).count());
-//        assertEquals(2, StreamEx.of("a", "bb", "c", "e", "ddd").filterBy(x -> x.length() > 1 ? null : x, null).count());
-//    }
-//
-//    @Test
-//    public void testRemoveBy() {
-//        assertEquals(2, StreamEx.of("a", "bb", "c", "e", "ddd").removeBy(String::length, 1).count());
-//        assertEquals(3, StreamEx.of("a", "bb", "c", "e", "ddd").removeBy(x -> x.length() > 1 ? null : x, null).count());
-//    }
+    //    @Test
+    //    public void testFilterBy() {
+    //        assertEquals(3, StreamEx.of("a", "bb", "c", "e", "ddd").filterBy(String::length, 1).count());
+    //        assertEquals(2, StreamEx.of("a", "bb", "c", "e", "ddd").filterBy(x -> x.length() > 1 ? null : x, null).count());
+    //    }
+    //
+    //    @Test
+    //    public void testRemoveBy() {
+    //        assertEquals(2, StreamEx.of("a", "bb", "c", "e", "ddd").removeBy(String::length, 1).count());
+    //        assertEquals(3, StreamEx.of("a", "bb", "c", "e", "ddd").removeBy(x -> x.length() > 1 ? null : x, null).count());
+    //    }
 
     @Test
     public void testIntersperse() {
@@ -2104,7 +2111,6 @@ public class StreamExTest {
         assertFalse(StreamEx.of("a", "b", "c").containsAll(Arrays.asList("d", "c")));
         assertFalse(StreamEx.of("a", "b", "c").containsAll(new HashSet<>(Arrays.asList("d"))));
     }
-    
 
     @Test
     public void test_join() {
