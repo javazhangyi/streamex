@@ -1362,7 +1362,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param supplier a supplier for the resulting collection
      * @return the new collection.
      * @since 0.3.7
+     * @deprecated
      */
+    @Deprecated
     public <U, C extends Collection<U>> C toFlatCollection(Function<? super T, ? extends Collection<U>> mapper,
             Supplier<C> supplier) {
         return map(mapper).collect(supplier, Collection::addAll, Collection::addAll);
@@ -1392,7 +1394,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        {@link Collection} of new values
      * @return the new list.
      * @since 0.3.7
+     * @deprecated
      */
+    @Deprecated
     public <U> List<U> toFlatList(Function<? super T, ? extends Collection<U>> mapper) {
         return toFlatCollection(mapper, ArrayList::new);
     }
