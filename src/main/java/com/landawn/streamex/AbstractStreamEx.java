@@ -1389,7 +1389,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return a {@code Collection} containing the elements of this stream
      * @see Collectors#toCollection(Supplier)
      */
-    public <C extends Collection<T>> C toCollection(Supplier<C> collectionFactory) {
+    public <C extends Collection<T>> C toCollection(Supplier<? extends C> collectionFactory) {
         return rawCollect(Collectors.toCollection(collectionFactory));
     }
 

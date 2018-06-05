@@ -1376,9 +1376,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toCollection(Supplier)
      * @since 0.8
      */
-    public <C extends Collection<V>> EntryStream<K, C> groupBy(Supplier<C> collectionFactory,
+    public <C extends Collection<V>> EntryStream<K, C> groupBy(Supplier<? extends C> collectionFactory,
             Supplier<Map<K, C>> mapSupplier) {
-        return groupBy(Collectors.toCollection(collectionFactory), mapSupplier);
+        return groupBy(Collectors.toCollection((Supplier<C>) collectionFactory), mapSupplier);
     }
 
     /**
@@ -1497,9 +1497,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return a {@code Map} containing the elements of this stream
      * @see Collectors#toCollection(Supplier)
      */
-    public <C extends Collection<V>, M extends Map<K, C>> M groupTo(Supplier<C> collectionFactory,
+    public <C extends Collection<V>, M extends Map<K, C>> M groupTo(Supplier<? extends C> collectionFactory,
             Supplier<M> mapSupplier) {
-        return groupTo(Collectors.toCollection(collectionFactory), mapSupplier);
+        return groupTo(Collectors.toCollection((Supplier<C>) collectionFactory), mapSupplier);
     }
 
     /**

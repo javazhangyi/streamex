@@ -66,6 +66,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 
+import com.landawn.abacus.util.Fn.Suppliers;
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.Joining;
@@ -410,7 +411,7 @@ public class StreamExTest {
 
         streamEx(() -> StreamEx.of("a", "bb", "dd", "ccc"), supplier -> {
             assertEquals(expected, supplier.get().groupTo(String::length));
-            Map<Integer, List<String>> map = supplier.get().groupTo(String::length, () -> new LinkedList<>());
+            Map<Integer, List<String>> map = supplier.get().groupTo(String::length, Suppliers.ofLinkedList());
             assertEquals(expected, map);
             assertTrue(map.get(1) instanceof LinkedList);
             assertEquals(expectedMapSet, supplier.get().groupTo(String::length, Collectors.toSet()));
