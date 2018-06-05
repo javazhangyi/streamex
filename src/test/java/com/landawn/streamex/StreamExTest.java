@@ -410,7 +410,7 @@ public class StreamExTest {
 
         streamEx(() -> StreamEx.of("a", "bb", "dd", "ccc"), supplier -> {
             assertEquals(expected, supplier.get().groupTo(String::length));
-            Map<Integer, List<String>> map = supplier.get().groupTo(String::length, LinkedList::new);
+            Map<Integer, List<String>> map = supplier.get().groupTo(String::length, () -> new LinkedList<>());
             assertEquals(expected, map);
             assertTrue(map.get(1) instanceof LinkedList);
             assertEquals(expectedMapSet, supplier.get().groupTo(String::length, Collectors.toSet()));

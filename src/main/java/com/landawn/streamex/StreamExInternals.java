@@ -31,7 +31,8 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
-/* package */final class StreamExInternals {
+/* package */@SuppressWarnings("restriction")
+final class StreamExInternals {
     static final int INITIAL_SIZE = 128;
     static final Function<int[], Integer> UNBOX_INT = box -> box[0];
     static final Function<long[], Long> UNBOX_LONG = box -> box[0];

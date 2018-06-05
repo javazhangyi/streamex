@@ -502,6 +502,27 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
     }
 
+    public <K, V> StreamEx<Map.Entry<K, List<V>>> groupBy(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper) {
+        final Map<K, List<V>> m = groupTo(classifier, valueMapper);
+
+        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+    }
+
+    public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
+        final Map<K, D> m = groupTo(classifier, valueMapper, downstream);
+
+        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+    }
+
+    public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
+            Supplier<Map<K, D>> mapFactory) {
+        final Map<K, D> m = groupTo(classifier, valueMapper, downstream, mapFactory);
+
+        return new StreamEx<>(context.parallel ? m.entrySet().parallelStream() : m.entrySet().stream(), context);
+    }
 
     /**
      * Returns a {@code StreamEx<Map.Entry<K, C>>} whose keys are the values
@@ -707,6 +728,28 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream, mapFactory);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    public <K, V> EntryStream<K, List<V>> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper) {
+        final StreamEx<Map.Entry<K, List<V>>> s = groupBy(classifier, valueMapper);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    public <K, V, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
+        final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, valueMapper, downstream);
+
+        return s.mapToEntry(Function.identity());
+    }
+
+    public <K, V, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
+            Supplier<Map<K, D>> mapFactory) {
+        final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, valueMapper, downstream, mapFactory);
 
         return s.mapToEntry(Function.identity());
     }
@@ -929,6 +972,33 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             return (M) rawCollect(Collectors.groupingByConcurrent(classifier,
                 (Supplier<ConcurrentMap<K, D>>) mapFactory, downstream));
         return rawCollect(Collectors.groupingBy(classifier, mapFactory, downstream));
+    }
+
+    public <K, V> Map<K, List<V>> groupTo(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper) {
+        return groupTo(classifier, valueMapper, Collectors.toList());
+    }
+
+    public <K, V, D> Map<K, D> groupTo(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
+        final Collector<? super T, ?, D> downstream2 = Collectors.mapping(valueMapper, downstream);
+
+        if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED))
+            return rawCollect(Collectors.groupingByConcurrent(classifier, downstream2));
+        return rawCollect(Collectors.groupingBy(classifier, downstream2));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <K, V, D, M extends Map<K, D>> M groupTo(Function<? super T, ? extends K> classifier,
+            Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
+            Supplier<M> mapFactory) {
+        final Collector<? super T, ?, D> downstream2 = Collectors.mapping(valueMapper, downstream);
+
+        if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapFactory
+                .get() instanceof ConcurrentMap)
+            return (M) rawCollect(Collectors.groupingByConcurrent(classifier,
+                (Supplier<ConcurrentMap<K, D>>) mapFactory, downstream2));
+        return rawCollect(Collectors.groupingBy(classifier, mapFactory, downstream2));
     }
 
     /**
@@ -2230,7 +2300,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public EntryStream<T, T> withFirst() {
         WithFirstSpliterator<T, Entry<T, T>> spliterator = new WithFirstSpliterator<>(spliterator(),
-                 SimpleImmutableEntry::new);
+                SimpleImmutableEntry::new);
         return new EntryStream<>(spliterator, context);
     }
 
@@ -2309,8 +2379,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #zipWith(BaseStream)
      */
     public <V, R> StreamEx<R> zipWith(BaseStream<V, ?> other, BiFunction<? super T, ? super V, ? extends R> mapper) {
-        return new StreamEx<>(new ZipSpliterator<>(spliterator(), other.spliterator(), mapper, true), context
-                .combine(other));
+        return new StreamEx<>(new ZipSpliterator<>(spliterator(), other.spliterator(), mapper, true), context.combine(
+            other));
     }
 
     /**
@@ -2346,7 +2416,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.5.5
      */
     public <V> EntryStream<T, V> zipWith(Stream<V> other) {
-        return zipWith((BaseStream<V, ?>)other);
+        return zipWith((BaseStream<V, ?>) other);
     }
 
     /**
@@ -2382,9 +2452,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.6.7
      */
     public <V> EntryStream<T, V> zipWith(BaseStream<V, ?> other) {
-        return new EntryStream<>(new ZipSpliterator<>(spliterator(), other.spliterator(),
-                SimpleImmutableEntry::new, true), context.combine(other));
+        return new EntryStream<>(new ZipSpliterator<>(spliterator(), other.spliterator(), SimpleImmutableEntry::new,
+                true), context.combine(other));
     }
+
     /**
      * Creates a new Stream which is the result of applying of the mapper
      * {@code BiFunction} to the first element of the current stream (head) and
