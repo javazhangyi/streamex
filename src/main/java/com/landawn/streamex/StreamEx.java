@@ -3679,7 +3679,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param <T> the type of map keys
      * @param map input map
      * @return a sequential {@code StreamEx} over the keys of given {@code Map}
-     * @throws NullPointerException if map is null
      * @see Map#keySet()
      */
     public static <T> StreamEx<T> ofKeys(Map<T, ?> map) {
@@ -3700,7 +3699,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param valueFilter a predicate used to test values
      * @return a sequential {@code StreamEx} over the keys of given {@code Map}
      *         which corresponding values match the supplied filter.
-     * @throws NullPointerException if map is null
      * @see Map#keySet()
      */
     public static <T, V> StreamEx<T> ofKeys(Map<T, V> map, Predicate<? super V> valueFilter) {
@@ -3719,7 +3717,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param map input map
      * @return a sequential {@code StreamEx} over the values of given
      *         {@code Map}
-     * @throws NullPointerException if map is null
      * @see Map#values()
      */
     public static <T> StreamEx<T> ofValues(Map<?, T> map) {
@@ -3740,7 +3737,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param keyFilter a predicate used to test keys
      * @return a sequential {@code StreamEx} over the values of given
      *         {@code Map} which corresponding keys match the supplied filter.
-     * @throws NullPointerException if map is null
      * @see Map#values()
      */
     public static <K, T> StreamEx<T> ofValues(Map<K, T> map, Predicate<? super K> keyFilter) {
