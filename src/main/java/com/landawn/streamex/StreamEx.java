@@ -365,7 +365,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param <V> the type of array elements
      * @param other the array to perform a cross product with
      * @return the new {@code EntryStream}
-     * @throws NullPointerException if other is null
      * @since 0.2.3
      */
     @SuppressWarnings("unchecked")
@@ -394,7 +393,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param <V> the type of collection elements
      * @param other the collection to perform a cross product with
      * @return the new {@code EntryStream}
-     * @throws NullPointerException if other is null
      * @since 0.2.3
      */
     public <V> EntryStream<T, V> cross(Collection<? extends V> other) {
