@@ -67,6 +67,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 
 import com.landawn.abacus.util.Fn;
+import com.landawn.abacus.util.N;
 import com.landawn.abacus.util.Fn.Suppliers;
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
@@ -85,6 +86,34 @@ import static java.util.Arrays.asList;
 public class StreamExTest {
     @Rule
     public TemporaryFolder tmp = new TemporaryFolder();
+
+    @Test
+    public void testSlidingMap() {
+        StreamEx.<String> of().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a", "bb").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a", "bb", "c").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+
+        StreamEx.<String> of().parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+
+        StreamEx.<String> of().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a", "bb").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a", "bb", "c").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a", "bb", "c", "ddd").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c))
+                .println();
+
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c))
+                .println();
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
+            c)).println();
+    }
 
     @Test
     public void testGroupBy() {

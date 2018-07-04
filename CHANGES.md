@@ -1,6 +1,13 @@
-# StreamEx changes
+z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
+
+### 2.1
+
+* Add `StreamEx.slidingMap`.
+
+* Improvements.
+
 
 ### 2.0.3
 

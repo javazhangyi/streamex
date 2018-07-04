@@ -157,7 +157,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @see #without(int)
      * @see #removeIf(IntPredicate)
      */
-    public IntStreamEx without(int... values) {
+    @SafeVarargs
+    public final IntStreamEx without(int... values) {
         if (values == null || values.length == 0)
             return this;
         if (values.length == 1)
@@ -1500,7 +1501,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @param values the values to append to the stream
      * @return the new stream
      */
-    public IntStreamEx append(int... values) {
+    @SafeVarargs
+    public final IntStreamEx append(int... values) {
         if (values == null || values.length == 0)
             return this;
         return new IntStreamEx(IntStream.concat(stream(), IntStream.of(values)), context);
@@ -1532,7 +1534,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @param values the values to prepend to the stream
      * @return the new stream
      */
-    public IntStreamEx prepend(int... values) {
+    @SafeVarargs
+    public final IntStreamEx prepend(int... values) {
         if (values == null || values.length == 0)
             return this;
         return new IntStreamEx(IntStream.concat(IntStream.of(values), stream()), context);
@@ -1844,11 +1847,11 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return delegate(new PairSpliterator.PSOfInt((a, b) -> a, mapper, spliterator(), PairSpliterator.MODE_MAP_LAST));
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    @Override
-//    public  <SS extends BaseStream> SS p_s(Function<? super IntStreamEx, SS> op) {
-//        return (SS) parallel().__(op).sequential();
-//    }
+    //    @SuppressWarnings({ "rawtypes", "unchecked" })
+    //    @Override
+    //    public  <SS extends BaseStream> SS p_s(Function<? super IntStreamEx, SS> op) {
+    //        return (SS) parallel().__(op).sequential();
+    //    }
 
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
@@ -1887,7 +1890,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @param elements the elements of the new stream
      * @return the new stream
      */
-    public static IntStreamEx of(int... elements) {
+    @SafeVarargs
+    public static final IntStreamEx of(int... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }
@@ -1927,7 +1931,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @return the new stream
      * @since 0.2.0
      */
-    public static IntStreamEx of(byte... elements) {
+    @SafeVarargs
+    public static final IntStreamEx of(byte... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }
@@ -1966,7 +1971,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @return the new stream
      * @since 0.2.0
      */
-    public static IntStreamEx of(char... elements) {
+    @SafeVarargs
+    public static final IntStreamEx of(char... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }
@@ -2005,7 +2011,8 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @return the new stream
      * @since 0.2.0
      */
-    public static IntStreamEx of(short... elements) {
+    @SafeVarargs
+    public static final IntStreamEx of(short... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }

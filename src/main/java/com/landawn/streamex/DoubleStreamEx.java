@@ -137,7 +137,8 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @see #without(long)
      * @see #removeIf(LongPredicate)
      */
-    public DoubleStreamEx without(double... values) {
+    @SafeVarargs
+    public final DoubleStreamEx without(double... values) {
         if (values == null || values.length == 0)
             return this;
         if (values.length == 1)
@@ -1432,7 +1433,8 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @param values the values to append to the stream
      * @return the new stream
      */
-    public DoubleStreamEx append(double... values) {
+    @SafeVarargs
+    public final DoubleStreamEx append(double... values) {
         if (values == null || values.length == 0)
             return this;
         return new DoubleStreamEx(DoubleStream.concat(stream(), DoubleStream.of(values)), context);
@@ -1464,7 +1466,8 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @param values the values to prepend to the stream
      * @return the new stream
      */
-    public DoubleStreamEx prepend(double... values) {
+    @SafeVarargs
+    public final DoubleStreamEx prepend(double... values) {
         if (values == null || values.length == 0)
             return this;
         return new DoubleStreamEx(DoubleStream.concat(DoubleStream.of(values), stream()), context);
@@ -1620,11 +1623,11 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
         return VER_SPEC.callWhile(this, Objects.requireNonNull(predicate), true);
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    @Override
-//    public  <SS extends BaseStream> SS p_s(Function<? super DoubleStreamEx, SS> op) {
-//        return (SS) parallel().__(op).sequential();
-//    }
+    //    @SuppressWarnings({ "rawtypes", "unchecked" })
+    //    @Override
+    //    public  <SS extends BaseStream> SS p_s(Function<? super DoubleStreamEx, SS> op) {
+    //        return (SS) parallel().__(op).sequential();
+    //    }
 
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
@@ -1663,7 +1666,8 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @param elements the elements of the new stream
      * @return the new stream
      */
-    public static DoubleStreamEx of(double... elements) {
+    @SafeVarargs
+    public static final DoubleStreamEx of(double... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }
@@ -1743,7 +1747,8 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @return the new stream
      * @since 0.2.0
      */
-    public static DoubleStreamEx of(float... elements) {
+    @SafeVarargs
+    public static final DoubleStreamEx of(float... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }

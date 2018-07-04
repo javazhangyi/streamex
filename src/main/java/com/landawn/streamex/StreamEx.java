@@ -37,7 +37,12 @@ import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
 import com.landawn.abacus.util.Fn;
+import com.landawn.abacus.util.N;
 import com.landawn.abacus.util.Pair;
+import com.landawn.abacus.util.Tuple;
+import com.landawn.abacus.util.Tuple.Tuple2;
+import com.landawn.abacus.util.Tuple.Tuple3;
+import com.landawn.abacus.util.function.TriFunction;
 import com.landawn.streamex.PairSpliterator.PSOfRef;
 
 import java.util.stream.Collectors;
@@ -368,7 +373,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.2.3
      */
     @SuppressWarnings("unchecked")
-    public <V> EntryStream<T, V> cross(V... other) {
+    @SafeVarargs
+    public final <V> EntryStream<T, V> cross(V... other) {
         if (other == null || other.length == 0)
             return new EntryStream<>(Spliterators.emptySpliterator(), context);
         if (other.length == 1)
@@ -2864,6 +2870,181 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         }), context);
     }
 
+    public <R> StreamEx<R> slidingMap(final BiFunction<? super T, ? super T, R> mapper) {
+        return slidingMap(mapper, 1);
+    }
+
+    /**
+     * Slide with <code>windowSize = 2</code> and the specified
+     * <code>increment</code>, then <code>map</code> by the specified
+     * <code>mapper</code>.
+     * 
+     * @param mapper
+     * @param increment
+     * @return
+     */
+    public <R> StreamEx<R> slidingMap(final BiFunction<? super T, ? super T, R> mapper, final int increment) {
+        return slidingMap(mapper, increment, false);
+    }
+
+    @SuppressWarnings("resource")
+    public <R> StreamEx<R> slidingMap(final BiFunction<? super T, ? super T, R> mapper, final int increment,
+            final boolean ignoreNotPaired) {
+        final int windowSize = 2;
+
+        N.checkArgument(windowSize > 0 && increment > 0, "'windowSize'=%s and 'increment'=%s must not be less than 1",
+            windowSize, increment);
+
+        if (isParallel()) {
+            final Function<Tuple2<T, T>, R> mapper2 = p -> mapper.apply(p._1, p._2);
+
+            return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(this.sequential().slidingMap((a, b) -> Tuple.of(
+                a, b), increment, ignoreNotPaired).iterator()), this.context).map(mapper2);
+        } else {
+            return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<R>() {
+                private final Iterator<T> iter = iterator();
+                @SuppressWarnings("unchecked")
+                private final T NONE = (T) StreamEx.NONE;
+                private T prev = NONE;
+                private T _1 = NONE;
+
+                @Override
+                public boolean hasNext() {
+                    if (increment > windowSize && prev != NONE) {
+                        int skipNum = increment - windowSize;
+
+                        while (skipNum-- > 0 && iter.hasNext()) {
+                            iter.next();
+                        }
+
+                        prev = NONE;
+                    }
+
+                    if (ignoreNotPaired && _1 == NONE && iter.hasNext()) {
+                        _1 = iter.next();
+                    }
+
+                    return iter.hasNext();
+                }
+
+                @Override
+                public R next() {
+                    if (hasNext() == false) {
+                        throw new NoSuchElementException();
+                    }
+
+                    if (ignoreNotPaired) {
+                        final R res = mapper.apply(_1, (prev = iter.next()));
+                        _1 = increment == 1 ? prev : NONE;
+                        return res;
+                    } else {
+                        if (increment == 1) {
+                            return mapper.apply(prev == NONE ? iter.next() : prev, (prev = (iter.hasNext() ? iter.next()
+                                    : null)));
+                        } else {
+                            return mapper.apply(iter.next(), (prev = (iter.hasNext() ? iter.next() : null)));
+                        }
+                    }
+                }
+            }), this.context);
+        }
+    }
+
+    public <R> StreamEx<R> slidingMap(final TriFunction<? super T, ? super T, ? super T, R> mapper) {
+        return slidingMap(mapper, 1);
+    }
+
+    /**
+     * Slide with <code>windowSize = 3</code> and the specified
+     * <code>increment</code>, then <code>map</code> by the specified
+     * <code>mapper</code>.
+     * 
+     * @param mapper
+     * @param increment
+     * @return
+     */
+    public <R> StreamEx<R> slidingMap(final TriFunction<? super T, ? super T, ? super T, R> mapper,
+            final int increment) {
+        return slidingMap(mapper, increment, false);
+    }
+
+    @SuppressWarnings("resource")
+    public <R> StreamEx<R> slidingMap(final TriFunction<? super T, ? super T, ? super T, R> mapper, final int increment,
+            final boolean ignoreNotPaired) {
+        final int windowSize = 3;
+
+        N.checkArgument(windowSize > 0 && increment > 0, "'windowSize'=%s and 'increment'=%s must not be less than 1",
+            windowSize, increment);
+        if (isParallel()) {
+            final Function<Tuple3<T, T, T>, R> mapper2 = p -> mapper.apply(p._1, p._2, p._3);
+
+            return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(this.sequential().slidingMap((a, b, c) -> Tuple
+                    .of(a, b, c), increment, ignoreNotPaired).iterator()), this.context).map(mapper2);
+        } else {
+            return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<R>() {
+                private final Iterator<T> iter = iterator();
+                @SuppressWarnings("unchecked")
+                private final T NONE = (T) StreamEx.NONE;
+                private T prev = NONE;
+                private T prev2 = NONE;
+                private T _1 = NONE;
+                private T _2 = NONE;
+
+                @Override
+                public boolean hasNext() {
+                    if (increment > windowSize && prev != NONE) {
+                        int skipNum = increment - windowSize;
+
+                        while (skipNum-- > 0 && iter.hasNext()) {
+                            iter.next();
+                        }
+
+                        prev = NONE;
+                    }
+
+                    if (ignoreNotPaired) {
+                        if (_1 == NONE && iter.hasNext()) {
+                            _1 = iter.next();
+                        }
+
+                        if (_2 == NONE && iter.hasNext()) {
+                            _2 = iter.next();
+                        }
+                    }
+
+                    return iter.hasNext();
+                }
+
+                @Override
+                public R next() {
+                    if (hasNext() == false) {
+                        throw new NoSuchElementException();
+                    }
+
+                    if (ignoreNotPaired) {
+                        final R res = mapper.apply(_1, _2, (prev = iter.next()));
+                        _1 = increment == 1 ? _2 : (increment == 2 ? prev : NONE);
+                        _2 = increment == 1 ? prev : NONE;
+                        return res;
+                    } else {
+                        if (increment == 1) {
+                            return mapper.apply(prev2 == NONE ? iter.next() : prev2, (prev2 = (prev == NONE ? (iter
+                                    .hasNext() ? iter.next() : null) : prev)), (prev = (iter.hasNext() ? iter.next()
+                                            : null)));
+
+                        } else if (increment == 2) {
+                            return mapper.apply(prev == NONE ? iter.next() : prev, (prev2 = (iter.hasNext() ? iter
+                                    .next() : null)), (prev = (iter.hasNext() ? iter.next() : null)));
+                        } else {
+                            return mapper.apply(iter.next(), (prev2 = (iter.hasNext() ? iter.next() : null)),
+                                (prev = (iter.hasNext() ? iter.next() : null)));
+                        }
+                    }
+                }
+            }), this.context);
+        }
+    }
+
     @SafeVarargs
     public final boolean containsAll(T... a) {
         if (a == null || a.length == 0) {
@@ -3328,7 +3509,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Stream#of(Object...)
      */
     @SafeVarargs
-    public static <T> StreamEx<T> of(T... elements) {
+    public static final <T> StreamEx<T> of(T... elements) {
         if (elements == null || elements.length == 0) {
             return StreamEx.empty();
         }
@@ -3445,7 +3626,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
                 return new StreamEx<>(ase.spliterator(), ase.context);
             return new StreamEx<>(ase.stream(), ase.context);
         }
-        
+
         return new StreamEx<>(stream, StreamContext.of(stream));
     }
 

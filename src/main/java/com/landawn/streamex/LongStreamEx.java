@@ -137,7 +137,8 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @see #without(long)
      * @see #removeIf(LongPredicate)
      */
-    public LongStreamEx without(long... values) {
+    @SafeVarargs
+    public final LongStreamEx without(long... values) {
         if (values == null || values.length == 0)
             return this;
         if (values.length == 1)
@@ -1426,7 +1427,8 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @param values the values to append to the stream
      * @return the new stream
      */
-    public LongStreamEx append(long... values) {
+    @SafeVarargs
+    public final LongStreamEx append(long... values) {
         if (values == null || values.length == 0)
             return this;
         return new LongStreamEx(LongStream.concat(stream(), LongStream.of(values)), context);
@@ -1458,7 +1460,8 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @param values the values to prepend to the stream
      * @return the new stream
      */
-    public LongStreamEx prepend(long... values) {
+    @SafeVarargs
+    public final LongStreamEx prepend(long... values) {
         if (values == null || values.length == 0)
             return this;
         return new LongStreamEx(LongStream.concat(LongStream.of(values), stream()), context);
@@ -1614,11 +1617,11 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
         return VER_SPEC.callWhile(this, Objects.requireNonNull(predicate), true);
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    @Override
-//    public  <SS extends BaseStream> SS p_s(Function<? super LongStreamEx, SS> op) {
-//        return (SS) parallel().__(op).sequential();
-//    }
+    //    @SuppressWarnings({ "rawtypes", "unchecked" })
+    //    @Override
+    //    public  <SS extends BaseStream> SS p_s(Function<? super LongStreamEx, SS> op) {
+    //        return (SS) parallel().__(op).sequential();
+    //    }
 
     // Necessary to generate proper JavaDoc
     // does not add overhead as it appears in bytecode anyways as bridge method
@@ -1657,7 +1660,8 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      * @param elements the elements of the new stream
      * @return the new stream
      */
-    public static LongStreamEx of(long... elements) {
+    @SafeVarargs
+    public static final LongStreamEx of(long... elements) {
         if (elements == null || elements.length == 0) {
             return empty();
         }
