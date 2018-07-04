@@ -726,6 +726,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return new StreamEx<>(ForwardingStream.of(supplier), context);
     }
 
+    public <K> Stream<Map.Entry<K, Integer>> countBy(final Function<? super T, ? extends K> classifier) {
+        return groupBy(classifier, MoreCollectors.countingInt());
+    }
+
     /**
      * Returns a {@code EntryStream<K, List<T>>} whose keys are the values
      * resulting from applying the classification function to the input
@@ -948,6 +952,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Supplier<? extends C> collectionFactory) {
 
         return partitionBy(predicate, (Supplier<C>) collectionFactory).mapToEntry(Function.identity());
+    }
+
+    public <K> EntryStream<K, Integer> countByToEntry(final Function<? super T, ? extends K> classifier) {
+        return groupByToEntry(classifier, MoreCollectors.countingInt());
     }
 
     /**

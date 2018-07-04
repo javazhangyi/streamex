@@ -2,6 +2,13 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.1.1
+
+* Add `StreamEx.countBy/countByToEntry`.
+
+* Improvements.
+
+
 ### 2.1
 
 * Add `StreamEx.slidingMap`.
