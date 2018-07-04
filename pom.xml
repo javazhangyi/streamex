@@ -4,7 +4,7 @@
 
   <groupId>com.landawn</groupId>
   <artifactId>streamex</artifactId>
-  <version>0.8-SNAPSHOT</version>
+  <version>2.1</version>
   <packaging>jar</packaging>
 
   <name>StreamEx</name>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>com.landawn</groupId>
       <artifactId>abacus-util</artifactId>
-      <version>1.2.13</version>
+      <version>1.2.16</version>
     </dependency>
     
     <dependency>
