@@ -37,6 +37,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
 import com.landawn.abacus.util.Fn;
+import com.landawn.abacus.util.Keyed;
 import com.landawn.abacus.util.N;
 import com.landawn.abacus.util.Pair;
 import com.landawn.abacus.util.Tuple;
@@ -956,6 +957,30 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     public <K> EntryStream<K, Integer> countByToEntry(final Function<? super T, ? extends K> classifier) {
         return groupByToEntry(classifier, MoreCollectors.countingInt());
+    }
+
+    /**
+     * Distinct and filter by occurrences.
+     * 
+     * @param occurrencesFilter
+     * @return
+     */
+    public StreamEx<T> distinct(final Predicate<? super Long> occurrencesFilter) {
+        return groupBy(Function.identity(), Collectors.counting()).filter(e -> occurrencesFilter.test(e.getValue()))
+                .map(Fn.key());
+    }
+
+    /**
+     * Distinct and filter by occurrences.
+     * 
+     * @param keyExtractor
+     * @param occurrencesFilter
+     * @return
+     */
+    public StreamEx<T> distinctBy(final Function<? super T, ?> keyExtractor,
+            final Predicate<? super Long> occurrencesFilter) {
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Collectors.counting()).filter(e -> occurrencesFilter
+                .test(e.getValue())).map(e -> e.getKey().val());
     }
 
     /**
