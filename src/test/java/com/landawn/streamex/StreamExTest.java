@@ -113,6 +113,28 @@ public class StreamExTest {
                 .println();
         StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
             c)).println();
+
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
+                .println();
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
+                .println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
+                .println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1,
+            true).println();
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
+            c), 1, true).println();
+
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+                .println();
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+                .println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+                .println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2,
+            true).println();
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
+            c), 2, true).println();
     }
 
     @Test
