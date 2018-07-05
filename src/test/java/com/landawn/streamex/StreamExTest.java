@@ -88,6 +88,17 @@ public class StreamExTest {
     public TemporaryFolder tmp = new TemporaryFolder();
 
     @Test
+    public void testDistinct_2() {
+        StreamEx.of("a", "ab", "ba", "c", "a").distinct(o -> o > 1).println();
+
+        StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o > 1).println();
+        StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o > 2).println();
+        StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o == 3).println();
+        StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o < 4).println();
+        StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o >= 4).println();
+    }
+
+    @Test
     public void testSlidingMap() {
         StreamEx.<String> of().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
         StreamEx.of("a").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
