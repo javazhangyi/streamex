@@ -2104,6 +2104,12 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
         return s.append(b);
     }
 
+    public static DoubleStreamEx concat(double[] a, double[] b, double[] c) {
+        final DoubleStreamEx s = of(a);
+
+        return s.append(b).append(c);
+    }
+
     /**
      * A helper interface to build a new stream by emitting elements and
      * creating new emitters in a chain.

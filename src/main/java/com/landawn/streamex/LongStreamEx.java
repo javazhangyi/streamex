@@ -2173,6 +2173,12 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
         return s.append(b);
     }
 
+    public static LongStreamEx concat(long[] a, long[] b, long[] c) {
+        final LongStreamEx s = of(a);
+
+        return s.append(b).append(c);
+    }
+
     /**
      * A helper interface to build a new stream by emitting elements and
      * creating new emitters in a chain.

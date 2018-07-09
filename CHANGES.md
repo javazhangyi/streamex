@@ -2,6 +2,13 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.1.3
+
+* Add `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx.concat(a, b, c)`
+
+* Improvements.
+
+
 ### 2.1.2
 
 * Add `distinct(Predicate<? super Long> occurrencesFilter)`

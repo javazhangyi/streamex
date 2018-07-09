@@ -2819,6 +2819,12 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return s.append(b);
     }
 
+    public static IntStreamEx concat(int[] a, int[] b, int[] c) {
+        final IntStreamEx s = of(a);
+
+        return s.append(b).append(c);
+    }
+
     /**
      * A helper interface to build a new stream by emitting elements and
      * creating new emitters in a chain.
