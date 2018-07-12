@@ -3468,6 +3468,24 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return of(new ConstSpliterator.OfRef<>(element, 1, true));
     }
 
+    public static StreamEx<Boolean> of(final boolean[] elements) {
+        if (elements == null || elements.length == 0) {
+            return StreamEx.<Boolean> empty();
+        }
+        
+        return IntStreamEx.range(0, elements.length).mapToObj(i -> elements[i]);
+    }
+
+    public static StreamEx<Boolean> of(final boolean[] elements, int startInclusive, int endExclusive) {
+        N.checkFromToIndex(startInclusive, endExclusive, N.len(elements));
+        
+        if (startInclusive == endExclusive) {
+            return StreamEx.<Boolean> empty();
+        }
+
+        return IntStreamEx.range(startInclusive, endExclusive).mapToObj(i -> elements[i]);
+    }
+
     public static StreamEx<Character> of(char[] elements) {
         return IntStreamEx.of(elements).mapToObj(i -> Character.valueOf((char) i));
     }
@@ -4711,7 +4729,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         return s.append(b);
     }
 
-    public static <T> StreamEx<T> concat(Collection<? extends T> a, Collection<? extends T> b, Collection<? extends T> c) {
+    public static <T> StreamEx<T> concat(Collection<? extends T> a, Collection<? extends T> b,
+            Collection<? extends T> c) {
         final StreamEx<T> s = of(a);
 
         return s.append(b).append(c);
