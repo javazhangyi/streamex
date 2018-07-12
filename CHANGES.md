@@ -6,6 +6,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 * Add `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx.concat(a, b, c)`
 
+* Add `StreamEx.of(boolean[])`.
+
 * Improvements.
 
 
