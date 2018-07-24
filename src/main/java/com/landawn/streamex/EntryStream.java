@@ -647,6 +647,12 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     public EntryStream<K, V> removeIf(BiPredicate<? super K, ? super V> predicate) {
         return filter(predicate.negate());
     }
+    
+    @SuppressWarnings("rawtypes")
+    private static final Predicate<Map.Entry> NONE_KEY = e -> e.getKey() != null;
+    @SuppressWarnings("rawtypes")
+    private static final Predicate<Map.Entry> NONE_VALUE = e -> e.getValue() != null;
+            
 
     /**
      * Returns a stream consisting of the elements of this stream which key is
@@ -661,7 +667,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     @Deprecated
     public EntryStream<K, V> nonNullKeys() {
-        return filter(e -> e.getKey() != null);
+        return filter(NONE_KEY);
     }
 
     /**
@@ -675,7 +681,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> skipNullKeys() {
-        return filter(e -> e.getKey() != null);
+        return filter(NONE_KEY);
     }
 
     /**
@@ -691,7 +697,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     @Deprecated
     public EntryStream<K, V> nonNullValues() {
-        return filter(e -> e.getValue() != null);
+        return filter(NONE_VALUE);
     }
 
     /**
@@ -705,7 +711,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> skipNullValues() {
-        return filter(e -> e.getValue() != null);
+        return filter(NONE_VALUE);
     }
 
     /**
