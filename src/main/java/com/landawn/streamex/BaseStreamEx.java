@@ -26,7 +26,6 @@ import java.util.stream.BaseStream;
 /* package */abstract class BaseStreamEx<T, S extends BaseStream<T, S>, SPLTR extends Spliterator<T>, B extends BaseStreamEx<T, S, SPLTR, B>>
         implements BaseStream<T, S> {
     static final String CONSUMED_MESSAGE = "Stream is already consumed";
-    static final Object NONE = new Object();
     
     private S stream;
     SPLTR spliterator;

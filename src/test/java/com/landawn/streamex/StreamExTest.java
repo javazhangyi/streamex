@@ -744,6 +744,8 @@ public class StreamExTest {
     public void testFoldLeftOptional() {
         // non-associative
         BinaryOperator<Integer> accumulator = (x, y) -> (x + y) * (x + y);
+        StreamEx.repeat(3, 4).foldLeft(accumulator).ifPresent(s -> assertEquals(2322576, s.intValue()));
+        
         streamEx(() -> StreamEx.repeat(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldLeft(
             accumulator).orElse(-1)));
         streamEx(() -> StreamEx.of(1, 2, 3), supplier -> assertEquals(144, (int) supplier.get().foldLeft(accumulator)

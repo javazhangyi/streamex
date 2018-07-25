@@ -649,9 +649,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     @SuppressWarnings("rawtypes")
-    private static final Predicate<Map.Entry> NONE_KEY = e -> e.getKey() != null;
+    private static final Predicate<Map.Entry> NON_KEY = e -> e.getKey() != null;
     @SuppressWarnings("rawtypes")
-    private static final Predicate<Map.Entry> NONE_VALUE = e -> e.getValue() != null;
+    private static final Predicate<Map.Entry> NON_VALUE = e -> e.getValue() != null;
 
     /**
      * Returns a stream consisting of the elements of this stream which key is
@@ -666,7 +666,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     @Deprecated
     public EntryStream<K, V> nonNullKeys() {
-        return filter(NONE_KEY);
+        return filter(NON_KEY);
     }
 
     /**
@@ -680,7 +680,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> skipNullKeys() {
-        return filter(NONE_KEY);
+        return filter(NON_KEY);
     }
 
     /**
@@ -696,7 +696,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     @Deprecated
     public EntryStream<K, V> nonNullValues() {
-        return filter(NONE_VALUE);
+        return filter(NON_VALUE);
     }
 
     /**
@@ -710,7 +710,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> skipNullValues() {
-        return filter(NONE_VALUE);
+        return filter(NON_VALUE);
     }
 
     /**

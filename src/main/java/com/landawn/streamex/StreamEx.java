@@ -2943,23 +2943,23 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<R>() {
                 private final Iterator<T> iter = iterator();
                 @SuppressWarnings("unchecked")
-                private final T NONE = (T) StreamEx.NONE;
-                private T prev = NONE;
-                private T _1 = NONE;
+                private final T NONE_T = (T) StreamExInternals.NONE;
+                private T prev = NONE_T;
+                private T _1 = NONE_T;
 
                 @Override
                 public boolean hasNext() {
-                    if (increment > windowSize && prev != NONE) {
+                    if (increment > windowSize && prev != NONE_T) {
                         int skipNum = increment - windowSize;
 
                         while (skipNum-- > 0 && iter.hasNext()) {
                             iter.next();
                         }
 
-                        prev = NONE;
+                        prev = NONE_T;
                     }
 
-                    if (ignoreNotPaired && _1 == NONE && iter.hasNext()) {
+                    if (ignoreNotPaired && _1 == NONE_T && iter.hasNext()) {
                         _1 = iter.next();
                     }
 
@@ -2974,12 +2974,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
                     if (ignoreNotPaired) {
                         final R res = mapper.apply(_1, (prev = iter.next()));
-                        _1 = increment == 1 ? prev : NONE;
+                        _1 = increment == 1 ? prev : NONE_T;
                         return res;
                     } else {
                         if (increment == 1) {
-                            return mapper.apply(prev == NONE ? iter.next() : prev, (prev = (iter.hasNext() ? iter.next()
-                                    : null)));
+                            return mapper.apply(prev == NONE_T ? iter.next() : prev, (prev = (iter.hasNext() ? iter
+                                    .next() : null)));
                         } else {
                             return mapper.apply(iter.next(), (prev = (iter.hasNext() ? iter.next() : null)));
                         }
@@ -3023,30 +3023,30 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             return new StreamEx<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<R>() {
                 private final Iterator<T> iter = iterator();
                 @SuppressWarnings("unchecked")
-                private final T NONE = (T) StreamEx.NONE;
-                private T prev = NONE;
-                private T prev2 = NONE;
-                private T _1 = NONE;
-                private T _2 = NONE;
+                private final T NONE_T = (T) NONE;
+                private T prev = NONE_T;
+                private T prev2 = NONE_T;
+                private T _1 = NONE_T;
+                private T _2 = NONE_T;
 
                 @Override
                 public boolean hasNext() {
-                    if (increment > windowSize && prev != NONE) {
+                    if (increment > windowSize && prev != NONE_T) {
                         int skipNum = increment - windowSize;
 
                         while (skipNum-- > 0 && iter.hasNext()) {
                             iter.next();
                         }
 
-                        prev = NONE;
+                        prev = NONE_T;
                     }
 
                     if (ignoreNotPaired) {
-                        if (_1 == NONE && iter.hasNext()) {
+                        if (_1 == NONE_T && iter.hasNext()) {
                             _1 = iter.next();
                         }
 
-                        if (_2 == NONE && iter.hasNext()) {
+                        if (_2 == NONE_T && iter.hasNext()) {
                             _2 = iter.next();
                         }
                     }
@@ -3062,17 +3062,17 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
                     if (ignoreNotPaired) {
                         final R res = mapper.apply(_1, _2, (prev = iter.next()));
-                        _1 = increment == 1 ? _2 : (increment == 2 ? prev : NONE);
-                        _2 = increment == 1 ? prev : NONE;
+                        _1 = increment == 1 ? _2 : (increment == 2 ? prev : NONE_T);
+                        _2 = increment == 1 ? prev : NONE_T;
                         return res;
                     } else {
                         if (increment == 1) {
-                            return mapper.apply(prev2 == NONE ? iter.next() : prev2, (prev2 = (prev == NONE ? (iter
+                            return mapper.apply(prev2 == NONE_T ? iter.next() : prev2, (prev2 = (prev == NONE_T ? (iter
                                     .hasNext() ? iter.next() : null) : prev)), (prev = (iter.hasNext() ? iter.next()
                                             : null)));
 
                         } else if (increment == 2) {
-                            return mapper.apply(prev == NONE ? iter.next() : prev, (prev2 = (iter.hasNext() ? iter
+                            return mapper.apply(prev == NONE_T ? iter.next() : prev, (prev2 = (iter.hasNext() ? iter
                                     .next() : null)), (prev = (iter.hasNext() ? iter.next() : null)));
                         } else {
                             return mapper.apply(iter.next(), (prev2 = (iter.hasNext() ? iter.next() : null)),
