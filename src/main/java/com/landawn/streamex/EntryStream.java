@@ -647,12 +647,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     public EntryStream<K, V> removeIf(BiPredicate<? super K, ? super V> predicate) {
         return filter(predicate.negate());
     }
-    
+
     @SuppressWarnings("rawtypes")
     private static final Predicate<Map.Entry> NONE_KEY = e -> e.getKey() != null;
     @SuppressWarnings("rawtypes")
     private static final Predicate<Map.Entry> NONE_VALUE = e -> e.getValue() != null;
-            
 
     /**
      * Returns a stream consisting of the elements of this stream which key is
@@ -1186,6 +1185,12 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#toConcurrentMap(Function, Function)
      */
     public <M extends Map<K, V>> M toMap(BinaryOperator<V> mergeFunction, Supplier<M> mapSupplier) {
+        // return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
+
+        if (isParallel() && mapSupplier.get() instanceof ConcurrentMap)
+            return (M) rawCollect(Collectors.toConcurrentMap(Fn.key(), Fn.value(), mergeFunction,
+                (Supplier<ConcurrentMap<K, V>>) mapSupplier));
+
         return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
     }
 

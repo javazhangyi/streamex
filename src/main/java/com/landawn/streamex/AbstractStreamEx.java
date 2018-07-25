@@ -716,6 +716,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public S removeIf(Predicate<? super T> predicate) {
         return filter(predicate.negate());
     }
+    
+    private static final Predicate<Object> NON_NULL = e -> e != null;
 
     /**
      * Returns a stream consisting of the elements of this stream that aren't
@@ -730,11 +732,11 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      */
     @Deprecated
     public S nonNull() {
-        return skipNull();
+        return filter(NON_NULL);
     }
 
     public S skipNull() {
-        return filter(Objects::nonNull);
+        return filter(NON_NULL);
     }
 
     /**

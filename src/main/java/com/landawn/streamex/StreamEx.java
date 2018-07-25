@@ -1566,6 +1566,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         //        forEach(t -> addToMap(map, keyMapper.apply(t), valMapper.apply(t), mergeFunction));
         //        return map;
 
+        // return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
+
+        if (isParallel() && mapSupplier.get() instanceof ConcurrentMap)
+            return (M) rawCollect(Collectors.toConcurrentMap(keyMapper, valMapper, mergeFunction,
+                (Supplier<ConcurrentMap<K, V>>) mapSupplier));
+
         return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
     }
 
@@ -3472,13 +3478,13 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         if (elements == null || elements.length == 0) {
             return StreamEx.<Boolean> empty();
         }
-        
+
         return IntStreamEx.range(0, elements.length).mapToObj(i -> elements[i]);
     }
 
     public static StreamEx<Boolean> of(final boolean[] elements, int startInclusive, int endExclusive) {
         N.checkFromToIndex(startInclusive, endExclusive, N.len(elements));
-        
+
         if (startInclusive == endExclusive) {
             return StreamEx.<Boolean> empty();
         }
