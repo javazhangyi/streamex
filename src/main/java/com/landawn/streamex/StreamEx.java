@@ -2262,6 +2262,32 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     /**
+     * Returns a stream consisting of lists of elements of this stream where
+     * adjacent elements are grouped according to supplied predicate.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * partial reduction operation.
+     * 
+     * <p>
+     * There are no guarantees on the type, mutability, serializability, or
+     * thread-safety of the {@code List} objects of the resulting stream.
+     * 
+     * <p>
+     * This operation is equivalent to
+     * {@code collapse(sameGroup, Collectors.toList())}, but more efficient.
+     * 
+     * @param sameGroup a non-interfering, stateless predicate to apply to the
+     *        pair of adjacent elements which returns true for elements which
+     *        belong to the same group.
+     * @return the new stream
+     * @since 2.1.6
+     */
+    public StreamEx<List<T>> collappse(BiPredicate<? super T, ? super T> sameGroup) {
+        return groupRuns(sameGroup);
+    }
+
+    /**
      * Collapses adjacent elements are grouped according to supplied predicate
      * and returns an {@link EntryStream} where keys are input elements and
      * values specify how many elements were collapsed.
@@ -2274,16 +2300,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        pair of adjacent elements which returns true for elements which
      *        belong to the same group.
      * @return the new stream
-     * @since 0.8.3
+     * @since 2.1.6
      */
-    public EntryStream<T, Long> runLengths(BiPredicate<? super T, ? super T> sameGroup) {
-        return new EntryStream<>(collapseInternal(sameGroup, t -> new ObjLongBox<>(t, 1L), (acc, t) -> {
-            acc.b++;
-            return acc;
-        }, (e1, e2) -> {
-            e1.b += e2.b;
-            return e1;
-        }), context);
+    public EntryStream<T, Long> collapsse(BiPredicate<? super T, ? super T> sameGroup) {
+        return runLengths(sameGroup);
     }
 
     /**
@@ -2307,7 +2327,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      *        belong to the same group.
      * @return the new stream
      * @since 0.3.1
+     * @deprecated replaced by {@code #collappse(BiPredicate)}
      */
+    @Deprecated
     public StreamEx<List<T>> groupRuns(BiPredicate<? super T, ? super T> sameGroup) {
         return collapseInternal(sameGroup, Collections::singletonList, (acc, t) -> {
             if (!(acc instanceof ArrayList)) {
@@ -2326,6 +2348,33 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             acc1.addAll(acc2);
             return acc1;
         });
+    }
+
+    /**
+     * Collapses adjacent elements are grouped according to supplied predicate
+     * and returns an {@link EntryStream} where keys are input elements and
+     * values specify how many elements were collapsed.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate</a>
+     * partial reduction operation.
+     * 
+     * @param sameGroup a non-interfering, stateless predicate to apply to the
+     *        pair of adjacent elements which returns true for elements which
+     *        belong to the same group.
+     * @return the new stream
+     * @since 0.8.3
+     * @deprecated replaced by {@code #collapsse(BiPredicate)}
+     */
+    @Deprecated
+    public EntryStream<T, Long> runLengths(BiPredicate<? super T, ? super T> sameGroup) {
+        return new EntryStream<>(collapseInternal(sameGroup, t -> new ObjLongBox<>(t, 1L), (acc, t) -> {
+            acc.b++;
+            return acc;
+        }, (e1, e2) -> {
+            e1.b += e2.b;
+            return e1;
+        }), context);
     }
 
     /**
