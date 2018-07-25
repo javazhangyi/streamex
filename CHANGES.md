@@ -2,6 +2,14 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+
+### 2.1.4
+
+* Improve `StreamEx/EntryStream.toMap`.
+
+* Improvements.
+
+
 ### 2.1.3
 
 * Add `StreamEx/IntStreamEx/LongStreamEx/DoubleStreamEx.concat(a, b, c)`
