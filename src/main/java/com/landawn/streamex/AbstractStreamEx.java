@@ -19,6 +19,7 @@ import static com.landawn.streamex.StreamExInternals.*;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.*;
 import java.util.stream.*;
@@ -429,7 +430,18 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @since 0.3.8
      */
     public S distinctBy(Function<? super T, ?> keyExtractor) {
-        return supply(stream().map(t -> new PairBox<>(t, keyExtractor.apply(t))).distinct().map(box -> box.a));
+        // return supply(stream().map(t -> new PairBox<>(t, keyExtractor.apply(t))).distinct().map(box -> box.a));
+
+        final Predicate<T> p = new Predicate<T>() {
+            private final Set<Object> set = isParallel() ? ConcurrentHashMap.newKeySet() : new HashSet<>();
+
+            @Override
+            public boolean test(T t) {
+                return set.add(keyExtractor.apply(t));
+            }
+        };
+
+        return filter(p);
     }
 
     @Override
@@ -716,7 +728,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public S removeIf(Predicate<? super T> predicate) {
         return filter(predicate.negate());
     }
-    
+
     private static final Predicate<Object> NON_NULL = e -> e != null;
 
     /**

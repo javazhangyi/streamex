@@ -2,6 +2,11 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.1.7
+
+* Improvements.
+
+
 ### 2.1.6
 
 * Replace `groupRuns/runLengths` with `collappse/collapsse`.
