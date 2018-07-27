@@ -4,8 +4,6 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 2.1.8
 
-* Add `EntryStream.toMap/groupTo/groupBy(classifier, valueMapper...)`.
-
 * Improvements and bug fixes.
 
 
