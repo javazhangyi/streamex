@@ -745,7 +745,7 @@ public class StreamExTest {
         // non-associative
         BinaryOperator<Integer> accumulator = (x, y) -> (x + y) * (x + y);
         StreamEx.repeat(3, 4).foldLeft(accumulator).ifPresent(s -> assertEquals(2322576, s.intValue()));
-        
+
         streamEx(() -> StreamEx.repeat(3, 4), supplier -> assertEquals(2322576, (int) supplier.get().foldLeft(
             accumulator).orElse(-1)));
         streamEx(() -> StreamEx.of(1, 2, 3), supplier -> assertEquals(144, (int) supplier.get().foldLeft(accumulator)
@@ -774,9 +774,14 @@ public class StreamExTest {
     }
 
     @Test
+    public void testDistinctBy() {
+        StreamEx.of("a", "b", "c", null, "a").distinct().println();
+        StreamEx.of("a", "b", "c", null, "a").distinctBy(Fn.identity()).println();
+        StreamEx.of("a", "b", "c", null, "a").parallel().distinctBy(Fn.identity(), i -> i > 1).println();
+    }
+
+    @Test
     public void testDistinctAtLeast() {
-        StreamEx.of("a", "b", "c", null).parallel().distinct().toList();
-        
         assertEquals(0, StreamEx.of("a", "b", "c").distinct(2).count());
         assertEquals(StreamEx.of("a", "b", "c").distinct().toList(), StreamEx.of("a", "b", "c").distinct(1).toList());
         assertEquals(asList("b"), StreamEx.of("a", "b", "c", "b", null).distinct(2).toList());
