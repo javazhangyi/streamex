@@ -1037,8 +1037,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <K, D> Map<K, D> groupTo(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED))
-            return rawCollect(Collectors.groupingByConcurrent(classifier, downstream));
-        return rawCollect(Collectors.groupingBy(classifier, downstream));
+            return rawCollect(MoreCollectors.groupingByConcurrent(classifier, downstream));
+        return rawCollect(MoreCollectors.groupingBy(classifier, downstream));
     }
 
     /**
@@ -1073,9 +1073,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Collector<? super T, ?, D> downstream, Supplier<M> mapFactory) {
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapFactory
                 .get() instanceof ConcurrentMap)
-            return (M) rawCollect(Collectors.groupingByConcurrent(classifier,
-                (Supplier<ConcurrentMap<K, D>>) mapFactory, downstream));
-        return rawCollect(Collectors.groupingBy(classifier, mapFactory, downstream));
+            return (M) rawCollect(MoreCollectors.groupingByConcurrent(classifier, downstream,
+                (Supplier<ConcurrentMap<K, D>>) mapFactory));
+        return rawCollect(MoreCollectors.groupingBy(classifier, downstream, mapFactory));
     }
 
     public <K, V> Map<K, List<V>> groupTo(Function<? super T, ? extends K> classifier,
@@ -1085,24 +1085,24 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     public <K, V, D> Map<K, D> groupTo(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
-        final Collector<? super T, ?, D> downstream2 = Collectors.mapping(valueMapper, downstream);
+        final Collector<? super T, ?, D> downstream2 = MoreCollectors.mapping(valueMapper, downstream);
 
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED))
-            return rawCollect(Collectors.groupingByConcurrent(classifier, downstream2));
-        return rawCollect(Collectors.groupingBy(classifier, downstream2));
+            return rawCollect(MoreCollectors.groupingByConcurrent(classifier, downstream2));
+        return rawCollect(MoreCollectors.groupingBy(classifier, downstream2));
     }
 
     @SuppressWarnings("unchecked")
     public <K, V, D, M extends Map<K, D>> M groupTo(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
             Supplier<M> mapFactory) {
-        final Collector<? super T, ?, D> downstream2 = Collectors.mapping(valueMapper, downstream);
+        final Collector<? super T, ?, D> downstream2 = MoreCollectors.mapping(valueMapper, downstream);
 
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapFactory
                 .get() instanceof ConcurrentMap)
-            return (M) rawCollect(Collectors.groupingByConcurrent(classifier,
-                (Supplier<ConcurrentMap<K, D>>) mapFactory, downstream2));
-        return rawCollect(Collectors.groupingBy(classifier, mapFactory, downstream2));
+            return (M) rawCollect(MoreCollectors.groupingByConcurrent(classifier, downstream2,
+                (Supplier<ConcurrentMap<K, D>>) mapFactory));
+        return rawCollect(MoreCollectors.groupingBy(classifier, downstream2, mapFactory));
     }
 
     /**
@@ -1261,7 +1261,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <C extends Collection<T>> Map<Boolean, C> partitionTo(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
-        return collect(Collectors.partitioningBy(predicate, Collectors.toCollection((Supplier<C>) collectionFactory)));
+        return collect(MoreCollectors.partitioningBy(predicate, Collectors.toCollection((Supplier<C>) collectionFactory)));
     }
 
     /**
@@ -1569,7 +1569,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
         // return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
 
         if (isParallel() && mapSupplier.get() instanceof ConcurrentMap)
-            return (M) rawCollect(Collectors.toConcurrentMap(keyMapper, valMapper, mergeFunction,
+            return (M) rawCollect(MoreCollectors.toConcurrentMap(keyMapper, valMapper, mergeFunction,
                 (Supplier<ConcurrentMap<K, V>>) mapSupplier));
 
         return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));

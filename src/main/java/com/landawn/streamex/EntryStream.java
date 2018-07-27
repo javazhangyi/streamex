@@ -1188,7 +1188,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         // return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
 
         if (isParallel() && mapSupplier.get() instanceof ConcurrentMap)
-            return (M) rawCollect(Collectors.toConcurrentMap(Fn.key(), Fn.value(), mergeFunction,
+            return (M) rawCollect(MoreCollectors.toConcurrentMap(Fn.key(), Fn.value(), mergeFunction,
                 (Supplier<ConcurrentMap<K, V>>) mapSupplier));
 
         return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
@@ -1550,11 +1550,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public <A, D> Map<K, D> groupTo(Collector<? super V, A, D> downstream) {
         Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        Collector<Entry<K, V>, ?, D> mapping = Collectors.mapping(Entry::getValue, downstream);
+        Collector<Entry<K, V>, ?, D> mapping = MoreCollectors.mapping(Entry::getValue, downstream);
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED)) {
-            return collect(Collectors.groupingByConcurrent(keyMapper, mapping));
+            return collect(MoreCollectors.groupingByConcurrent(keyMapper, mapping));
         }
-        return collect(Collectors.groupingBy(keyMapper, mapping));
+        return collect(MoreCollectors.groupingBy(keyMapper, mapping));
     }
 
     /**
@@ -1582,13 +1582,13 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     @SuppressWarnings("unchecked")
     public <A, D, M extends Map<K, D>> M groupTo(Collector<? super V, A, D> downstream, Supplier<M> mapSupplier) {
         Function<Entry<K, V>, K> keyMapper = Entry::getKey;
-        Collector<Entry<K, V>, ?, D> mapping = Collectors.mapping(Entry::getValue, downstream);
+        Collector<Entry<K, V>, ?, D> mapping = MoreCollectors.mapping(Entry::getValue, downstream);
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapSupplier
                 .get() instanceof ConcurrentMap) {
-            return (M) collect(Collectors.groupingByConcurrent(keyMapper,
-                (Supplier<? extends ConcurrentMap<K, D>>) mapSupplier, mapping));
+            return (M) collect(MoreCollectors.groupingByConcurrent(keyMapper, mapping,
+                (Supplier<? extends ConcurrentMap<K, D>>) mapSupplier));
         }
-        return collect(Collectors.groupingBy(keyMapper, mapSupplier, mapping));
+        return collect(MoreCollectors.groupingBy(keyMapper, mapping, mapSupplier));
     }
 
     /**

@@ -598,7 +598,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @since 0.8.2
      */
     public <R, A, RR> RR collectAndThen(Collector<? super T, A, R> downstream, Function<R, RR> finisher) {
-        return collect(Collectors.collectingAndThen(downstream, finisher));
+        return collect(MoreCollectors.collectingAndThen(downstream, finisher));
     }
 
     @Override
