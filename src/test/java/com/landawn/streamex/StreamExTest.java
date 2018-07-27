@@ -775,6 +775,8 @@ public class StreamExTest {
 
     @Test
     public void testDistinctAtLeast() {
+        StreamEx.of("a", "b", "c", null).parallel().distinct().toList();
+        
         assertEquals(0, StreamEx.of("a", "b", "c").distinct(2).count());
         assertEquals(StreamEx.of("a", "b", "c").distinct().toList(), StreamEx.of("a", "b", "c").distinct(1).toList());
         assertEquals(asList("b"), StreamEx.of("a", "b", "c", "b", null).distinct(2).toList());

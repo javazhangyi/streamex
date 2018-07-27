@@ -437,7 +437,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
 
             @Override
             public boolean test(T t) {
-                return set.add(keyExtractor.apply(t));
+                final Object key = keyExtractor.apply(t);
+                return set.add(key == null ? NONE : key);
             }
         };
 
