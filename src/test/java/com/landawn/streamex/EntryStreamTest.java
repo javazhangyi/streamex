@@ -453,13 +453,13 @@ public class EntryStreamTest {
 //        result = s.get().parallel().groupingTo(LinkedList::new);
 //        assertEquals(expected, result);
 //        assertTrue(result.get("a") instanceof LinkedList);
-        SortedMap<String, List<Integer>> resultTree = s.get().groupTo(LinkedList::new, TreeMap::new);
+        SortedMap<String, List<Integer>> resultTree = s.get().groupTo(() -> new LinkedList<>(), TreeMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
-        resultTree = s.get().parallel().groupTo(LinkedList::new, TreeMap::new);
+        resultTree = s.get().parallel().groupTo(() -> new LinkedList<>(), TreeMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
-        resultTree = s.get().parallel().groupTo(LinkedList::new, ConcurrentSkipListMap::new);
+        resultTree = s.get().parallel().groupTo(() -> new LinkedList<>(), ConcurrentSkipListMap::new);
         assertTrue(resultTree.get("a") instanceof LinkedList);
         assertEquals(expected, resultTree);
     }

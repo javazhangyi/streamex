@@ -18,6 +18,7 @@ package com.landawn.streamex;
 import java.util.AbstractMap.SimpleImmutableEntry;
 
 import static com.landawn.streamex.StreamExInternals.*;
+import static com.landawn.abacus.util.Fn.Suppliers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1055,58 +1056,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #toImmutableMap()
      */
     public Map<K, V> toMap() {
-        return toMap(Fn.throwingMerger(), Fn.Suppliers.ofMap());
-    }
-
-    /**
-     * Returns an immutable {@link Map} containing the elements of this stream.
-     * There's no guarantees on exact type of the returned {@code Map}. In
-     * particular, no specific element order in the resulting {@code Map} is
-     * guaranteed. The returned {@code Map} is guaranteed to be serializable if
-     * all its elements are serializable.
-     *
-     * <p>
-     * This is a terminal operation.
-     *
-     * @return a {@code Map} containing the elements of this stream
-     * @throws IllegalStateException if this stream contains duplicate keys
-     *         (according to {@link Object#equals(Object)})
-     * @see #toMap()
-     * @since 0.6.3
-     */
-    public ImmutableMap<K, V> toImmutableMap() {
-        Map<K, V> map = toMap();
-        return map.isEmpty() ? ImmutableMap.empty() : ImmutableMap.of(map);
-    }
-
-    /**
-     * Creates a {@link Map} containing the elements of this stream, then
-     * performs finishing transformation and returns its result. There are no
-     * guarantees on the type or serializability of the {@code Map} created.
-     *
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">terminal</a>
-     * operation.
-     *
-     * <p>
-     * Created {@code Map} is guaranteed to be modifiable.
-     *
-     * <p>
-     * For parallel stream the concurrent {@code Map} is created.
-     *
-     * @param <R> the type of the result
-     * @param finisher a function to be applied to the intermediate map
-     * @return result of applying the finisher transformation to the {@code Map}
-     *         of the stream elements.
-     * @throws IllegalStateException if this stream contains duplicate keys
-     *         (according to {@link Object#equals(Object)})
-     * @see #toMap()
-     * @since 0.5.5
-     */
-    public <R> R toMapAndThen(Function<? super Map<K, V>, R> finisher) {
-        if (context.fjp != null)
-            return context.terminate(() -> finisher.apply(toMap()));
-        return finisher.apply(toMap());
+        return toMap(Fn.throwingMerger(), Suppliers.ofMap());
     }
 
     /**
@@ -1137,7 +1087,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public Map<K, V> toMap(BinaryOperator<V> mergeFunction) {
-        return toMap(mergeFunction, Fn.Suppliers.ofMap());
+        return toMap(mergeFunction, Suppliers.ofMap());
     }
 
     /**
@@ -1194,6 +1144,33 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
     }
 
+    public <KK, VV> Map<KK, VV> toMap(final Function<? super Map.Entry<K, V>, ? extends KK> keyMapper,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valMapper) {
+        return toMap(keyMapper, valMapper, Fn.throwingMerger());
+    }
+
+    public <KK, VV> Map<KK, VV> toMap(final Function<? super Map.Entry<K, V>, ? extends KK> keyMapper,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valMapper, final BinaryOperator<VV> mergeFunction) {
+        return toMap(keyMapper, valMapper, mergeFunction, Suppliers.ofMap());
+    }
+
+    public <KK, VV, M extends Map<KK, VV>> M toMap(final Function<? super Map.Entry<K, V>, ? extends KK> keyMapper,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valMapper, final Supplier<M> mapSupplier) {
+        return toMap(keyMapper, valMapper, Fn.throwingMerger(), mapSupplier);
+    }
+
+    public <KK, VV, M extends Map<KK, VV>> M toMap(final Function<? super Map.Entry<K, V>, ? extends KK> keyMapper,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valMapper, final BinaryOperator<VV> mergeFunction,
+            final Supplier<M> mapSupplier) {
+        // return rawCollect(MoreCollectors.toMap(Fn.key(), Fn.value(), mergeFunction, mapSupplier));
+
+        if (isParallel() && mapSupplier.get() instanceof ConcurrentMap)
+            return (M) rawCollect(MoreCollectors.toConcurrentMap(keyMapper, valMapper, mergeFunction,
+                (Supplier<ConcurrentMap<KK, VV>>) mapSupplier));
+
+        return rawCollect(MoreCollectors.toMap(keyMapper, valMapper, mergeFunction, mapSupplier));
+    }
+
     /**
      * Returns a {@link SortedMap} containing the elements of this stream. There
      * are no guarantees on the type or serializability of the {@code SortedMap}
@@ -1247,7 +1224,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.1.0
      */
     public SortedMap<K, V> toSortedMap(BinaryOperator<V> mergeFunction) {
-        return toMap(mergeFunction, Fn.Suppliers.ofTreeMap());
+        return toMap(mergeFunction, Suppliers.ofTreeMap());
     }
 
     /**
@@ -1304,7 +1281,58 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.6.5
      */
     public NavigableMap<K, V> toNavigableMap(BinaryOperator<V> mergeFunction) {
-        return toMap(mergeFunction, Fn.Suppliers.ofTreeMap());
+        return toMap(mergeFunction, Suppliers.ofTreeMap());
+    }
+
+    /**
+     * Returns an immutable {@link Map} containing the elements of this stream.
+     * There's no guarantees on exact type of the returned {@code Map}. In
+     * particular, no specific element order in the resulting {@code Map} is
+     * guaranteed. The returned {@code Map} is guaranteed to be serializable if
+     * all its elements are serializable.
+     *
+     * <p>
+     * This is a terminal operation.
+     *
+     * @return a {@code Map} containing the elements of this stream
+     * @throws IllegalStateException if this stream contains duplicate keys
+     *         (according to {@link Object#equals(Object)})
+     * @see #toMap()
+     * @since 0.6.3
+     */
+    public ImmutableMap<K, V> toImmutableMap() {
+        Map<K, V> map = toMap();
+        return map.isEmpty() ? ImmutableMap.empty() : ImmutableMap.of(map);
+    }
+
+    /**
+     * Creates a {@link Map} containing the elements of this stream, then
+     * performs finishing transformation and returns its result. There are no
+     * guarantees on the type or serializability of the {@code Map} created.
+     *
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">terminal</a>
+     * operation.
+     *
+     * <p>
+     * Created {@code Map} is guaranteed to be modifiable.
+     *
+     * <p>
+     * For parallel stream the concurrent {@code Map} is created.
+     *
+     * @param <R> the type of the result
+     * @param finisher a function to be applied to the intermediate map
+     * @return result of applying the finisher transformation to the {@code Map}
+     *         of the stream elements.
+     * @throws IllegalStateException if this stream contains duplicate keys
+     *         (according to {@link Object#equals(Object)})
+     * @see #toMap()
+     * @since 0.5.5
+     */
+    public <R> R toMapAndThen(Function<? super Map<K, V>, R> finisher) {
+        if (context.fjp != null)
+            return context.terminate(() -> finisher.apply(toMap()));
+        return finisher.apply(toMap());
     }
 
     /**
@@ -1451,6 +1479,38 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return new EntryStream<>(ForwardingStream.of(supplier), context);
     }
 
+    public <KK, VV> EntryStream<KK, List<VV>> groupBy(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper) {
+        return groupBy(classifier, valueMapper, Suppliers.ofMap());
+    }
+
+    public <KK, VV, M extends Map<KK, List<VV>>> EntryStream<KK, List<VV>> groupBy(
+            final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper, Supplier<M> mapSupplier) {
+        return groupBy(classifier, valueMapper, Collectors.toList(), mapSupplier);
+    }
+
+    public <A, D, KK, VV> EntryStream<KK, D> groupBy(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper,
+            final Collector<? super VV, A, D> downstream) {
+        return groupBy(classifier, valueMapper, downstream, Suppliers.ofMap());
+    }
+
+    public <A, D, KK, VV, M extends Map<KK, D>> EntryStream<KK, D> groupBy(
+            final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper,
+            final Collector<? super VV, A, D> downstream, final Supplier<M> mapSupplier) {
+        Supplier<Stream<Map.Entry<KK, D>>> supplier = null;
+
+        if (context.parallel) {
+            supplier = () -> groupTo(classifier, valueMapper, downstream, mapSupplier).entrySet().parallelStream();
+        } else {
+            supplier = () -> groupTo(classifier, valueMapper, downstream, mapSupplier).entrySet().stream();
+        }
+
+        return new EntryStream<>(ForwardingStream.of(supplier), context);
+    }
+
     /**
      * Returns a {@link Map} where elements of this stream with the same key are
      * grouped together. The resulting {@code Map} keys are the keys of this
@@ -1580,7 +1640,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      */
     @SuppressWarnings("unchecked")
-    public <A, D, M extends Map<K, D>> M groupTo(Collector<? super V, A, D> downstream, Supplier<M> mapSupplier) {
+    public <A, D, M extends Map<K, D>> M groupTo(final Collector<? super V, A, D> downstream,
+            final Supplier<M> mapSupplier) {
         Function<Entry<K, V>, K> keyMapper = Entry::getKey;
         Collector<Entry<K, V>, ?, D> mapping = MoreCollectors.mapping(Entry::getValue, downstream);
         if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapSupplier
@@ -1589,6 +1650,37 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
                 (Supplier<? extends ConcurrentMap<K, D>>) mapSupplier));
         }
         return collect(MoreCollectors.groupingBy(keyMapper, mapping, mapSupplier));
+    }
+
+    public <KK, VV> Map<KK, List<VV>> groupTo(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper) {
+        return groupTo(classifier, valueMapper, Suppliers.ofMap());
+    }
+
+    public <KK, VV, M extends Map<KK, List<VV>>> M groupTo(
+            final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper, final Supplier<M> mapSupplier) {
+        return groupTo(classifier, valueMapper, Collectors.toList(), mapSupplier);
+    }
+
+    public <A, D, KK, VV> Map<KK, D> groupTo(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper,
+            final Collector<? super VV, A, D> downstream) {
+        return groupTo(classifier, valueMapper, downstream, Suppliers.ofMap());
+    }
+
+    public <A, D, KK, VV, M extends Map<KK, D>> M groupTo(
+            final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
+            final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper,
+            final Collector<? super VV, A, D> downstream, final Supplier<M> mapSupplier) {
+        final Collector<Map.Entry<K, V>, ?, D> mapping = MoreCollectors.mapping(valueMapper, downstream);
+
+        if (isParallel() && downstream.characteristics().contains(Characteristics.UNORDERED) && mapSupplier
+                .get() instanceof ConcurrentMap) {
+            return (M) collect(MoreCollectors.groupingByConcurrent(classifier, mapping,
+                (Supplier<? extends ConcurrentMap<KK, D>>) mapSupplier));
+        }
+        return collect(MoreCollectors.groupingBy(classifier, mapping, mapSupplier));
     }
 
     /**

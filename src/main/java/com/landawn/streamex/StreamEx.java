@@ -16,6 +16,7 @@
 package com.landawn.streamex;
 
 import static com.landawn.streamex.StreamExInternals.*;
+import static com.landawn.abacus.util.Fn.Suppliers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -1261,7 +1262,8 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <C extends Collection<T>> Map<Boolean, C> partitionTo(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
-        return collect(MoreCollectors.partitioningBy(predicate, Collectors.toCollection((Supplier<C>) collectionFactory)));
+        return collect(MoreCollectors.partitioningBy(predicate, Collectors.toCollection(
+            (Supplier<C>) collectionFactory)));
     }
 
     /**
@@ -1496,7 +1498,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        return toMap(keyMapper, valMapper, Fn.Suppliers.ofMap());
+        return toMap(keyMapper, valMapper, Suppliers.ofMap());
     }
 
     /**
@@ -1535,7 +1537,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofMap());
+        return toMap(keyMapper, valMapper, mergeFunction, Suppliers.ofMap());
     }
 
     /**
@@ -1645,7 +1647,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        return toMap(keyMapper, valMapper, Fn.Suppliers.ofTreeMap());
+        return toMap(keyMapper, valMapper, Suppliers.ofTreeMap());
     }
 
     /**
@@ -1684,7 +1686,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofTreeMap());
+        return toMap(keyMapper, valMapper, mergeFunction, Suppliers.ofTreeMap());
     }
 
     /**
@@ -1755,7 +1757,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper) {
-        return toMap(keyMapper, valMapper, Fn.Suppliers.ofTreeMap());
+        return toMap(keyMapper, valMapper, Suppliers.ofTreeMap());
     }
 
     /**
@@ -1795,7 +1797,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, V> NavigableMap<K, V> toNavigableMap(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valMapper, BinaryOperator<V> mergeFunction) {
-        return toMap(keyMapper, valMapper, mergeFunction, Fn.Suppliers.ofTreeMap());
+        return toMap(keyMapper, valMapper, mergeFunction, Suppliers.ofTreeMap());
     }
 
     /**
