@@ -2,6 +2,11 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.1.9
+
+* Improvements and bug fixes.
+
+
 ### 2.1.8
 
 * Improvements and bug fixes.
