@@ -313,7 +313,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
     public DoubleStreamEx flatMap(DoubleFunction<? extends DoubleStream> mapper) {
         return new DoubleStreamEx(stream().flatMap(mapper), context);
     }
- 
+
     public DoubleStreamEx flattMap(final DoubleFunction<double[]> mapper) {
         return flatMap(d -> DoubleStreamEx.of(mapper.apply(d)));
     }
@@ -372,8 +372,18 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @return the new stream
      * @since 0.3.0
      */
-    public <R> StreamEx<R> flatMapToObj(DoubleFunction<? extends Stream<R>> mapper) {
+    public <R> StreamEx<R> flatMapToObj(DoubleFunction<? extends Stream<? extends R>> mapper) {
         return new StreamEx<>(stream().mapToObj(mapper).flatMap(Function.identity()), context);
+    }
+
+    public <R> StreamEx<R> flattMapToObj(DoubleFunction<? extends Collection<? extends R>> mapper) {
+        return new StreamEx<>(stream().mapToObj(mapper).flatMap(c -> c == null ? Stream.<R> empty() : c.stream()),
+                context);
+    }
+
+    public <R> StreamEx<R> flatMappToObj(DoubleFunction<R[]> mapper) {
+        return new StreamEx<R>(stream().mapToObj(mapper).flatMap(a -> a == null ? Stream.<R> empty() : Stream.of(a)),
+                context);
     }
 
     /**

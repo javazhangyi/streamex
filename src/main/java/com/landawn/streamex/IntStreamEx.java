@@ -352,6 +352,16 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return new StreamEx<>(stream().mapToObj(mapper).flatMap(Function.identity()), context);
     }
 
+    public <R> StreamEx<R> flattMapToObj(IntFunction<? extends Collection<? extends R>> mapper) {
+        return new StreamEx<>(stream().mapToObj(mapper).flatMap(c -> c == null ? Stream.<R> empty() : c.stream()),
+                context);
+    }
+
+    public <R> StreamEx<R> flatMappToObj(IntFunction<R[]> mapper) {
+        return new StreamEx<R>(stream().mapToObj(mapper).flatMap(a -> a == null ? Stream.<R> empty() : Stream.of(a)),
+                context);
+    }
+
     /**
      * Returns a new stream containing all the elements of the original stream
      * interspersed with given delimiter.

@@ -313,7 +313,7 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
     public LongStreamEx flatMap(LongFunction<? extends LongStream> mapper) {
         return new LongStreamEx(stream().flatMap(mapper), context);
     }
- 
+
     public LongStreamEx flattMap(final LongFunction<long[]> mapper) {
         return flatMap(d -> LongStreamEx.of(mapper.apply(d)));
     }
@@ -374,6 +374,16 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
      */
     public <R> StreamEx<R> flatMapToObj(LongFunction<? extends Stream<R>> mapper) {
         return new StreamEx<>(stream().mapToObj(mapper).flatMap(Function.identity()), context);
+    }
+
+    public <R> StreamEx<R> flattMapToObj(LongFunction<? extends Collection<? extends R>> mapper) {
+        return new StreamEx<>(stream().mapToObj(mapper).flatMap(c -> c == null ? Stream.<R> empty() : c.stream()),
+                context);
+    }
+
+    public <R> StreamEx<R> flatMappToObj(LongFunction<R[]> mapper) {
+        return new StreamEx<R>(stream().mapToObj(mapper).flatMap(a -> a == null ? Stream.<R> empty() : Stream.of(a)),
+                context);
     }
 
     /**

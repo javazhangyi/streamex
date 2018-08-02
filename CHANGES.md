@@ -2,6 +2,13 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.2.1
+
+* Add `IntStreamEx/LongStreamEx/DoubleStreamEx.flattMapToObj/flatMappToObj`.
+
+* Improvements and bug fixes.
+
+
 ### 2.2
 
 * Add `EntryStream.flattMap/flattMapKeys/flattMapValues`.
