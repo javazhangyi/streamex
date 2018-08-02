@@ -290,6 +290,10 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
         return new IntStreamEx(stream().flatMap(mapper), context);
     }
 
+    public IntStreamEx flattMap(final IntFunction<int[]> mapper) {
+        return flatMap(d -> IntStreamEx.of(mapper.apply(d)));
+    }
+
     /**
      * Returns a {@link LongStreamEx} consisting of the results of replacing
      * each element of this stream with the contents of a mapped stream produced

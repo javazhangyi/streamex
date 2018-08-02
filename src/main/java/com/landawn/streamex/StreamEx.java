@@ -448,15 +448,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K> StreamEx<Map.Entry<K, List<T>>> groupBy(Function<? super T, ? extends K> classifier) {
-        Supplier<Stream<Map.Entry<K, List<T>>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> ((Map<K, List<T>>) groupTo(classifier)).entrySet().parallelStream();
-        } else {
-            supplier = () -> ((Map<K, List<T>>) groupTo(classifier)).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return groupBy(classifier, Fn.identity());
     }
 
     /**
@@ -480,15 +472,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
-        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> ((Map<K, D>) groupTo(classifier, downstream)).entrySet().parallelStream();
-        } else {
-            supplier = () -> ((Map<K, D>) groupTo(classifier, downstream)).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return groupBy(classifier, Fn.identity(), downstream);
     }
 
     /**
@@ -514,48 +498,23 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
-            Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
-        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> groupTo(classifier, downstream, mapFactory).entrySet().parallelStream();
-        } else {
-            supplier = () -> groupTo(classifier, downstream, mapFactory).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+            Collector<? super T, ?, D> downstream, Supplier<? extends Map<K, D>> mapFactory) {
+        return groupBy(classifier, Fn.identity(), downstream, mapFactory);
     }
 
-    @SuppressWarnings("rawtypes")
     public <K, V> StreamEx<Map.Entry<K, List<V>>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper) {
-        Supplier<Stream<Map.Entry<K, List<V>>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> ((Map<K, List<V>>) (Map) groupTo(classifier, valueMapper)).entrySet().parallelStream();
-        } else {
-            supplier = () -> ((Map<K, List<V>>) (Map) groupTo(classifier, valueMapper)).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return groupBy(classifier, valueMapper, Collectors.toList());
     }
 
     public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
-        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> ((Map<K, D>) groupTo(classifier, valueMapper, downstream)).entrySet().parallelStream();
-        } else {
-            supplier = () -> ((Map<K, D>) groupTo(classifier, valueMapper, downstream)).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return groupBy(classifier, valueMapper, downstream, Suppliers.<K, D> ofMap());
     }
 
     public <K, V, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
-            Supplier<Map<K, D>> mapFactory) {
+            Supplier<? extends Map<K, D>> mapFactory) {
         Supplier<Stream<Map.Entry<K, D>>> supplier = null;
 
         if (context.parallel) {
@@ -587,18 +546,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Supplier)
      * @see Collectors#groupingByConcurrent(Function, Supplier)
      * @since 0.8
+     * @deprecated replaced with {@link #groupBy(Function, Collector)}
      */
+    @Deprecated
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory) {
-        Supplier<Stream<Map.Entry<K, C>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> ((Map<K, C>) groupTo(classifier, collectionFactory)).entrySet().parallelStream();
-        } else {
-            supplier = () -> ((Map<K, C>) groupTo(classifier, collectionFactory)).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return groupBy(classifier, collectionFactory, Suppliers.ofMap());
     }
 
     /**
@@ -624,9 +577,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
      * @since 0.8
+     * @deprecated replaced with {@link #groupBy(Function, Collector, Supplier)}
      */
+    @Deprecated
     public <K, C extends Collection<T>> StreamEx<Map.Entry<K, C>> groupBy(Function<? super T, ? extends K> classifier,
-            Supplier<? extends C> collectionFactory, Supplier<Map<K, C>> mapFactory) {
+            Supplier<? extends C> collectionFactory, Supplier<? extends Map<K, C>> mapFactory) {
         Supplier<Stream<Map.Entry<K, C>>> supplier = null;
 
         if (context.parallel) {
@@ -653,15 +608,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public StreamEx<Map.Entry<Boolean, List<T>>> partitionBy(Predicate<? super T> predicate) {
-        Supplier<Stream<Map.Entry<Boolean, List<T>>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> partitionTo(predicate).entrySet().parallelStream();
-        } else {
-            supplier = () -> partitionTo(predicate).entrySet().stream();
-        }
-
-        return new StreamEx<>(ForwardingStream.of(supplier), context);
+        return partitionBy(predicate, Collectors.toList());
     }
 
     /**
@@ -714,7 +661,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #partitionTo(Predicate, Collector)
      * @see Collectors#partitioningBy(Predicate)
      * @since 0.8
+     * @deprecated replaced by {@link #partitionBy(Predicate, Collector)}
      */
+    @Deprecated
     public <C extends Collection<T>> StreamEx<Map.Entry<Boolean, C>> partitionBy(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
         Supplier<Stream<Map.Entry<Boolean, C>>> supplier = null;
@@ -803,7 +752,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public <K, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
-            Collector<? super T, ?, D> downstream, Supplier<Map<K, D>> mapFactory) {
+            Collector<? super T, ?, D> downstream, Supplier<? extends Map<K, D>> mapFactory) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream, mapFactory);
 
         return s.mapToEntry(Function.identity());
@@ -825,7 +774,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
 
     public <K, V, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream,
-            Supplier<Map<K, D>> mapFactory) {
+            Supplier<? extends Map<K, D>> mapFactory) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, valueMapper, downstream, mapFactory);
 
         return s.mapToEntry(Function.identity());
@@ -850,7 +799,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Collector)
      * @see Collectors#groupingByConcurrent(Function, Collector)
      * @since 0.8.2
+     * @deprecated replaced by {@link #groupByToEntry(Function, Collector)}
      */
+    @Deprecated
     public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory) {
         final StreamEx<Map.Entry<K, C>> s = groupBy(classifier, collectionFactory);
@@ -880,9 +831,12 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
      * @since 0.8.2
+     * @deprecated replaced by
+     *             {@link #groupByToEntry(Function, Collector, Supplier)}
      */
+    @Deprecated
     public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
-            Supplier<? extends C> collectionFactory, Supplier<Map<K, C>> mapFactory) {
+            Supplier<? extends C> collectionFactory, Supplier<? extends Map<K, C>> mapFactory) {
 
         return groupBy(classifier, collectionFactory, mapFactory).mapToEntry(Function.identity());
     }
@@ -902,7 +856,6 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public EntryStream<Boolean, List<T>> partitionByToEntry(Predicate<? super T> predicate) {
-
         return partitionBy(predicate).mapToEntry(Function.identity());
     }
 
@@ -949,7 +902,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #partitionBy(Predicate, Collector)
      * @see Collectors#partitioningBy(Predicate)
      * @since 0.8.2
+     * @deprecated replaced by {@link #partitionByToEntry(Predicate, Collector)}
      */
+    @Deprecated
     public <C extends Collection<T>> EntryStream<Boolean, C> partitionByToEntry(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
 
@@ -966,9 +921,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param occurrencesFilter
      * @return
      */
+    @Override
     public StreamEx<T> distinct(final Predicate<? super Long> occurrencesFilter) {
-        return groupBy(Function.identity(), Collectors.counting()).filter(e -> occurrencesFilter.test(e.getValue()))
-                .map(Fn.key());
+        return groupBy(Function.identity(), Collectors.counting(), Suppliers.ofLinkedHashMap()).filter(
+            e -> occurrencesFilter.test(e.getValue())).map(Fn.key());
     }
 
     /**
@@ -978,10 +934,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param occurrencesFilter
      * @return
      */
+    @Override
     public StreamEx<T> distinctBy(final Function<? super T, ?> keyExtractor,
             final Predicate<? super Long> occurrencesFilter) {
-        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Collectors.counting()).filter(e -> occurrencesFilter
-                .test(e.getValue())).map(e -> e.getKey().val());
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Collectors.counting(), Suppliers.ofLinkedHashMap())
+                .filter(e -> occurrencesFilter.test(e.getValue())).map(e -> e.getKey().val());
     }
 
     /**
@@ -1133,7 +1090,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Collector)
      * @see Collectors#groupingByConcurrent(Function, Collector)
      * @since 0.2.2
+     * @deprecated replaced by {@link #groupTo(Function, Collector)}
      */
+    @Deprecated
     public <K, C extends Collection<T>> Map<K, C> groupTo(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory) {
         return groupTo(classifier, Collectors.toCollection((Supplier<C>) collectionFactory));
@@ -1168,7 +1127,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @see Collectors#groupingByConcurrent(Function, Supplier, Collector)
      * @since 0.2.2
+     * @deprecated replaced by {@link #groupTo(Function, Collector, Supplier)}
      */
+    @Deprecated
     public <K, C extends Collection<T>, M extends Map<K, C>> M groupTo(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory, Supplier<M> mapFactory) {
         return groupTo(classifier, Collectors.toCollection((Supplier<C>) collectionFactory), mapFactory);
@@ -1259,7 +1220,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #partitionTo(Predicate, Collector)
      * @see Collectors#partitioningBy(Predicate)
      * @since 0.2.2
+     * @deprecated replaced by {@link #partitionTo(Predicate, Collector)}
      */
+    @Deprecated
     public <C extends Collection<T>> Map<Boolean, C> partitionTo(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
         return collect(MoreCollectors.partitioningBy(predicate, Collectors.toCollection(
@@ -1847,6 +1810,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return the new stream
      * @since 0.5.4
      */
+    @Override
     public StreamEx<T> append(T value) {
         return appendSpliterator(null, new ConstSpliterator.OfRef<>(value, 1, true));
     }
@@ -1865,6 +1829,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param values the values to append to the stream
      * @return the new stream
      */
+    @Override
     @SafeVarargs
     public final StreamEx<T> append(T... values) {
         if (values == null || values.length == 0) {
@@ -1910,6 +1875,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @return the new stream
      * @since 0.5.4
      */
+    @Override
     public StreamEx<T> prepend(T value) {
         return new StreamEx<>(new PrependSpliterator<>(spliterator(), value), context);
     }
@@ -1929,6 +1895,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @param values the values to prepend to the stream
      * @return the new stream
      */
+    @Override
     @SafeVarargs
     public final StreamEx<T> prepend(T... values) {
         if (values == null || values.length == 0) {

@@ -49,6 +49,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.landawn.abacus.util.Fn;
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.MoreCollectors;
@@ -559,6 +560,8 @@ public class EntryStreamTest {
 
     @Test
     public void testDistinctKeysValues() {
+        EntryStream.of(1, "a", 1, "b", 2, "b", 2, "c", 1, "c", 3, "c").distinctByKey().forEach(Fn.println());
+        
         entryStream(() -> EntryStream.of(1, "a", 1, "b", 2, "b", 2, "c", 1, "c", 3, "c"), s -> {
             checkAsString("1->a;2->b;3->c", s.get().distinctByKey());
             checkAsString("1->a;1->b;2->c", s.get().distinctByValue());

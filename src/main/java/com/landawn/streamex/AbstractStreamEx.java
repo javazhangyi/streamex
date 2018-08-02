@@ -396,7 +396,9 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      * @see #distinct()
      * @since 0.3.1
+     * @deprecated replaced by {@link #distinct(Predicate)}
      */
+    @Deprecated
     public S distinct(long atLeast) {
         if (atLeast <= 1)
             return distinct();
@@ -444,6 +446,24 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
 
         return filter(p);
     }
+
+    /**
+     * Distinct and filter by occurrences.
+     * 
+     * @param occurrencesFilter
+     * @return
+     */
+    public abstract S distinct(final Predicate<? super Long> occurrencesFilter);
+
+    /**
+     * Distinct and filter by occurrences.
+     * 
+     * @param keyExtractor
+     * @param occurrencesFilter
+     * @return
+     */
+    public abstract S distinctBy(final Function<? super T, ?> keyExtractor,
+            final Predicate<? super Long> occurrencesFilter);
 
     @Override
     public S sorted() {
@@ -1193,6 +1213,37 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     }
 
     /**
+     * Returns a new {@code StreamEx} which is a concatenation of this stream
+     * and the supplied value.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a> with <a href="package-summary.html#TSO">tail-stream
+     * optimization</a>.
+     * 
+     * @param value the value to append to the stream
+     * @return the new stream
+     * @since 0.5.4
+     */
+    public abstract S append(T value);
+
+    /**
+     * Returns a new {@code StreamEx} which is a concatenation of this stream
+     * and the supplied values.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a>.
+     * 
+     * <p>
+     * May return this if no values are supplied.
+     * 
+     * @param values the values to append to the stream
+     * @return the new stream
+     */
+    public abstract S append(T... values);
+
+    /**
      * Creates a lazily concatenated stream whose elements are all the elements
      * of this stream followed by all the elements of the other stream. The
      * resulting stream is ordered if both of the input streams are ordered, and
@@ -1214,6 +1265,38 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     public S append(Stream<? extends T> other) {
         return appendSpliterator(other, other.spliterator());
     }
+
+    /**
+     * Returns a new {@code StreamEx} which is a concatenation of supplied value
+     * and this stream.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a> with <a href="package-summary.html#TSO">tail-stream
+     * optimization</a>.
+     * 
+     * @param value the value to prepend to the stream
+     * @return the new stream
+     * @since 0.5.4
+     */
+    public abstract S prepend(T value);
+
+    /**
+     * Returns a new {@code StreamEx} which is a concatenation of supplied
+     * values and this stream.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a> with <a href="package-summary.html#TSO">tail-stream
+     * optimization</a>.
+     * 
+     * <p>
+     * May return this if no values are supplied.
+     * 
+     * @param values the values to prepend to the stream
+     * @return the new stream
+     */
+    public abstract S prepend(T... values);
 
     /**
      * Creates a lazily concatenated stream whose elements are all the elements

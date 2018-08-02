@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.Spliterators;
 import java.util.concurrent.ConcurrentMap;
@@ -52,6 +53,7 @@ import java.util.stream.StreamSupport;
 import com.landawn.abacus.util.Comparators;
 import com.landawn.abacus.util.Fn;
 import com.landawn.abacus.util.ImmutableMap;
+import com.landawn.abacus.util.Keyed;
 
 /**
  * A {@link Stream} of {@link Entry} objects which provides additional specific
@@ -244,25 +246,6 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
 
     /**
      * Returns a new {@code EntryStream} which is a concatenation of this stream
-     * and the stream created from the supplied map entries.
-     * 
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
-     * operation</a>.
-     * 
-     * <p>
-     * May return this if the supplied map is empty and non-concurrent.
-     * 
-     * @param map the map to prepend to the stream
-     * @return the new stream
-     * @since 0.2.1
-     */
-    public EntryStream<K, V> append(Map<K, V> map) {
-        return appendSpliterator(null, map.entrySet().spliterator());
-    }
-
-    /**
-     * Returns a new {@code EntryStream} which is a concatenation of this stream
      * and the supplied key-value pair.
      * 
      * <p>
@@ -274,7 +257,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> append(K key, V value) {
-        return appendSpliterator(null, new ConstSpliterator.OfRef<>(new SimpleImmutableEntry<>(key, value), 1, true));
+        return append(new SimpleImmutableEntry<>(key, value));
     }
 
     /**
@@ -294,9 +277,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public EntryStream<K, V> append(K k1, V v1, K k2, V v2) {
         @SuppressWarnings("unchecked")
-        SimpleImmutableEntry<K, V>[] array = new SimpleImmutableEntry[] { new SimpleImmutableEntry<>(k1, v1),
+        final Map.Entry<K, V>[] entries = new Map.Entry[] { new SimpleImmutableEntry<>(k1, v1),
                 new SimpleImmutableEntry<>(k2, v2) };
-        return appendSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
+        return append(entries);
     }
 
     /**
@@ -318,19 +301,32 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public EntryStream<K, V> append(K k1, V v1, K k2, V v2, K k3, V v3) {
         @SuppressWarnings("unchecked")
-        SimpleImmutableEntry<K, V>[] array = new SimpleImmutableEntry[] { new SimpleImmutableEntry<>(k1, v1),
+        final Map.Entry<K, V>[] entries = new Map.Entry[] { new SimpleImmutableEntry<>(k1, v1),
                 new SimpleImmutableEntry<>(k2, v2), new SimpleImmutableEntry<>(k3, v3) };
-        return appendSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
+        return append(entries);
+    }
+
+    @Override
+    public EntryStream<K, V> append(Entry<K, V> entry) {
+        return appendSpliterator(null, new ConstSpliterator.OfRef<>(entry, 1, true));
+    }
+
+    @Override
+    public EntryStream<K, V> append(Entry<K, V>... entries) {
+        if (entries == null || entries.length == 0) {
+            return this;
+        }
+
+        return appendSpliterator(null, Spliterators.spliterator(entries, Spliterator.ORDERED));
     }
 
     /**
-     * Returns a new {@code EntryStream} which is a concatenation of the stream
-     * created from the supplied map entries and this stream.
+     * Returns a new {@code EntryStream} which is a concatenation of this stream
+     * and the stream created from the supplied map entries.
      * 
      * <p>
      * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
-     * operation</a> with <a href="package-summary.html#TSO">tail-stream
-     * optimization</a>.
+     * operation</a>.
      * 
      * <p>
      * May return this if the supplied map is empty and non-concurrent.
@@ -339,8 +335,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      * @since 0.2.1
      */
-    public EntryStream<K, V> prepend(Map<K, V> map) {
-        return prependSpliterator(null, map.entrySet().spliterator());
+    public EntryStream<K, V> append(Map<K, V> map) {
+        return appendSpliterator(null, map.entrySet().spliterator());
     }
 
     /**
@@ -357,7 +353,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      */
     public EntryStream<K, V> prepend(K key, V value) {
-        return supply(new PrependSpliterator<>(spliterator(), new SimpleImmutableEntry<>(key, value)));
+        return prepend(new SimpleImmutableEntry<>(key, value));
     }
 
     /**
@@ -378,9 +374,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public EntryStream<K, V> prepend(K k1, V v1, K k2, V v2) {
         @SuppressWarnings("unchecked")
-        SimpleImmutableEntry<K, V>[] array = new SimpleImmutableEntry[] { new SimpleImmutableEntry<>(k1, v1),
+        final Map.Entry<K, V>[] entries = new Map.Entry[] { new SimpleImmutableEntry<>(k1, v1),
                 new SimpleImmutableEntry<>(k2, v2) };
-        return prependSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
+        return prepend(entries);
     }
 
     /**
@@ -403,9 +399,43 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public EntryStream<K, V> prepend(K k1, V v1, K k2, V v2, K k3, V v3) {
         @SuppressWarnings("unchecked")
-        SimpleImmutableEntry<K, V>[] array = new SimpleImmutableEntry[] { new SimpleImmutableEntry<>(k1, v1),
+        final Map.Entry<K, V>[] entries = new Map.Entry[] { new SimpleImmutableEntry<>(k1, v1),
                 new SimpleImmutableEntry<>(k2, v2), new SimpleImmutableEntry<>(k3, v3) };
-        return prependSpliterator(null, Spliterators.spliterator(array, Spliterator.ORDERED));
+        return prepend(entries);
+    }
+
+    @Override
+    public EntryStream<K, V> prepend(Entry<K, V> entry) {
+        return supply(new PrependSpliterator<>(spliterator(), entry));
+    }
+
+    @Override
+    public EntryStream<K, V> prepend(Entry<K, V>... entries) {
+        if (entries == null || entries.length == 0) {
+            return this;
+        }
+
+        return prependSpliterator(null, Spliterators.spliterator(entries, Spliterator.ORDERED));
+    }
+
+    /**
+     * Returns a new {@code EntryStream} which is a concatenation of the stream
+     * created from the supplied map entries and this stream.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">quasi-intermediate
+     * operation</a> with <a href="package-summary.html#TSO">tail-stream
+     * optimization</a>.
+     * 
+     * <p>
+     * May return this if the supplied map is empty and non-concurrent.
+     * 
+     * @param map the map to prepend to the stream
+     * @return the new stream
+     * @since 0.2.1
+     */
+    public EntryStream<K, V> prepend(Map<K, V> map) {
+        return prependSpliterator(null, map.entrySet().spliterator());
     }
 
     public EntryStream<K, V> sortedByKey(final Comparator<? super K> cmp) {
@@ -456,6 +486,19 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public EntryStream<K, V> distinctByValue() {
         return distinctBy(Fn.value());
+    }
+
+    @Override
+    public EntryStream<K, V> distinct(Predicate<? super Long> occurrencesFilter) {
+        return groupBy(Function.identity(), Function.identity(), Collectors.counting(), Suppliers.ofLinkedHashMap())
+                .filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(Fn.key());
+    }
+
+    @Override
+    public EntryStream<K, V> distinctBy(Function<? super Entry<K, V>, ?> keyExtractor,
+            Predicate<? super Long> occurrencesFilter) {
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Function.identity(), Collectors.counting(), Suppliers
+                .ofLinkedHashMap()).filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(e -> e.getKey().val());
     }
 
     /**
@@ -1032,6 +1075,35 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return scan((a, b) -> new SimpleImmutableEntry<>(b.getKey(), op.apply(a.getValue(), b.getValue())));
     }
 
+    public <KK, VV> EntryStream<KK, VV> scan(final Map.Entry<KK, VV> seed, final BiFunction<? super Map.Entry<KK, VV>, ? super Map.Entry<K, V>, Map.Entry<KK, VV>> op) {
+        return new EntryStream<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<Map.Entry<KK, VV>>() {
+            private final Iterator<Map.Entry<K, V>> iter = iterator();
+            private boolean isFirst = true;
+            private Map.Entry<KK, VV> val = null;
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext() || isFirst;
+            }
+
+            @Override
+            public Map.Entry<KK, VV> next() {
+                if (!(iter.hasNext() || isFirst)) {
+                    throw new NoSuchElementException();
+                }
+
+                if (isFirst) {
+                    val = seed;
+                    isFirst = false;
+                } else {
+                    val = op.apply(val, iter.next());
+                }
+
+                return val;
+            }
+        }), this.context);
+    }
+
     /**
      * Returns a {@link Map} containing the elements of this stream. There are
      * no guarantees on the type or serializability of the {@code Map} returned;
@@ -1392,7 +1464,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #groupTo(Supplier)
      * @since 0.8
      */
-    public EntryStream<K, List<V>> groupBy(Supplier<Map<K, List<V>>> mapSupplier) {
+    public EntryStream<K, List<V>> groupBy(Supplier<? extends Map<K, List<V>>> mapSupplier) {
         return groupBy(Collectors.toList(), mapSupplier);
     }
 
@@ -1414,9 +1486,11 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #groupTo(Supplier, Supplier)
      * @see Collectors#toCollection(Supplier)
      * @since 0.8
+     * @deprecated replaced by {@link #groupBy(Collector, Supplier)}
      */
+    @Deprecated
     public <C extends Collection<V>> EntryStream<K, C> groupBy(Supplier<? extends C> collectionFactory,
-            Supplier<Map<K, C>> mapSupplier) {
+            Supplier<? extends Map<K, C>> mapSupplier) {
         return groupBy(Collectors.toCollection((Supplier<C>) collectionFactory), mapSupplier);
     }
 
@@ -1436,15 +1510,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @since 0.8
      */
     public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream) {
-        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> groupTo(downstream).entrySet().parallelStream();
-        } else {
-            supplier = () -> groupTo(downstream).entrySet().stream();
-        }
-
-        return new EntryStream<>(ForwardingStream.of(supplier), context);
+        return groupBy(downstream, Suppliers.ofMap());
     }
 
     /**
@@ -1467,21 +1533,14 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see Collectors#groupingBy(Function, Supplier, Collector)
      * @since 0.8
      */
-    public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream, Supplier<Map<K, D>> mapSupplier) {
-        Supplier<Stream<Map.Entry<K, D>>> supplier = null;
-
-        if (context.parallel) {
-            supplier = () -> groupTo(downstream, mapSupplier).entrySet().parallelStream();
-        } else {
-            supplier = () -> groupTo(downstream, mapSupplier).entrySet().stream();
-        }
-
-        return new EntryStream<>(ForwardingStream.of(supplier), context);
+    public <A, D> EntryStream<K, D> groupBy(Collector<? super V, A, D> downstream,
+            Supplier<? extends Map<K, D>> mapSupplier) {
+        return groupBy(Fn.key(), Fn.value(), downstream, mapSupplier);
     }
 
     public <KK, VV> EntryStream<KK, List<VV>> groupBy(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
             final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper) {
-        return groupBy(classifier, valueMapper, Suppliers.ofMap());
+        return groupBy(classifier, valueMapper, Collectors.toList());
     }
 
     public <KK, VV, M extends Map<KK, List<VV>>> EntryStream<KK, List<VV>> groupBy(
@@ -1579,7 +1638,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @param <M> the type of the resulting {@code Map}
      * @return a {@code Map} containing the elements of this stream
      * @see Collectors#toCollection(Supplier)
+     * @deprecated replaced by {@link #groupTo(Collector, Supplier)}
      */
+    @Deprecated
     public <C extends Collection<V>, M extends Map<K, C>> M groupTo(Supplier<? extends C> collectionFactory,
             Supplier<M> mapSupplier) {
         return groupTo(Collectors.toCollection((Supplier<C>) collectionFactory), mapSupplier);
@@ -1654,7 +1715,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
 
     public <KK, VV> Map<KK, List<VV>> groupTo(final Function<? super Map.Entry<K, V>, ? extends KK> classifier,
             final Function<? super Map.Entry<K, V>, ? extends VV> valueMapper) {
-        return groupTo(classifier, valueMapper, Suppliers.ofMap());
+        return groupTo(classifier, valueMapper, Collectors.toList());
     }
 
     public <KK, VV, M extends Map<KK, List<VV>>> M groupTo(

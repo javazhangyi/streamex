@@ -313,6 +313,10 @@ public class LongStreamEx extends BaseStreamEx<Long, LongStream, Spliterator.OfL
     public LongStreamEx flatMap(LongFunction<? extends LongStream> mapper) {
         return new LongStreamEx(stream().flatMap(mapper), context);
     }
+ 
+    public LongStreamEx flattMap(final LongFunction<long[]> mapper) {
+        return flatMap(d -> LongStreamEx.of(mapper.apply(d)));
+    }
 
     /**
      * Returns an {@link IntStreamEx} consisting of the results of replacing

@@ -313,6 +313,10 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
     public DoubleStreamEx flatMap(DoubleFunction<? extends DoubleStream> mapper) {
         return new DoubleStreamEx(stream().flatMap(mapper), context);
     }
+ 
+    public DoubleStreamEx flattMap(final DoubleFunction<double[]> mapper) {
+        return flatMap(d -> DoubleStreamEx.of(mapper.apply(d)));
+    }
 
     /**
      * Returns an {@link IntStreamEx} consisting of the results of replacing
