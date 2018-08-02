@@ -2,7 +2,18 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.2
+
+* Add `EntryStream.flattMap/flattMapKeys/flattMapValues`.
+
+* Improvements and bug fixes.
+
+
 ### 2.1.9
+
+* Add `EntryStream.distinct(occurrencesFilter)/distinctBy(keyExtractor, occurrencesFilter)`.
+
+* Add `EntryStream.scan(seed, op)`.
 
 * Improvements and bug fixes.
 

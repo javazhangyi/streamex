@@ -1817,8 +1817,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the {@code List} where the last element is the last element of
      *         this stream and every predecessor element is the result of
      *         applying accumulator function to the corresponding stream element
-     *         and the next list element. The resulting list is one element
-     *         longer than this stream.
+     *         and the next list element. The resulting list is same size as this stream.
      * @see #scanLeft(BinaryOperator)
      * @see #foldRight(BinaryOperator)
      * @since 0.4.0

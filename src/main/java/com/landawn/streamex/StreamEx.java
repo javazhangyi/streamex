@@ -923,8 +923,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     @Override
     public StreamEx<T> distinct(final Predicate<? super Long> occurrencesFilter) {
-        return groupBy(Function.identity(), Collectors.counting(), Suppliers.ofLinkedHashMap()).filter(
-            e -> occurrencesFilter.test(e.getValue())).map(Fn.key());
+        final Supplier<? extends Map<T, Long>> mapSupplier = Suppliers.ofLinkedHashMap();
+
+        return groupBy(Function.identity(), Collectors.counting(), mapSupplier).filter(e -> occurrencesFilter.test(e
+                .getValue())).map(Fn.key());
     }
 
     /**
@@ -937,8 +939,11 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     @Override
     public StreamEx<T> distinctBy(final Function<? super T, ?> keyExtractor,
             final Predicate<? super Long> occurrencesFilter) {
-        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Collectors.counting(), Suppliers.ofLinkedHashMap())
-                .filter(e -> occurrencesFilter.test(e.getValue())).map(e -> e.getKey().val());
+        final Supplier<? extends Map<Keyed<?, T>, Long>> mapSupplier = isParallel() ? Suppliers
+                .<Keyed<?, T>, Long> ofConcurrentHashMap() : Suppliers.<Keyed<?, T>, Long> ofLinkedHashMap();
+
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Collectors.counting(), mapSupplier).filter(
+            e -> occurrencesFilter.test(e.getValue())).map(e -> e.getKey().val());
     }
 
     /**

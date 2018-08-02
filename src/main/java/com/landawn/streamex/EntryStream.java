@@ -171,6 +171,17 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
                 context);
     }
 
+    public <KK> EntryStream<KK, V> flattMapKeys(Function<? super K, ? extends Collection<? extends KK>> mapper) {
+        return new EntryStream<>(stream().flatMap(e -> withValue(StreamEx.of(mapper.apply(e.getKey())), e.getValue())),
+                context);
+    }
+
+    public <KK> EntryStream<KK, V> flattMapKeys(
+            BiFunction<? super K, ? super V, ? extends Collection<? extends KK>> mapper) {
+        return new EntryStream<>(stream().flatMap(e -> withValue(StreamEx.of(mapper.apply(e.getKey(), e.getValue())), e
+                .getValue())), context);
+    }
+
     /**
      * Returns an {@code EntryStream} consisting of the entries whose values are
      * results of replacing source values with the contents of a mapped stream
@@ -223,6 +234,17 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
                 context);
     }
 
+    public <VV> EntryStream<K, VV> flattMapValues(Function<? super V, ? extends Collection<? extends VV>> mapper) {
+        return new EntryStream<>(stream().flatMap(e -> withKey(e.getKey(), StreamEx.of(mapper.apply(e.getValue())))),
+                context);
+    }
+
+    public <VV> EntryStream<K, VV> flattMapValues(
+            BiFunction<? super K, ? super V, ? extends Collection<? extends VV>> mapper) {
+        return new EntryStream<>(stream().flatMap(e -> withKey(e.getKey(), StreamEx.of(mapper.apply(e.getKey(), e
+                .getValue())))), context);
+    }
+
     /**
      * Returns a stream consisting of the results of replacing each element of
      * this stream with the contents of a mapped stream produced by applying the
@@ -240,8 +262,12 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @return the new stream
      * @since 0.3.0
      */
-    public <R> StreamEx<R> flatMap(BiFunction<? super K, ? super V, ? extends Stream<? extends R>> mapper) {
+    public <R> StreamEx<R> flatMap(final BiFunction<? super K, ? super V, ? extends Stream<? extends R>> mapper) {
         return this.<R> flatMap(toFunction(mapper));
+    }
+
+    public <R> StreamEx<R> flattMap(final BiFunction<? super K, ? super V, ? extends Collection<? extends R>> mapper) {
+        return this.<R> flattMap(toFunction(mapper));
     }
 
     /**
@@ -490,15 +516,21 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
 
     @Override
     public EntryStream<K, V> distinct(Predicate<? super Long> occurrencesFilter) {
-        return groupBy(Function.identity(), Function.identity(), Collectors.counting(), Suppliers.ofLinkedHashMap())
-                .filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(Fn.key());
+        final Supplier<? extends Map<Map.Entry<K, V>, Long>> mapSupplier = Suppliers.ofLinkedHashMap();
+
+        return groupBy(Function.identity(), Function.identity(), Collectors.counting(), mapSupplier).filter(
+            e -> occurrencesFilter.test(e.getValue())).mapToEntry(Fn.key());
     }
 
     @Override
     public EntryStream<K, V> distinctBy(Function<? super Entry<K, V>, ?> keyExtractor,
             Predicate<? super Long> occurrencesFilter) {
-        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Function.identity(), Collectors.counting(), Suppliers
-                .ofLinkedHashMap()).filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(e -> e.getKey().val());
+        final Supplier<? extends Map<Keyed<?, Map.Entry<K, V>>, Long>> mapSupplier = isParallel()
+                ? Suppliers.<Keyed<?, Map.Entry<K, V>>, Long> ofConcurrentHashMap()
+                : Suppliers.<Keyed<?, Map.Entry<K, V>>, Long> ofLinkedHashMap();
+
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Function.identity(), Collectors.counting(), mapSupplier)
+                .filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(e -> e.getKey().val());
     }
 
     /**
@@ -1075,7 +1107,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
         return scan((a, b) -> new SimpleImmutableEntry<>(b.getKey(), op.apply(a.getValue(), b.getValue())));
     }
 
-    public <KK, VV> EntryStream<KK, VV> scan(final Map.Entry<KK, VV> seed, final BiFunction<? super Map.Entry<KK, VV>, ? super Map.Entry<K, V>, Map.Entry<KK, VV>> op) {
+    public <KK, VV> EntryStream<KK, VV> scan(final Map.Entry<KK, VV> seed,
+            final BiFunction<? super Map.Entry<KK, VV>, ? super Map.Entry<K, V>, Map.Entry<KK, VV>> op) {
         return new EntryStream<>(new UnknownSizeSpliterator.USOfRef<>(new Iterator<Map.Entry<KK, VV>>() {
             private final Iterator<Map.Entry<K, V>> iter = iterator();
             private boolean isFirst = true;
