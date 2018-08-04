@@ -28,6 +28,14 @@ public final class IndexedLong extends AbstractIndexed {
         this.value = value;
     }
 
+    public static IndexedLong of(long value, int index) {
+        return new IndexedLong(index, value);
+    }
+
+    public static IndexedLong of(long value, long index) {
+        return new IndexedLong(index, value);
+    }
+
     public long value() {
         return value;
     }

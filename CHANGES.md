@@ -2,7 +2,7 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
-### 2.2.3
+### 2.3
 
 * Refactoring `AbstractStreamEx.toImmutableList/toImmutableSet` for removing the dependence on `abacus-util`.
 
