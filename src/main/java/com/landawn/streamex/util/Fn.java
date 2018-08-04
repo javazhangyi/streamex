@@ -135,12 +135,7 @@ public final class Fn extends Comparators {
     };
 
     @SuppressWarnings("rawtypes")
-    private static final Function IDENTITY = new Function() {
-        @Override
-        public Object apply(Object t) {
-            return t;
-        }
-    };
+    private static final Function IDENTITY = Function.identity();
 
     private static final Function<String, String> TRIM = new Function<String, String>() {
         @Override
