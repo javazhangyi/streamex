@@ -16,7 +16,6 @@
 package com.landawn.streamex;
 
 import static com.landawn.streamex.StreamExInternals.*;
-import static com.landawn.abacus.util.Fn.Suppliers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,15 +36,16 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
-import com.landawn.abacus.util.Fn;
-import com.landawn.abacus.util.Keyed;
-import com.landawn.abacus.util.N;
-import com.landawn.abacus.util.Pair;
-import com.landawn.abacus.util.Tuple;
-import com.landawn.abacus.util.Tuple.Tuple2;
-import com.landawn.abacus.util.Tuple.Tuple3;
-import com.landawn.abacus.util.function.TriFunction;
 import com.landawn.streamex.PairSpliterator.PSOfRef;
+import com.landawn.streamex.function.TriFunction;
+import com.landawn.streamex.util.Fn;
+import com.landawn.streamex.util.Fn.Suppliers;
+import com.landawn.streamex.util.Keyed;
+import com.landawn.streamex.util.MoreObjects;
+import com.landawn.streamex.util.Pair;
+import com.landawn.streamex.util.Tuple;
+import com.landawn.streamex.util.Tuple.Tuple2;
+import com.landawn.streamex.util.Tuple.Tuple3;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -448,7 +448,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K> StreamEx<Map.Entry<K, List<T>>> groupBy(Function<? super T, ? extends K> classifier) {
-        return groupBy(classifier, Fn.identity());
+        return groupBy(classifier, Function.identity());
     }
 
     /**
@@ -472,7 +472,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
-        return groupBy(classifier, Fn.identity(), downstream);
+        return groupBy(classifier, Function.identity(), downstream);
     }
 
     /**
@@ -499,7 +499,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream, Supplier<? extends Map<K, D>> mapFactory) {
-        return groupBy(classifier, Fn.identity(), downstream, mapFactory);
+        return groupBy(classifier, Function.identity(), downstream, mapFactory);
     }
 
     public <K, V> StreamEx<Map.Entry<K, List<V>>> groupBy(Function<? super T, ? extends K> classifier,
@@ -1434,7 +1434,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #toMap(Function, Function)
      */
     public <K> Map<K, T> toMap(Function<? super T, ? extends K> keyMapper) {
-        return toMap(keyMapper, Fn.identity());
+        return toMap(keyMapper, Function.identity());
     }
 
     /**
@@ -1578,7 +1578,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.1.0
      */
     public <K> SortedMap<K, T> toSortedMap(Function<? super T, ? extends K> keyMapper) {
-        return toSortedMap(keyMapper, Fn.identity());
+        return toSortedMap(keyMapper, Function.identity());
     }
 
     /**
@@ -1689,7 +1689,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.6.5
      */
     public <K> NavigableMap<K, T> toNavigableMap(Function<? super T, ? extends K> keyMapper) {
-        return toNavigableMap(keyMapper, Fn.identity());
+        return toNavigableMap(keyMapper, Function.identity());
     }
 
     /**
@@ -2954,8 +2954,9 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             final boolean ignoreNotPaired) {
         final int windowSize = 2;
 
-        N.checkArgument(windowSize > 0 && increment > 0, "'windowSize'=%s and 'increment'=%s must not be less than 1",
-            windowSize, increment);
+        if (increment <= 0) {
+            throw new IllegalArgumentException("'increment'=" + increment + " must not be less than 1");
+        }
 
         if (isParallel()) {
             final Function<Tuple2<T, T>, R> mapper2 = p -> mapper.apply(p._1, p._2);
@@ -3035,8 +3036,10 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             final boolean ignoreNotPaired) {
         final int windowSize = 3;
 
-        N.checkArgument(windowSize > 0 && increment > 0, "'windowSize'=%s and 'increment'=%s must not be less than 1",
-            windowSize, increment);
+        if (increment <= 0) {
+            throw new IllegalArgumentException("'increment'=" + increment + " must not be less than 1");
+        }
+
         if (isParallel()) {
             final Function<Tuple3<T, T, T>, R> mapper2 = p -> mapper.apply(p._1, p._2, p._3);
 
@@ -3506,7 +3509,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     }
 
     public static StreamEx<Boolean> of(final boolean[] elements, int startInclusive, int endExclusive) {
-        N.checkFromToIndex(startInclusive, endExclusive, N.len(elements));
+        MoreObjects.checkFromToIndex(startInclusive, endExclusive, elements == null ? 0 : elements.length);
 
         if (startInclusive == endExclusive) {
             return StreamEx.<Boolean> empty();

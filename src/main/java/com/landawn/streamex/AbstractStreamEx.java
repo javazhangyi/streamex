@@ -26,9 +26,7 @@ import java.util.stream.*;
 import java.util.stream.Collector.Characteristics;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
-
-import com.landawn.abacus.util.ImmutableList;
-import com.landawn.abacus.util.ImmutableSet;
+ 
 
 /**
  * Base class providing common functionality for {@link StreamEx} and
@@ -1382,15 +1380,15 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @since 0.6.3
      */
     @SuppressWarnings("unchecked")
-    public ImmutableList<T> toImmutableList() {
+    public List<T> toImmutableList() {
         Object[] array = toArray(Object[]::new);
-        switch (array.length) {
+        switch(array.length) {
         case 0:
-            return ImmutableList.empty();
+            return Collections.emptyList();
         case 1:
-            return ImmutableList.of((T) array[0]);
+            return Collections.singletonList((T) array[0]);
         default:
-            return ImmutableList.of((T[]) array);
+            return Collections.unmodifiableList(Arrays.asList((T[]) array));
         }
     }
 
@@ -1447,11 +1445,11 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @see #toSet()
      * @since 0.6.3
      */
-    public ImmutableSet<T> toImmutableSet() {
+    public Set<T> toImmutableSet() {
         Set<T> result = toSet();
         if (result.size() == 0)
-            return ImmutableSet.empty();
-        return ImmutableSet.of(result);
+            return Collections.emptySet();
+        return Collections.unmodifiableSet(result);
     }
 
     /**

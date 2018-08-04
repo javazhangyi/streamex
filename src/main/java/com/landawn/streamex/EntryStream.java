@@ -18,7 +18,6 @@ package com.landawn.streamex;
 import java.util.AbstractMap.SimpleImmutableEntry;
 
 import static com.landawn.streamex.StreamExInternals.*;
-import static com.landawn.abacus.util.Fn.Suppliers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,10 +49,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.landawn.abacus.util.Comparators;
-import com.landawn.abacus.util.Fn;
-import com.landawn.abacus.util.ImmutableMap;
-import com.landawn.abacus.util.Keyed;
+import com.landawn.streamex.util.Comparators;
+import com.landawn.streamex.util.Fn;
+import com.landawn.streamex.util.Fn.Suppliers;
+import com.landawn.streamex.util.Keyed;
 
 /**
  * A {@link Stream} of {@link Entry} objects which provides additional specific
@@ -1405,9 +1404,9 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @see #toMap()
      * @since 0.6.3
      */
-    public ImmutableMap<K, V> toImmutableMap() {
+    public Map<K, V> toImmutableMap() {
         Map<K, V> map = toMap();
-        return map.isEmpty() ? ImmutableMap.empty() : ImmutableMap.of(map);
+        return map.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(map);
     }
 
     /**
@@ -1938,14 +1937,14 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     public static <K, T> EntryStream<K, T> of(final T[] a, final Function<? super T, K> keyExtractor) {
-        final Function<T, T> valueMapper = Fn.identity();
+        final Function<T, T> valueMapper = Function.identity();
 
         return StreamEx.of(a).mapToEntry(keyExtractor, valueMapper);
     }
 
     public static <K, T> EntryStream<K, T> of(final Collection<? extends T> c,
             final Function<? super T, K> keyExtractor) {
-        final Function<T, T> valueMapper = Fn.identity();
+        final Function<T, T> valueMapper = Function.identity();
 
         return StreamEx.of(c).mapToEntry(keyExtractor, valueMapper);
     }

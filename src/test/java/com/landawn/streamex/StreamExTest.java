@@ -66,14 +66,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 
-import com.landawn.abacus.util.Fn;
-import com.landawn.abacus.util.N;
-import com.landawn.abacus.util.Fn.Suppliers;
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.Joining;
 import com.landawn.streamex.MoreCollectors;
 import com.landawn.streamex.StreamEx;
+import com.landawn.streamex.util.Fn;
+import com.landawn.streamex.util.Fn.Suppliers;
 
 import static org.junit.Assert.*;
 import static com.landawn.streamex.TestHelpers.*;
@@ -88,14 +87,6 @@ public class StreamExTest {
     public TemporaryFolder tmp = new TemporaryFolder();
 
     @Test
-    public void test_flatMapToEntry() {
-        Map<String, Map<String, Object>> map = N.asMap("a", N.asMap("b", 1));
-        StreamEx.of(map).flattMapToEntry(e -> e.getValue()).forEach(Fn.println());
-        StreamEx.of(map).flatMapToEntry(e -> StreamEx.of(e.getValue())).forEach(Fn.println());
-        StreamEx.of(map).flatMapToEntry(e -> EntryStream.of(e.getValue())).forEach(Fn.println());
-    }
-
-    @Test
     public void testDistinct_2() {
         StreamEx.of("a", "ab", "ba", "c", "a").distinct(o -> o > 1).println();
 
@@ -106,59 +97,63 @@ public class StreamExTest {
         StreamEx.of("a", "ab", "ba", "c", "a").distinctBy(e -> e.charAt(0), o -> o >= 4).println();
     }
 
+    static int len(Object[] a) {
+        return a == null ? 0 : a.length;
+    }
+
+    static int len(String str) {
+        return str == null ? 0 : str.length();
+    }
+
     @Test
     public void testSlidingMap() {
-        StreamEx.<String> of().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a", "bb").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a", "bb", "c").slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.<String> of().slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a").slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a", "bb").slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a", "bb", "c").slidingMap((a, b) -> len(a) + "-" + len(b)).println();
 
-        StreamEx.<String> of().parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a", "bb").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
-        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b) -> N.len(a) + "-" + N.len(b)).println();
+        StreamEx.<String> of().parallel().slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a").parallel().slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b) -> len(a) + "-" + len(b)).println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b) -> len(a) + "-" + len(b)).println();
 
-        StreamEx.<String> of().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a", "bb").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a", "bb", "c").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a", "bb", "c", "ddd").slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c))
+        StreamEx.<String> of().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a").slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb").slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb", "c").slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb", "c", "ddd").slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c)).println();
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c))
                 .println();
 
-        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c)).println();
-        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c))
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 1, true)
                 .println();
-        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
-            c)).println();
-
-        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 1, true).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 1, true)
                 .println();
-        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 1, true)
                 .println();
-        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1, true)
-                .println();
-        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 1,
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 1,
             true).println();
-        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
-            c), 1, true).println();
 
-        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+        StreamEx.<String> of().parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 2, true)
                 .println();
-        StreamEx.of("a").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+        StreamEx.of("a").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 2, true).println();
+        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 2, true)
                 .println();
-        StreamEx.of("a", "bb").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2, true)
+        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 2, true)
                 .println();
-        StreamEx.of("a", "bb", "c").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(c), 2,
+        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> len(a) + "-" + len(b) + "-" + len(c), 2,
             true).println();
-        StreamEx.of("a", "bb", "c", "ddd").parallel().slidingMap((a, b, c) -> N.len(a) + "-" + N.len(b) + "-" + N.len(
-            c), 2, true).println();
     }
 
     @Test
     public void testGroupBy() {
-        StreamEx.of("a", "bb", "c").peek(Fn.println()).groupBy(Fn.length()).count();
+        StreamEx.of("a", "bb", "c").peek(Fn.println()).groupBy(s -> s.length()).count();
     }
 
     @Test

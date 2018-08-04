@@ -48,13 +48,13 @@ import java.util.stream.Stream;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import com.landawn.abacus.util.Fn;
+ 
 import com.landawn.streamex.EntryStream;
 import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.MoreCollectors;
 import com.landawn.streamex.StreamEx;
 import com.landawn.streamex.StreamExTest.Point;
+import com.landawn.streamex.util.Fn;
 
 /**
  * @author Tagir Valeev

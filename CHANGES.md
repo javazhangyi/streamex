@@ -2,6 +2,15 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.2.3
+
+* Refactoring `AbstractStreamEx.toImmutableList/toImmutableSet` for removing the dependence on `abacus-util`.
+
+* Removing the dependence on `abacus-util`. 
+
+* Improvements and bug fixes.
+
+
 ### 2.2.2
 
 * Rename `AbstractStreamEx.flatMapToEntry(Function<? super T, ? extends Map<K, V>> mapper)` to `flattMapToEntry`.
