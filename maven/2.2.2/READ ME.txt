@@ -5,7 +5,7 @@
 2, copy settings-security.xml and settings.xml to folder: C:\Users\haiyangl\.m2\ 
 
 3, Deploy and Release:
-	mvn clean deploy -f streamex-2.1.pom
+	mvn clean deploy -f streamex-2.2.2.pom
 	
 ######## Method 2 ############################################
 
@@ -20,8 +20,8 @@
 5, public repository: https://oss.sonatype.org/content/groups/public/com/landawn
 	
 ======================abacus-util=======================================
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.1.pom -Dfile=streamex-2.1.jar
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.1.pom -Dfile=streamex-2.1-javadoc.jar
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.1.pom -Dfile=streamex-2.1-sources.jar
+mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.2.2.pom -Dfile=streamex-2.2.2.jar
+mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.2.2.pom -Dfile=streamex-2.2.2-javadoc.jar
+mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=streamex-2.2.2.pom -Dfile=streamex-2.2.2-sources.jar
 
-jar -cvf streamex-2.1-bundle.jar streamex-2.1.pom streamex-2.1.pom.asc streamex-2.1.jar streamex-2.1.jar.asc streamex-2.1-javadoc.jar streamex-2.1-javadoc.jar.asc streamex-2.1-sources.jar streamex-2.1-sources.jar.asc
+jar -cvf streamex-2.2.2-bundle.jar streamex-2.2.2.pom streamex-2.2.2.pom.asc streamex-2.2.2.jar streamex-2.2.2.jar.asc streamex-2.2.2-javadoc.jar streamex-2.2.2-javadoc.jar.asc streamex-2.2.2-sources.jar streamex-2.2.2-sources.jar.asc
