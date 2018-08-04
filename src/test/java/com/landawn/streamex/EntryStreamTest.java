@@ -90,7 +90,7 @@ public class EntryStreamTest {
         assertEquals(createMap(), EntryStream.of("a", 1, "bb", 22, "ccc", 33).toMap());
 
         assertEquals(expected, StreamEx.of(Collections.singletonMap("aaa", 3), Collections.singletonMap("bbb", 3),
-            Collections.singletonMap("c", 1), Collections.emptyMap()).flatMapToEntry(m -> m).toMap());
+            Collections.singletonMap("c", 1), Collections.emptyMap()).flattMapToEntry(m -> m).toMap());
 
         EntryStream<String, Integer> stream = EntryStream.of(data);
         assertSame(stream.stream(), EntryStream.of(stream).stream());
@@ -396,7 +396,7 @@ public class EntryStreamTest {
         data2.put("aaa", asList(10));
         data2.put("bb", asList(20));
         data2.put("cc", null);
-        Map<String, List<Integer>> result = StreamEx.of(data1, data2, null).flatMapToEntry(m -> m).flatMapValues(
+        Map<String, List<Integer>> result = StreamEx.of(data1, data2, null).flattMapToEntry(m -> m).flatMapValues(
             l -> l == null ? null : l.stream()).groupTo();
         Map<String, List<Integer>> expected = new HashMap<>();
         expected.put("aaa", asList(1, 2, 3, 10));

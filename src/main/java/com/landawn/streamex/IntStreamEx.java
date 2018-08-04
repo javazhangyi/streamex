@@ -15,6 +15,7 @@
  */
 package com.landawn.streamex;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import static com.landawn.streamex.StreamExInternals.*;
 
 import java.io.IOException;
@@ -281,7 +282,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      */
     public <K, V> EntryStream<K, V> mapToEntry(IntFunction<? extends K> keyMapper,
             IntFunction<? extends V> valueMapper) {
-        return new EntryStream<>(stream().mapToObj(t -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(t),
+        return new EntryStream<>(stream().mapToObj(t -> new SimpleImmutableEntry<>(keyMapper.apply(t),
                 valueMapper.apply(t))), context);
     }
 

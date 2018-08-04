@@ -15,9 +15,9 @@
  */
 package com.landawn.streamex;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import static com.landawn.streamex.StreamExInternals.*;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;import java.util.Map.Entry;
@@ -222,7 +222,7 @@ import java.util.stream.Stream;
     
         @Override
         public void accept(T t) {
-            action.accept(new AbstractMap.SimpleImmutableEntry<>(depth, t));
+            action.accept(new SimpleImmutableEntry<>(depth, t));
             try(Stream<T> stream = mapper.apply(depth, t)) {
                 if(stream != null) {
                     depth++;

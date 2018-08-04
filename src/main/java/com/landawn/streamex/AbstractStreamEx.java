@@ -25,6 +25,8 @@ import java.util.function.*;
 import java.util.stream.*;
 import java.util.stream.Collector.Characteristics;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+
 import com.landawn.abacus.util.ImmutableList;
 import com.landawn.abacus.util.ImmutableSet;
 
@@ -239,6 +241,11 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
         return new DoubleStreamEx(stream().flatMapToDouble(mapper), context);
     }
 
+    public <K, V> EntryStream<K, V> flatMapToEntry(
+            final Function<? super T, ? extends Stream<Map.Entry<K, V>>> mapper) {
+        return new EntryStream<>(stream().flatMap(mapper), context);
+    }
+
     /**
      * Creates a new {@code EntryStream} populated from entries of maps produced
      * by supplied mapper function which is applied to the every element of this
@@ -257,11 +264,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      *        correspond to some element.
      * @return the new {@code EntryStream}
      */
-    public <K, V> EntryStream<K, V> flatMapToEntry(Function<? super T, ? extends Map<K, V>> mapper) {
-        return new EntryStream<>(stream().flatMap(e -> {
-            Map<K, V> s = mapper.apply(e);
-            return s == null ? StreamEx.empty() : s.entrySet().stream();
-        }), context);
+    public <K, V> EntryStream<K, V> flattMapToEntry(final Function<? super T, ? extends Map<K, V>> mapper) {
+        return flatMapToEntry(e -> StreamEx.of(mapper.apply(e)));
     }
 
     @Override
@@ -299,8 +303,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      */
     public <K> EntryStream<K, T> mapToEntryKey(Function<? super T, ? extends K> keyMapper) {
-        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e), e)),
-                context);
+        return new EntryStream<>(stream().map(e -> new SimpleImmutableEntry<>(keyMapper.apply(e), e)), context);
     }
 
     /**
@@ -318,8 +321,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the new stream
      */
     public <V> EntryStream<T, V> mapToEntryValue(Function<? super T, ? extends V> valueMapper) {
-        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(e, valueMapper.apply(e))),
-                context);
+        return new EntryStream<>(stream().map(e -> new SimpleImmutableEntry<>(e, valueMapper.apply(e))), context);
     }
 
     /**
@@ -366,8 +368,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      */
     public <K, V> EntryStream<K, V> mapToEntry(Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper) {
-        return new EntryStream<>(stream().map(e -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(e),
-                valueMapper.apply(e))), context);
+        return new EntryStream<>(stream().map(e -> new SimpleImmutableEntry<>(keyMapper.apply(e), valueMapper.apply(
+            e))), context);
     }
 
     @Override
@@ -1817,7 +1819,8 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      * @return the {@code List} where the last element is the last element of
      *         this stream and every predecessor element is the result of
      *         applying accumulator function to the corresponding stream element
-     *         and the next list element. The resulting list is same size as this stream.
+     *         and the next list element. The resulting list is same size as
+     *         this stream.
      * @see #scanLeft(BinaryOperator)
      * @see #foldRight(BinaryOperator)
      * @since 0.4.0

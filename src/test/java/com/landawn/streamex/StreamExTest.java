@@ -88,6 +88,14 @@ public class StreamExTest {
     public TemporaryFolder tmp = new TemporaryFolder();
 
     @Test
+    public void test_flatMapToEntry() {
+        Map<String, Map<String, Object>> map = N.asMap("a", N.asMap("b", 1));
+        StreamEx.of(map).flattMapToEntry(e -> e.getValue()).forEach(Fn.println());
+        StreamEx.of(map).flatMapToEntry(e -> StreamEx.of(e.getValue())).forEach(Fn.println());
+        StreamEx.of(map).flatMapToEntry(e -> EntryStream.of(e.getValue())).forEach(Fn.println());
+    }
+
+    @Test
     public void testDistinct_2() {
         StreamEx.of("a", "ab", "ba", "c", "a").distinct(o -> o > 1).println();
 

@@ -2,6 +2,15 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.2.2
+
+* Rename `AbstractStreamEx.flatMapToEntry(Function<? super T, ? extends Map<K, V>> mapper)` to `flattMapToEntry`.
+
+* Add `AbstractStreamEx.flatMapToEntry(Function<? super T, ? extends Stream<Map.Entry<K, V>>> mapper)`
+
+* Improvements and bug fixes.
+
+
 ### 2.2.1
 
 * Add `IntStreamEx/LongStreamEx/DoubleStreamEx.flattMapToObj/flatMappToObj`.

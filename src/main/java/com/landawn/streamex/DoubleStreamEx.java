@@ -24,6 +24,7 @@ import java.util.PrimitiveIterator.OfDouble;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.*;
 import java.util.stream.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  * A {@link DoubleStream} implementation with additional functionality
@@ -305,7 +306,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      */
     public <K, V> EntryStream<K, V> mapToEntry(DoubleFunction<? extends K> keyMapper,
             DoubleFunction<? extends V> valueMapper) {
-        return new EntryStream<>(stream().mapToObj(t -> new AbstractMap.SimpleImmutableEntry<>(keyMapper.apply(t),
+        return new EntryStream<>(stream().mapToObj(t -> new SimpleImmutableEntry<>(keyMapper.apply(t),
                 valueMapper.apply(t))), context);
     }
 
