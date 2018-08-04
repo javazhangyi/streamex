@@ -1922,25 +1922,6 @@ public final class Fn extends Comparators {
                 }
             };
         }
-
-        /**
-         * Remove the continuous repeat elements. Returns a stateful predicate
-         * which should not be used in parallel stream.
-         * 
-         * @return
-         */
-        public static <T> Predicate<T> skipRepeats() {
-            return new Predicate<T>() {
-                private T pre = (T) NULL;
-
-                @Override
-                public boolean test(T value) {
-                    boolean res = pre == NULL || Objects.equals(value, pre) == false;
-                    pre = value;
-                    return res;
-                }
-            };
-        }
     }
 
     public static final class BiPredicates {
@@ -2520,17 +2501,6 @@ public final class Fn extends Comparators {
             // singleton.
         }
 
-        /**
-         * 
-         * @return
-         * @deprecated replaced by {@code #ofAddAllToFirst()}
-         */
-        @Deprecated
-        @SuppressWarnings("unchecked")
-        public static <T, C extends Collection<T>> BinaryOperator<C> ofAddAll() {
-            return (BinaryOperator<C>) ADD_ALL_TO_FIRST;
-        }
-
         @SuppressWarnings("unchecked")
         public static <T, C extends Collection<T>> BinaryOperator<C> ofAddAllToFirst() {
             return (BinaryOperator<C>) ADD_ALL_TO_FIRST;
@@ -2541,31 +2511,9 @@ public final class Fn extends Comparators {
             return (BinaryOperator<C>) ADD_ALL_TO_BIGGER;
         }
 
-        /**
-         * 
-         * @return
-         * @deprecated replaced by {@code #ofRemoveAllFromFirst()}.
-         */
-        @Deprecated
-        @SuppressWarnings("unchecked")
-        public static <T, C extends Collection<T>> BinaryOperator<C> ofRemoveAll() {
-            return (BinaryOperator<C>) REMOVE_ALL_FROM_FIRST;
-        }
-
         @SuppressWarnings("unchecked")
         public static <T, C extends Collection<T>> BinaryOperator<C> ofRemoveAllFromFirst() {
             return (BinaryOperator<C>) REMOVE_ALL_FROM_FIRST;
-        }
-
-        /**
-         * 
-         * @return
-         * @deprecated replaced by {@code #ofPutAllToFirst()}
-         */
-        @Deprecated
-        @SuppressWarnings("unchecked")
-        public static <K, V, M extends Map<K, V>> BinaryOperator<M> ofPutAll() {
-            return (BinaryOperator<M>) PUT_ALL_TO_FIRST;
         }
 
         @SuppressWarnings("unchecked")
@@ -2576,16 +2524,6 @@ public final class Fn extends Comparators {
         @SuppressWarnings("unchecked")
         public static <K, V, M extends Map<K, V>> BinaryOperator<M> ofPutAllToBigger() {
             return (BinaryOperator<M>) PUT_ALL_TO_BIGGER;
-        }
-
-        /**
-         * 
-         * @return
-         * @deprecated replaced by {@code #ofAppendToFirst()}
-         */
-        @Deprecated
-        public static BinaryOperator<StringBuilder> ofAppend() {
-            return APPEND_TO_FIRST;
         }
 
         public static BinaryOperator<StringBuilder> ofAppendToFirst() {
@@ -2650,24 +2588,6 @@ public final class Fn extends Comparators {
                     return comparator.compare(t, u) >= 0 ? t : u;
                 }
             };
-        }
-    }
-
-    public static final class UnaryOperators {
-        @SuppressWarnings("rawtypes")
-        private static final UnaryOperator IDENTITY = new UnaryOperator() {
-            @Override
-            public Object apply(Object t) {
-                return t;
-            }
-        };
-
-        private UnaryOperators() {
-            // singleton.
-        }
-
-        public static <T> UnaryOperator<T> identity() {
-            return IDENTITY;
         }
     }
 }
