@@ -1806,8 +1806,8 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      * @param transfer
      * @return
      */
-    public <K2, V2> EntryStream<K2, V2> chain(
-            Function<? super StreamEx<Map.Entry<K, V>>, StreamEx<Map.Entry<K2, V2>>> transfer) {
+    public <KK, VV> EntryStream<KK, VV> chain(
+            Function<? super StreamEx<Map.Entry<K, V>>, StreamEx<Map.Entry<KK, VV>>> transfer) {
         return transfer.apply(entries()).mapToEntry(Function.identity());
     }
 

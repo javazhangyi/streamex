@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @author Tagir Valeev
  */
-public class WithFirstSpliteratorTest extends TestBase {
+public class WithFirstSpliteratorTest {
     @Test
     public void testSpliterator() {
         checkSpliterator("withFirst", EntryStream.of(0, 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5).toList(),

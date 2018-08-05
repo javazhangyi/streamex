@@ -16,6 +16,7 @@
 package com.landawn.streamex.api;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -25,12 +26,10 @@ import org.junit.Test;
 
 import com.landawn.streamex.StreamEx;
 
-import junit.framework.TestCase;
-
 /**
  * @author Tagir Valeev
  */
-public class StreamExApiTest extends TestCase {
+public class StreamExApiTest {
     @Test
     public void testMap() {
         BiFunction<StreamEx<Integer>, Function<Integer, Integer>, StreamEx<Integer>> streamMapper = StreamEx::map;

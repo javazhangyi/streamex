@@ -33,7 +33,7 @@ import com.landawn.streamex.UnorderedCancellableSpliterator;
 /**
  * @author Tagir Valeev
  */
-public class UnorderedCancellableSpliteratorTest extends TestBase {
+public class UnorderedCancellableSpliteratorTest {
     private static class BoxedInteger {
         int value;
 

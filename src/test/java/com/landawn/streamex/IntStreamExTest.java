@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class IntStreamExTest extends TestBase {
+public class IntStreamExTest {
     private static final byte[] EVEN_BYTES = new byte[] { 2, 4, 6, 8, 10 };
 
     @Test

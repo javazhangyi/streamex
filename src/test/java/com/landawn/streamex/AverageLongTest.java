@@ -17,6 +17,8 @@ package com.landawn.streamex;
 
 import static com.landawn.streamex.StreamExInternals.*;
 import static com.landawn.streamex.TestHelpers.*;
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -34,12 +36,10 @@ import org.junit.Test;
 import com.landawn.streamex.LongStreamEx;
 import com.landawn.streamex.MoreCollectors;
 
-import junit.framework.TestCase;
-
 /**
  * @author Tagir Valeev
  */
-public class AverageLongTest extends TestCase {
+public class AverageLongTest {
 
     @Test
     public void testAverageLongNoOverflow() {
@@ -64,8 +64,8 @@ public class AverageLongTest extends TestCase {
         withRandom(r -> {
             int[] input = r.ints(1000).toArray();
             OptionalDouble expected = IntStream.of(input).average();
-            assertEquals(expected, Arrays.stream(input)
-                    .collect(AverageLong::new, AverageLong::accept, AverageLong::combine).result());
+            assertEquals(expected, Arrays.stream(input).collect(AverageLong::new, AverageLong::accept,
+                AverageLong::combine).result());
 
             assertEquals(expected, Arrays.stream(input).parallel().collect(AverageLong::new, AverageLong::accept,
                 AverageLong::combine).result());
@@ -104,7 +104,7 @@ public class AverageLongTest extends TestCase {
                 .empty()
                 : OptionalDouble.of(new BigDecimal(sum).divide(BigDecimal.valueOf(cnt), MathContext.DECIMAL64)
                         .doubleValue());
-        return MoreCollectors.pairing(Collectors.reducing(BigInteger.ZERO,
-            BigInteger::valueOf, BigInteger::add), Collectors.counting(), finisher);
+        return MoreCollectors.pairing(Collectors.reducing(BigInteger.ZERO, BigInteger::valueOf, BigInteger::add),
+            Collectors.counting(), finisher);
     }
 }

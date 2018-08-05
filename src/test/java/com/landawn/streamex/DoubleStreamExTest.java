@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DoubleStreamExTest extends TestBase {
+public class DoubleStreamExTest {
     @Test
     public void testCreate() {
         assertArrayEquals(new double[] {}, DoubleStreamEx.empty().toArray(), 0.0);

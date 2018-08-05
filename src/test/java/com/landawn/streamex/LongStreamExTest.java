@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LongStreamExTest extends TestBase {
+public class LongStreamExTest {
     LongConsumer EMPTY = l -> {
         // nothing
     };

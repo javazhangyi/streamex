@@ -33,7 +33,7 @@ import com.landawn.streamex.OrderedCancellableSpliterator;
 /**
  * @author Tagir Valeev
  */
-public class OrderedCancellableSpliteratorTest extends TestBase {
+public class OrderedCancellableSpliteratorTest {
     @Test
     public void testSpliterator() {
         int limit = 10;

@@ -30,7 +30,7 @@ import com.landawn.streamex.ZipSpliterator;
 /**
  * @author Tagir Valeev
  */
-public class ZipSpliteratorTest extends TestBase {
+public class ZipSpliteratorTest {
     @Test
     public void testEven() {
         List<String> expected = IntStreamEx.range(200).mapToObj(x -> x+":"+(x+1)).toList();

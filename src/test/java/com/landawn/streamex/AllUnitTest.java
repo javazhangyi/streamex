@@ -4,57 +4,51 @@
 
 package com.landawn.streamex;
 
+import org.junit.runner.RunWith;
+
 import com.landawn.streamex.api.StreamExApiTest;
 
-import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.junit.runners.Suite;
 
-/**
- * 
- * @since 0.8
- * 
- * @author Haiyang Li
- */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        // 
+        StreamExApiTest.class, //
+        AverageLongTest.class, //
+        BaseStreamExTest.class, //
+        CharSpliteratorTest.class, //
+        CollapseSpliteratorTest.class, //
+        ConstSpliteratorTest.class, //
+        CrossSpliteratorTest.class, //
+        CustomPoolTest.class, //
+        DistinctSpliteratorTest.class, //
+        DoubleCollectorTest.class, //
+        DoubleStreamExTest.class, //
+        EmitterTest.class, //
+        EntryStreamTest.class, //
+        IntCollectorTest.class, //
+        InternalsTest.class, //
+        IntStreamExTest.class, //
+        JoiningTest.class, //
+        LimiterTest.class, //
+        LongCollectorTest.class, //
+        LongStreamExTest.class, //
+        MoreCollectorsTest.class, //
+        OrderedCancellableSpliteratorTest.class, //
+        PairPermutationSpliteratorTest.class, //
+        PairSpliteratorTest.class, //
+        PermutationSpliteratorTest.class, //
+        PrependSpliteratorTest.class, //
+        RangeBasedSpliteratorTest.class, //
+        StreamExTest.class, //
+        TailConcatSpliteratorTest.class, //
+        TreeSpliteratorTest.class, //
+        UnknownSizeSpliteratorTest.class, //
+        UnorderedCancellableSpliteratorTest.class, //
+        WithFirstSpliteratorTest.class, //
+        ZipSpliteratorTest.class, //
+})
+
 public class AllUnitTest extends TestSuite {
-
-    public static Test suite() {
-        TestSuite suite = new TestSuite("All Unit Test");
-
-        suite.addTestSuite(StreamExApiTest.class);
-        suite.addTestSuite(AverageLongTest.class);
-        suite.addTestSuite(BaseStreamExTest.class);
-        suite.addTestSuite(CharSpliteratorTest.class);
-        suite.addTestSuite(CollapseSpliteratorTest.class);
-        suite.addTestSuite(ConstSpliteratorTest.class);
-        suite.addTestSuite(CrossSpliteratorTest.class);
-        suite.addTestSuite(CustomPoolTest.class);
-        suite.addTestSuite(DistinctSpliteratorTest.class);
-        suite.addTestSuite(DoubleCollectorTest.class);
-        suite.addTestSuite(DoubleStreamExTest.class);
-        suite.addTestSuite(EmitterTest.class);
-        suite.addTestSuite(EntryStreamTest.class);
-        suite.addTestSuite(IntCollectorTest.class);
-        suite.addTestSuite(InternalsTest.class);
-        suite.addTestSuite(IntStreamExTest.class);
-        suite.addTestSuite(JoiningTest.class);
-        suite.addTestSuite(LimiterTest.class);
-        suite.addTestSuite(LongCollectorTest.class);
-        suite.addTestSuite(LongStreamExTest.class);
-        suite.addTestSuite(MoreCollectorsTest.class);
-        suite.addTestSuite(OrderedCancellableSpliteratorTest.class);
-        suite.addTestSuite(PairPermutationSpliteratorTest.class);
-        suite.addTestSuite(PairSpliteratorTest.class);
-        suite.addTestSuite(PermutationSpliteratorTest.class);
-        suite.addTestSuite(PrependSpliteratorTest.class);
-        suite.addTestSuite(RangeBasedSpliteratorTest.class);
-        suite.addTestSuite(StreamExTest.class);
-        suite.addTestSuite(TailConcatSpliteratorTest.class);
-        suite.addTestSuite(TreeSpliteratorTest.class);
-        suite.addTestSuite(UnknownSizeSpliteratorTest.class);
-        suite.addTestSuite(UnorderedCancellableSpliteratorTest.class);
-        suite.addTestSuite(WithFirstSpliteratorTest.class);
-        suite.addTestSuite(ZipSpliteratorTest.class);
-
-        return suite;
-    }
 }

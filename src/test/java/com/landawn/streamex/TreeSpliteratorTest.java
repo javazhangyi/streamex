@@ -31,7 +31,7 @@ import com.landawn.streamex.TreeSpliterator;
  * @author Tagir Valeev
  *
  */
-public class TreeSpliteratorTest extends TestBase {
+public class TreeSpliteratorTest {
     @Test
     public void testPlainSpliterator() {
         List<String> expected = Arrays.asList("", "a", "aa", "aaa", "aaaa", "aaab", "aab", "aaba", "aabb", "ab", "aba",

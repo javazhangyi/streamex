@@ -2,6 +2,11 @@ z# StreamEx changes
 
 Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
+### 2.3.2
+
+* Improvements and bug fixes.
+
+
 ### 2.3.1
 
 * Add `MoreCollectors.combine`.

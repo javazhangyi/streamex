@@ -41,7 +41,7 @@ import com.landawn.streamex.StreamEx.Emitter;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EmitterTest extends TestBase {
+public class EmitterTest {
     // Like Java-9 Stream.iterate(seed, test, op)
     public static <T> Emitter<T> iterate(T seed, Predicate<? super T> test, UnaryOperator<T> op) {
         return test.test(seed) ? action -> {

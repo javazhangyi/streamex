@@ -30,7 +30,7 @@ import com.landawn.streamex.StreamEx;
 /**
  * @author Tagir Valeev
  */
-public class RangeBasedSpliteratorTest extends TestBase {
+public class RangeBasedSpliteratorTest {
     private static final List<Integer> list10 = IntStreamEx.range(10).boxed().toList();
 
     @Test

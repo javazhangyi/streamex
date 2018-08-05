@@ -16,6 +16,8 @@
 package com.landawn.streamex;
 
 import static com.landawn.streamex.TestHelpers.*;
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.Spliterator;
 
@@ -24,12 +26,10 @@ import org.junit.Test;
 import com.landawn.streamex.CharSpliterator;
 import com.landawn.streamex.IntStreamEx;
 
-import junit.framework.TestCase;
-
 /**
  * @author Tagir Valeev
  */
-public class CharSpliteratorTest extends TestCase {
+public class CharSpliteratorTest {
     @Test
     public void testBasics() {
         CharSpliterator spliterator = new CharSpliterator("abcd,efgh", ',', false);
@@ -55,11 +55,12 @@ public class CharSpliteratorTest extends TestCase {
         withRandom(r -> {
             String[] inputs = { ",", "abcd,e,f,gh,,,i,j,kl,,,,,,", ",", "abcdasdfgsdfgsdfgsdfgsdfgsdgdfsgs",
                     "abcdasdfgsdfgsdfgsdfgsdfgsdgdfsgs,", "abcdasdfgs,dfgsdfgsdfgsdfgsdgdfsgs",
-                    "abcd,e,f,gh,,,i,j,kl,,,,,,x", "abcd,e,f,gh,,,i,j,kl,,,,,,x,",
-                    IntStreamEx.of(r, 0, 3).limit(r.nextInt(1000)+1).elements(new int[] { ',', 'a', 'b' }).charsToString() };
+                    "abcd,e,f,gh,,,i,j,kl,,,,,,x", "abcd,e,f,gh,,,i,j,kl,,,,,,x,", IntStreamEx.of(r, 0, 3).limit(r
+                            .nextInt(1000) + 1).elements(new int[] { ',', 'a', 'b' }).charsToString() };
             for (String input : inputs) {
                 checkSpliterator(input, Arrays.asList(input.split(",")), () -> new CharSpliterator(input, ',', true));
-                checkSpliterator(input, Arrays.asList(input.split(",", -1)), () -> new CharSpliterator(input, ',', false));
+                checkSpliterator(input, Arrays.asList(input.split(",", -1)), () -> new CharSpliterator(input, ',',
+                        false));
             }
         });
     }

@@ -29,7 +29,7 @@ import com.landawn.streamex.ConstSpliterator.OfRef;
 /**
  * @author Tagir Valeev
  */
-public class ConstSpliteratorTest extends TestBase {
+public class ConstSpliteratorTest {
     @Test
     public void testConstant() {
         checkSpliterator("ref", Collections.nCopies(100, "val"), () -> new ConstSpliterator.OfRef<>("val", 100, false));

@@ -34,7 +34,7 @@ import com.landawn.streamex.TailConcatSpliterator;
  * @author Tagir Valeev
  *
  */
-public class TailConcatSpliteratorTest extends TestBase {
+public class TailConcatSpliteratorTest {
     @Test
     public void testCharacteristics() {
         TailConcatSpliterator<Integer> spltr = new TailConcatSpliterator<>(IntStreamEx.range(1000).spliterator(), IntStreamEx.range(1000).spliterator());
