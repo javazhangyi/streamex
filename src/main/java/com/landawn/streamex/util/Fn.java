@@ -427,6 +427,18 @@ public final class Fn extends Comparators {
         };
     }
 
+    private static final Function<Keyed<?, Object>, Object> VAL = new Function<Keyed<?, Object>, Object>() {
+        @Override
+        public Object apply(Keyed<?, Object> t) {
+            return t.val();
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    public static <K, T> Function<Keyed<K, T>, T> val() {
+        return (Function) VAL;
+    }
+
     private static final Function<Map.Entry<Keyed<Object, Object>, Object>, Object> KK = new Function<Map.Entry<Keyed<Object, Object>, Object>, Object>() {
         @Override
         public Object apply(Map.Entry<Keyed<Object, Object>, Object> t) {
