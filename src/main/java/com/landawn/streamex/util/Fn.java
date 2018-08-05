@@ -286,9 +286,7 @@ public final class Fn extends Comparators {
             return value == null ? 0d : value.doubleValue();
         }
     };
-
-    private static final Object NULL = new Object();
-
+ 
     private Fn() {
         super();
         // Singleton.
@@ -307,12 +305,12 @@ public final class Fn extends Comparators {
      */
     public static <T> Supplier<T> single(final Supplier<T> supplier) {
         return new Supplier<T>() {
-            private T instance = (T) NULL;
+            private T instance = (T) NONE;
 
             @Override
             public T get() {
                 synchronized (this) {
-                    if (instance == NULL) {
+                    if (instance == NONE) {
                         instance = supplier.get();
                     }
 
