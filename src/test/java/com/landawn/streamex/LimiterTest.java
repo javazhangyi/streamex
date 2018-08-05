@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * @author Tagir Valeev
  */
-public class LimiterTest {
+public class LimiterTest extends TestBase {
     @Test
     public void testLimiter() {
         Comparator<String> cmp = Comparator.nullsFirst(Comparator.comparingInt(String::length));

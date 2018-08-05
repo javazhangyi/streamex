@@ -20,7 +20,7 @@ import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.LongStreamEx;
 import com.landawn.streamex.UnknownSizeSpliterator;
 
-public class UnknownSizeSpliteratorTest {
+public class UnknownSizeSpliteratorTest extends TestBase {
     @Test
     public void testSplit() {
         List<Integer> input = IntStreamEx.range(100).boxed().toList();

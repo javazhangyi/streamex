@@ -36,7 +36,7 @@ import com.landawn.streamex.LongStreamEx;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DoubleCollectorTest {
+public class DoubleCollectorTest extends TestBase {
     @Test
     public void testJoining() {
         String expected = IntStream.range(0, 10000).asDoubleStream().mapToObj(String::valueOf).collect(

@@ -32,7 +32,7 @@ import com.landawn.streamex.PairSpliterator.PSOfRef;
 /**
  * @author Tagir Valeev
  */
-public class PairSpliteratorTest {
+public class PairSpliteratorTest extends TestBase {
     @Test
     public void testSpliterator() {
         withRandom(r -> {

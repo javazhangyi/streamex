@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * @author Tagir Valeev
  */
-public class DistinctSpliteratorTest {
+public class DistinctSpliteratorTest extends TestBase {
 
     @Test
     public void testSpliterator() {

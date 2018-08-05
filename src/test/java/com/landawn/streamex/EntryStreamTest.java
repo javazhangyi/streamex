@@ -60,7 +60,7 @@ import com.landawn.streamex.util.Fn;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EntryStreamTest {
+public class EntryStreamTest extends TestBase {
     private void checkAsString(String expected, EntryStream<?, ?> stream) {
         assertEquals(expected, stream.map(e -> e.getKey() + "->" + e.getValue()).join(";"));
     }

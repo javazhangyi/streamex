@@ -19,6 +19,7 @@ import static com.landawn.streamex.StreamExInternals.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,12 +49,18 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
-import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 import java.util.stream.Collectors;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import com.landawn.streamex.util.Comparators;
+import com.landawn.streamex.util.MoreObjects;
+import com.landawn.streamex.util.Tuple;
+import com.landawn.streamex.util.Tuple.Tuple2;
+import com.landawn.streamex.util.Tuple.Tuple3;
+import com.landawn.streamex.util.Tuple.Tuple4;
+import com.landawn.streamex.util.Tuple.Tuple5;
 
 /**
  * Implementations of several collectors in addition to ones available in JDK.
@@ -2164,5 +2171,223 @@ public final class MoreCollectors {
         BiConsumer<M, T> accumulator = (map, element) -> addToMap(map, keyMapper.apply(element), valueMapper.apply(
             element), mergeFunction);
         return Collector.of(mapSupplier, accumulator, mapMerger(mergeFunction), CH_CONCURRENT_ID);
+    }
+
+    public static <T, A1, A2, R1, R2> Collector<T, Tuple2<A1, A2>, Tuple2<R1, R2>> combine(
+            final Collector<? super T, A1, R1> collector1, final Collector<? super T, A2, R2> collector2) {
+        final java.util.function.Supplier<A1> supplier1 = collector1.supplier();
+        final java.util.function.Supplier<A2> supplier2 = collector2.supplier();
+        final java.util.function.BiConsumer<A1, ? super T> accumulator1 = collector1.accumulator();
+        final java.util.function.BiConsumer<A2, ? super T> accumulator2 = collector2.accumulator();
+        final java.util.function.BinaryOperator<A1> combiner1 = collector1.combiner();
+        final java.util.function.BinaryOperator<A2> combiner2 = collector2.combiner();
+        final java.util.function.Function<A1, R1> finisher1 = collector1.finisher();
+        final java.util.function.Function<A2, R2> finisher2 = collector2.finisher();
+
+        final Supplier<Tuple2<A1, A2>> supplier = new Supplier<Tuple2<A1, A2>>() {
+            @Override
+            public Tuple2<A1, A2> get() {
+                return Tuple.of(supplier1.get(), supplier2.get());
+            }
+        };
+
+        final BiConsumer<Tuple2<A1, A2>, T> accumulator = new BiConsumer<Tuple2<A1, A2>, T>() {
+            @Override
+            public void accept(Tuple2<A1, A2> acct, T e) {
+                accumulator1.accept(acct._1, e);
+                accumulator2.accept(acct._2, e);
+            }
+        };
+
+        final BinaryOperator<Tuple2<A1, A2>> combiner = new BinaryOperator<Tuple2<A1, A2>>() {
+            @Override
+            public Tuple2<A1, A2> apply(Tuple2<A1, A2> t, Tuple2<A1, A2> u) {
+                return Tuple.of(combiner1.apply(t._1, u._1), combiner2.apply(t._2, u._2));
+            }
+        };
+
+        final Function<Tuple2<A1, A2>, Tuple2<R1, R2>> finisher = new Function<Tuple2<A1, A2>, Tuple2<R1, R2>>() {
+            @Override
+            public Tuple2<R1, R2> apply(Tuple2<A1, A2> t) {
+                return Tuple.of(finisher1.apply(t._1), finisher2.apply(t._2));
+            }
+        };
+
+        final Set<Characteristics> common = intersection(collector1.characteristics(), collector2.characteristics());
+
+        return Collector.of(supplier, accumulator, combiner, finisher, common.toArray(new Characteristics[common
+                .size()]));
+    }
+
+    public static <T, A1, A2, A3, R1, R2, R3> Collector<T, Tuple3<A1, A2, A3>, Tuple3<R1, R2, R3>> combine(
+            final Collector<? super T, A1, R1> collector1, final Collector<? super T, A2, R2> collector2,
+            final Collector<? super T, A3, R3> collector3) {
+        final java.util.function.Supplier<A1> supplier1 = collector1.supplier();
+        final java.util.function.Supplier<A2> supplier2 = collector2.supplier();
+        final java.util.function.Supplier<A3> supplier3 = collector3.supplier();
+        final java.util.function.BiConsumer<A1, ? super T> accumulator1 = collector1.accumulator();
+        final java.util.function.BiConsumer<A2, ? super T> accumulator2 = collector2.accumulator();
+        final java.util.function.BiConsumer<A3, ? super T> accumulator3 = collector3.accumulator();
+        final java.util.function.BinaryOperator<A1> combiner1 = collector1.combiner();
+        final java.util.function.BinaryOperator<A2> combiner2 = collector2.combiner();
+        final java.util.function.BinaryOperator<A3> combiner3 = collector3.combiner();
+        final java.util.function.Function<A1, R1> finisher1 = collector1.finisher();
+        final java.util.function.Function<A2, R2> finisher2 = collector2.finisher();
+        final java.util.function.Function<A3, R3> finisher3 = collector3.finisher();
+
+        final Supplier<Tuple3<A1, A2, A3>> supplier = new Supplier<Tuple3<A1, A2, A3>>() {
+            @Override
+            public Tuple3<A1, A2, A3> get() {
+                return Tuple.of(supplier1.get(), supplier2.get(), supplier3.get());
+            }
+        };
+
+        final BiConsumer<Tuple3<A1, A2, A3>, T> accumulator = new BiConsumer<Tuple3<A1, A2, A3>, T>() {
+            @Override
+            public void accept(Tuple3<A1, A2, A3> acct, T e) {
+                accumulator1.accept(acct._1, e);
+                accumulator2.accept(acct._2, e);
+                accumulator3.accept(acct._3, e);
+            }
+        };
+
+        final BinaryOperator<Tuple3<A1, A2, A3>> combiner = new BinaryOperator<Tuple3<A1, A2, A3>>() {
+            @Override
+            public Tuple3<A1, A2, A3> apply(Tuple3<A1, A2, A3> t, Tuple3<A1, A2, A3> u) {
+                return Tuple.of(combiner1.apply(t._1, u._1), combiner2.apply(t._2, u._2), combiner3.apply(t._3, u._3));
+            }
+        };
+
+        final Function<Tuple3<A1, A2, A3>, Tuple3<R1, R2, R3>> finisher = new Function<Tuple3<A1, A2, A3>, Tuple3<R1, R2, R3>>() {
+            @Override
+            public Tuple3<R1, R2, R3> apply(Tuple3<A1, A2, A3> t) {
+                return Tuple.of(finisher1.apply(t._1), finisher2.apply(t._2), finisher3.apply(t._3));
+            }
+        };
+
+        final Set<Characteristics> common = intersection(intersection(collector1.characteristics(), collector2
+                .characteristics()), collector3.characteristics());
+
+        return Collector.of(supplier, accumulator, combiner, finisher, common.toArray(new Characteristics[common
+                .size()]));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static <T, A1, A2, A3, A4, R1, R2, R3, R4> Collector<T, Tuple4<A1, A2, A3, A4>, Tuple4<R1, R2, R3, R4>> combine(
+            final Collector<? super T, A1, R1> collector1, final Collector<? super T, A2, R2> collector2,
+            final Collector<? super T, A3, R3> collector3, final Collector<? super T, A4, R4> collector4) {
+        final List<Collector<? super T, ?, ?>> collectors = Arrays.asList(collector1, collector2, collector3,
+            collector4);
+
+        final Function<List<?>, Tuple4<A1, A2, A3, A4>> func = new Function<List<?>, Tuple4<A1, A2, A3, A4>>() {
+            @Override
+            public Tuple4<A1, A2, A3, A4> apply(List<?> t) {
+                return Tuple4.from(t);
+            }
+        };
+
+        return (Collector) collectingAndThen(combine(collectors), func);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static <T, A1, A2, A3, A4, A5, R1, R2, R3, R4, R5> Collector<T, Tuple5<A1, A2, A3, A4, A5>, Tuple5<R1, R2, R3, R4, R5>> combine(
+            final Collector<? super T, A1, R1> collector1, final Collector<? super T, A2, R2> collector2,
+            final Collector<? super T, A3, R3> collector3, final Collector<? super T, A4, R4> collector4,
+            final Collector<? super T, A5, R5> collector5) {
+
+        final List<Collector<? super T, ?, ?>> collectors = Arrays.asList(collector1, collector2, collector3,
+            collector4, collector5);
+
+        final Function<List<?>, Tuple5<A1, A2, A3, A4, A5>> func = new Function<List<?>, Tuple5<A1, A2, A3, A4, A5>>() {
+            @Override
+            public Tuple5<A1, A2, A3, A4, A5> apply(List<?> t) {
+                return Tuple5.from(t);
+            }
+        };
+
+        return (Collector) collectingAndThen(combine(collectors), func);
+    }
+
+    /**
+     * 
+     * @param collectors
+     * @return
+     * @see Tuple#from(Collection)
+     */
+    @SuppressWarnings("rawtypes")
+    public static <T> Collector<T, ?, List<?>> combine(final Collection<Collector<? super T, ?, ?>> collectors) {
+        if (MoreObjects.isNullOrEmpty(collectors)) {
+            throw new IllegalArgumentException("The specified 'collectors' can't be null or empty");
+        }
+
+        final int len = collectors.size();
+        final Collector<T, Object, Object>[] cs = collectors.toArray(new Collector[len]);
+
+        final Supplier<List<Object>> supplier = new Supplier<List<Object>>() {
+            @Override
+            public List<Object> get() {
+                final List<Object> res = new ArrayList<>(len);
+
+                for (int i = 0; i < len; i++) {
+                    res.add(cs[i].supplier().get());
+                }
+
+                return res;
+            }
+        };
+
+        final BiConsumer<List<Object>, T> accumulator = new BiConsumer<List<Object>, T>() {
+            @Override
+            public void accept(List<Object> acct, T e) {
+                for (int i = 0; i < len; i++) {
+                    cs[i].accumulator().accept(acct.get(i), e);
+                }
+            }
+        };
+
+        final BinaryOperator<List<Object>> combiner = new BinaryOperator<List<Object>>() {
+            @Override
+            public List<Object> apply(List<Object> t, List<Object> u) {
+                for (int i = 0; i < len; i++) {
+                    t.set(i, cs[i].combiner().apply(t.get(i), u.get(i)));
+                }
+
+                return t;
+            }
+        };
+
+        final Function<List<Object>, List<Object>> finisher = new Function<List<Object>, List<Object>>() {
+            @Override
+            public List<Object> apply(List<Object> t) {
+                for (int i = 0; i < len; i++) {
+                    t.set(i, cs[i].finisher().apply(t.get(i)));
+                }
+
+                return t;
+            }
+        };
+
+        Set<Characteristics> common = cs[0].characteristics();
+
+        for (int i = 1; i < len; i++) {
+            common = intersection(common, cs[i].characteristics());
+
+            if (MoreObjects.isNullOrEmpty(common)) {
+                break;
+            }
+        }
+
+        return (Collector) Collector.of(supplier, accumulator, combiner, finisher, common.toArray(
+            new Characteristics[common.size()]));
+    }
+
+    private static <T> Set<T> intersection(final Collection<? extends T> a, final Collection<?> b) {
+        if (MoreObjects.isNullOrEmpty(a) || MoreObjects.isNullOrEmpty(b)) {
+            return new HashSet<>();
+        }
+
+        final Set<T> result = new HashSet<>(a);
+        result.retainAll(b);
+        return result;
     }
 }

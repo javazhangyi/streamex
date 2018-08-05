@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MoreCollectorsTest {
+public class MoreCollectorsTest extends TestBase {
     static class MyNumber implements Comparable<MyNumber> {
         int value;
         

@@ -32,7 +32,7 @@ import com.landawn.streamex.IntStreamEx;
 /**
  * @author Tagir Valeev
  */
-public class CrossSpliteratorTest {
+public class CrossSpliteratorTest extends TestBase {
     @Test
     public void testCrossToList() {
         for (int limit : new int[] { 1, 2, 4, 9 }) {

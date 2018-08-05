@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  *
  */
-public class CollapseSpliteratorTest {
+public class CollapseSpliteratorTest extends TestBase {
     private static <T> void splitEquals(Spliterator<T> source, BiConsumer<Spliterator<T>, Spliterator<T>> consumer) {
         Spliterator<T> right = new CollapseSpliterator<>(Objects::equals, Function.identity(), StreamExInternals
                 .selectFirst(), StreamExInternals.selectFirst(), source);

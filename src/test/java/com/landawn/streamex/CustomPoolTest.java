@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class CustomPoolTest {
+public class CustomPoolTest extends TestBase {
     ForkJoinPool pool = new ForkJoinPool(3);
 
     private void checkThread(Object element) {

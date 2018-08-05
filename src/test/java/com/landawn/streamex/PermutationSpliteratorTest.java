@@ -28,7 +28,7 @@ import com.landawn.streamex.PermutationSpliterator;
 import static com.landawn.streamex.TestHelpers.*;
 import static org.junit.Assert.*;
 
-public class PermutationSpliteratorTest {
+public class PermutationSpliteratorTest extends TestBase {
     private static final String PERMUTATIONS_4 = "0123,0132,0213,0231,0312,0321," + "1023,1032,1203,1230,1302,1320,"
         + "2013,2031,2103,2130,2301,2310," + "3012,3021,3102,3120,3201,3210";
     private static final String PERMUTATIONS_3 = "012,021,102,120,201,210";

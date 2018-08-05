@@ -33,11 +33,13 @@ import com.landawn.streamex.IntStreamEx;
 import com.landawn.streamex.LongStreamEx;
 import com.landawn.streamex.StreamEx;
 
+import junit.framework.TestCase;
+
 /**
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BaseStreamExTest {
+public class BaseStreamExTest extends TestCase {
     @Test
     public void testSpliterator() {
         Spliterator<Integer> spltr = Arrays.spliterator(new Integer[] {1,2,3}); 

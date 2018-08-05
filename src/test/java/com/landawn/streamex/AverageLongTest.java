@@ -17,8 +17,6 @@ package com.landawn.streamex;
 
 import static com.landawn.streamex.StreamExInternals.*;
 import static com.landawn.streamex.TestHelpers.*;
-import static org.junit.Assert.*;
-
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -36,10 +34,12 @@ import org.junit.Test;
 import com.landawn.streamex.LongStreamEx;
 import com.landawn.streamex.MoreCollectors;
 
+import junit.framework.TestCase;
+
 /**
  * @author Tagir Valeev
  */
-public class AverageLongTest {
+public class AverageLongTest extends TestCase {
 
     @Test
     public void testAverageLongNoOverflow() {

@@ -37,7 +37,7 @@ import com.landawn.streamex.IntStreamEx;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class IntCollectorTest {
+public class IntCollectorTest extends TestBase {
     @Test
     public void testJoining() {
         String expected = IntStream.range(0, 10000).mapToObj(String::valueOf).collect(Collectors.joining(", "));

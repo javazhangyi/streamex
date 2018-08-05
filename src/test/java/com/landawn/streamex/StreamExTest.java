@@ -82,7 +82,7 @@ import static java.util.Arrays.asList;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class StreamExTest {
+public class StreamExTest extends TestBase {
     @Rule
     public TemporaryFolder tmp = new TemporaryFolder();
 

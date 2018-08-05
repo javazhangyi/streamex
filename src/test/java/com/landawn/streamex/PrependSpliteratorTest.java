@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 /**
  * @author Tagir Valeev
  */
-public class PrependSpliteratorTest {
+public class PrependSpliteratorTest extends TestBase {
     @Test
     public void testSpliterator() {
         checkSpliterator("prepend", IntStreamEx.range(100).boxed().toList(), () -> new PrependSpliterator<>(IntStream

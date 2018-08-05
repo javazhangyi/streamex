@@ -16,8 +16,6 @@
 package com.landawn.streamex;
 
 import static com.landawn.streamex.TestHelpers.*;
-import static org.junit.Assert.*;
-
 import java.util.Arrays;
 import java.util.Spliterator;
 
@@ -26,10 +24,12 @@ import org.junit.Test;
 import com.landawn.streamex.CharSpliterator;
 import com.landawn.streamex.IntStreamEx;
 
+import junit.framework.TestCase;
+
 /**
  * @author Tagir Valeev
  */
-public class CharSpliteratorTest {
+public class CharSpliteratorTest extends TestCase {
     @Test
     public void testBasics() {
         CharSpliterator spliterator = new CharSpliterator("abcd,efgh", ',', false);

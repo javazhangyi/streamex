@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  * 
  * @author Tagir Valeev
  */
-public class InternalsTest {
+public class InternalsTest extends TestBase {
     @Test
     public void testArrayCollection() {
         Collection<Object> collection = new ArrayCollection(new Object[] { "1", "2" });

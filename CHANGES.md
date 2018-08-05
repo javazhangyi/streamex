@@ -4,6 +4,8 @@ Check also [MIGRATION.md](MIGRATION.md) for possible compatibility problems.
 
 ### 2.3.1
 
+* Add `MoreCollectors.combine`.
+
 * Improvements and bug fixes.
 
 

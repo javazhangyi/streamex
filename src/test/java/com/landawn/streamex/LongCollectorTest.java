@@ -36,7 +36,7 @@ import com.landawn.streamex.LongStreamEx;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LongCollectorTest {
+public class LongCollectorTest extends TestBase {
     @Test
     public void testJoining() {
         String expected = LongStream.range(0, 10000).mapToObj(String::valueOf).collect(Collectors.joining(", "));

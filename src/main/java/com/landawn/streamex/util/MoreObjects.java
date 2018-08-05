@@ -42,6 +42,14 @@ public final class MoreObjects {
         return obj;
     }
 
+    public static boolean isNullOrEmpty(final Object[] a) {
+        return (a == null) || (a.length == 0);
+    }
+
+    public static boolean isNullOrEmpty(final Collection<?> c) {
+        return (c == null) || (c.isEmpty());
+    }
+
     public static void checkIndex(final int index, final int length) {
         if (index < 0 || index >= length) {
             throw new IndexOutOfBoundsException(String.format("Index %d out-of-bounds for length %d", index, length));

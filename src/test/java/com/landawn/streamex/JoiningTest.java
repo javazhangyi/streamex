@@ -40,7 +40,7 @@ import com.landawn.streamex.StreamEx;
  * @author Tagir Valeev
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JoiningTest {
+public class JoiningTest extends TestBase {
     @Test(expected = IllegalArgumentException.class)
     public void testMaxCharsRange() {
         Joining.with(",").maxChars(-1);

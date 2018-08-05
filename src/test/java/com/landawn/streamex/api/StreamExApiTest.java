@@ -15,7 +15,6 @@
  */
 package com.landawn.streamex.api;
 
-import static org.junit.Assert.*;
 import static java.util.Arrays.asList;
 
 import java.util.List;
@@ -26,23 +25,24 @@ import org.junit.Test;
 
 import com.landawn.streamex.StreamEx;
 
+import junit.framework.TestCase;
+
 /**
  * @author Tagir Valeev
  */
-public class StreamExApiTest {
+public class StreamExApiTest extends TestCase {
     @Test
     public void testMap() {
         BiFunction<StreamEx<Integer>, Function<Integer, Integer>, StreamEx<Integer>> streamMapper = StreamEx::map;
-		assertEquals(asList(2, 4, 10),
-				streamMapper.apply(StreamEx.of(1, 2, 5), x -> x * 2).toList());
+        assertEquals(asList(2, 4, 10), streamMapper.apply(StreamEx.of(1, 2, 5), x -> x * 2).toList());
     }
-    
+
     @Test
     public void testAppend() {
         List<String> input = asList("a", "b", "c");
         assertEquals(input, input.stream().map(StreamEx::just).reduce(StreamEx::append).get().toList());
     }
-    
+
     @Test
     public void testPrepend() {
         List<String> input = asList("a", "b", "c");
