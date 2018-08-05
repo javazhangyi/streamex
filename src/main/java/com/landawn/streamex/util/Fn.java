@@ -17,6 +17,7 @@ package com.landawn.streamex.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,6 +170,21 @@ public final class Fn extends Comparators {
         }
     };
 
+    private static final Function<String, Integer> LENGTH = new Function<String, Integer>() {
+        @Override
+        public Integer apply(String t) {
+            return t == null ? 0 : t.length();
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    private static final Function<Collection, Integer> SIZE = new Function<Collection, Integer>() {
+        @Override
+        public Integer apply(Collection t) {
+            return t == null ? 0 : t.size();
+        }
+    };
+
     private static final Function<Map.Entry<Object, Object>, Object> KEY = new Function<Map.Entry<Object, Object>, Object>() {
         @Override
         public Object apply(Map.Entry<Object, Object> t) {
@@ -186,16 +202,16 @@ public final class Fn extends Comparators {
     private static final Function<Map.Entry<Object, Object>, Map.Entry<Object, Object>> INVERSE = new Function<Map.Entry<Object, Object>, Map.Entry<Object, Object>>() {
         @Override
         public Map.Entry<Object, Object> apply(Map.Entry<Object, Object> t) {
-            return Pair.of(t.getValue(), t.getKey());
+            return new SimpleImmutableEntry<>(t.getValue(), t.getKey());
         }
     };
 
-    //    private static final BiFunction<Object, Object, Map.Entry<Object, Object>> ENTRY = new BiFunction<Object, Object, Map.Entry<Object, Object>>() {
-    //        @Override
-    //        public Map.Entry<Object, Object> apply(Object key, Object value) {
-    //            return new AbstractMap.SimpleImmutableEntry<>(key, value);
-    //        }
-    //    };
+    private static final BiFunction<Object, Object, Map.Entry<Object, Object>> ENTRY = new BiFunction<Object, Object, Map.Entry<Object, Object>>() {
+        @Override
+        public Map.Entry<Object, Object> apply(Object key, Object value) {
+            return new SimpleImmutableEntry<>(key, value);
+        }
+    };
 
     private static final BiFunction<Object, Object, Pair<Object, Object>> PAIR = new BiFunction<Object, Object, Pair<Object, Object>>() {
         @Override
@@ -440,16 +456,14 @@ public final class Fn extends Comparators {
 
     @SuppressWarnings("rawtypes")
     public static <K, V> BiFunction<K, V, Map.Entry<K, V>> entry() {
-        // return (BiFunction) ENTRY;
-
-        return (BiFunction) PAIR;
+        return (BiFunction) ENTRY;
     }
 
     public static <K, T> Function<T, Map.Entry<K, T>> entry(final K key) {
         return new Function<T, Map.Entry<K, T>>() {
             @Override
             public Entry<K, T> apply(T t) {
-                return Pair.of(key, t);
+                return new SimpleImmutableEntry<>(key, t);
             }
         };
     }
@@ -460,7 +474,7 @@ public final class Fn extends Comparators {
         return new Function<T, Map.Entry<K, T>>() {
             @Override
             public Entry<K, T> apply(T t) {
-                return Pair.of(keyExtractor.apply(t), t);
+                return new SimpleImmutableEntry<>(keyExtractor.apply(t), t);
             }
         };
     }
@@ -484,6 +498,15 @@ public final class Fn extends Comparators {
 
     public static Function<String, String> nullToEmpty() {
         return NULL_TO_EMPTY;
+    }
+
+    public static Function<String, Integer> length() {
+        return LENGTH;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static <T extends Collection> Function<T, Integer> size() {
+        return (Function<T, Integer>) SIZE;
     }
 
     public static <T, U> Function<T, U> cast(final Class<U> clazz) {
@@ -1041,7 +1064,7 @@ public final class Fn extends Comparators {
         return new Function<Map.Entry<K, V>, Map.Entry<KK, V>>() {
             @Override
             public Map.Entry<KK, V> apply(Entry<K, V> entry) {
-                return Pair.of(func.apply(entry.getKey()), entry.getValue());
+                return new SimpleImmutableEntry<>(func.apply(entry.getKey()), entry.getValue());
             }
         };
     }
@@ -1052,7 +1075,7 @@ public final class Fn extends Comparators {
         return new Function<Map.Entry<K, V>, Map.Entry<K, VV>>() {
             @Override
             public Map.Entry<K, VV> apply(Entry<K, V> entry) {
-                return Pair.of(entry.getKey(), func.apply(entry.getValue()));
+                return new SimpleImmutableEntry<>(entry.getKey(), func.apply(entry.getValue()));
             }
         };
     }
