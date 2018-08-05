@@ -30,6 +30,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.*;
 import java.util.stream.*;
 
+import com.landawn.streamex.util.Fn;
+
 /**
  * An {@link IntStream} implementation with additional functionality
  * 
@@ -311,7 +313,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @since 0.3.0
      */
     public LongStreamEx flatMapToLong(IntFunction<? extends LongStream> mapper) {
-        return new LongStreamEx(stream().mapToObj(mapper).flatMapToLong(Function.identity()), context);
+        return new LongStreamEx(stream().mapToObj(mapper).flatMapToLong(Fn.identity()), context);
     }
 
     /**
@@ -330,7 +332,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @since 0.3.0
      */
     public DoubleStreamEx flatMapToDouble(IntFunction<? extends DoubleStream> mapper) {
-        return new DoubleStreamEx(stream().mapToObj(mapper).flatMapToDouble(Function.identity()), context);
+        return new DoubleStreamEx(stream().mapToObj(mapper).flatMapToDouble(Fn.identity()), context);
     }
 
     /**
@@ -350,7 +352,7 @@ public class IntStreamEx extends BaseStreamEx<Integer, IntStream, Spliterator.Of
      * @since 0.3.0
      */
     public <R> StreamEx<R> flatMapToObj(IntFunction<? extends Stream<R>> mapper) {
-        return new StreamEx<>(stream().mapToObj(mapper).flatMap(Function.identity()), context);
+        return new StreamEx<>(stream().mapToObj(mapper).flatMap(Fn.identity()), context);
     }
 
     public <R> StreamEx<R> flattMapToObj(IntFunction<? extends Collection<? extends R>> mapper) {

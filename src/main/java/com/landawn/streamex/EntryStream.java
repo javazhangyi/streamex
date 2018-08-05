@@ -517,7 +517,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     public EntryStream<K, V> distinct(Predicate<? super Long> occurrencesFilter) {
         final Supplier<? extends Map<Map.Entry<K, V>, Long>> mapSupplier = Suppliers.ofLinkedHashMap();
 
-        return groupBy(Function.identity(), Function.identity(), Collectors.counting(), mapSupplier).filter(
+        return groupBy(Fn.identity(), Fn.identity(), Collectors.counting(), mapSupplier).filter(
             e -> occurrencesFilter.test(e.getValue())).mapToEntry(Fn.key());
     }
 
@@ -528,7 +528,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
                 ? Suppliers.<Keyed<?, Map.Entry<K, V>>, Long> ofConcurrentHashMap()
                 : Suppliers.<Keyed<?, Map.Entry<K, V>>, Long> ofLinkedHashMap();
 
-        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Function.identity(), Collectors.counting(), mapSupplier)
+        return groupBy(e -> Keyed.of(keyExtractor.apply(e), e), Fn.identity(), Collectors.counting(), mapSupplier)
                 .filter(e -> occurrencesFilter.test(e.getValue())).mapToEntry(e -> e.getKey().val());
     }
 
@@ -921,7 +921,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     public StreamEx<Map.Entry<K, V>> entries() {
-        return map(Function.identity());
+        return map(Fn.identity());
     }
 
     /**
@@ -1004,7 +1004,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     public EntryStream<K, V> collapseKeys(BinaryOperator<V> merger) {
         BinaryOperator<Entry<K, V>> entryMerger = (e1, e2) -> new SimpleImmutableEntry<>(e1.getKey(), merger.apply(e1
                 .getValue(), e2.getValue()));
-        return new EntryStream<>(new CollapseSpliterator<>(equalKeys(), Function.identity(), entryMerger, entryMerger,
+        return new EntryStream<>(new CollapseSpliterator<>(equalKeys(), Fn.identity(), entryMerger, entryMerger,
                 spliterator()), context);
     }
 
@@ -1808,7 +1808,7 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
      */
     public <KK, VV> EntryStream<KK, VV> chain(
             Function<? super StreamEx<Map.Entry<K, V>>, StreamEx<Map.Entry<KK, VV>>> transfer) {
-        return transfer.apply(entries()).mapToEntry(Function.identity());
+        return transfer.apply(entries()).mapToEntry(Fn.identity());
     }
 
     /**
@@ -1937,14 +1937,14 @@ public class EntryStream<K, V> extends AbstractStreamEx<Entry<K, V>, EntryStream
     }
 
     public static <K, T> EntryStream<K, T> of(final T[] a, final Function<? super T, K> keyExtractor) {
-        final Function<T, T> valueMapper = Function.identity();
+        final Function<T, T> valueMapper = Fn.identity();
 
         return StreamEx.of(a).mapToEntry(keyExtractor, valueMapper);
     }
 
     public static <K, T> EntryStream<K, T> of(final Collection<? extends T> c,
             final Function<? super T, K> keyExtractor) {
-        final Function<T, T> valueMapper = Function.identity();
+        final Function<T, T> valueMapper = Fn.identity();
 
         return StreamEx.of(c).mapToEntry(keyExtractor, valueMapper);
     }

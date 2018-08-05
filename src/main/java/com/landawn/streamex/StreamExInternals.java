@@ -31,6 +31,8 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
+import com.landawn.streamex.util.Fn;
+
 /* package */@SuppressWarnings("restriction")
 final class StreamExInternals {
     static final int INITIAL_SIZE = 128;
@@ -390,7 +392,7 @@ final class StreamExInternals {
                 left.falseValue = downstreamCombiner.apply(left.falseValue, right.falseValue);
             };
             if (downstream.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
-                return (PartialCollector) new PartialCollector<>(supplier, merger, Function.identity(),
+                return (PartialCollector) new PartialCollector<>(supplier, merger, Fn.identity(),
                         ID_CHARACTERISTICS);
             }
             Function<A, R> downstreamFinisher = downstream.finisher();
@@ -499,7 +501,7 @@ final class StreamExInternals {
 
             if (downstream.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
                 return (PartialCollector<Map<K, A>, M>) new PartialCollector<>((Supplier<Map<K, A>>) mapFactory,
-                        merger, Function.identity(), ID_CHARACTERISTICS);
+                        merger, Fn.identity(), ID_CHARACTERISTICS);
             }
             Function<A, D> downstreamFinisher = downstream.finisher();
             return new PartialCollector<>((Supplier<Map<K, A>>) mapFactory, merger, map -> {

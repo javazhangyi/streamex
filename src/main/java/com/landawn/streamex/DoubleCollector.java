@@ -32,6 +32,8 @@ import java.util.function.ObjDoubleConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import com.landawn.streamex.util.Fn;
+
 /**
  * A {@link Collector} specialized to work with primitive {@code double}.
  * 
@@ -94,7 +96,7 @@ public interface DoubleCollector<A, R> extends MergingCollector<Double, A, R> {
      */
     static <R> DoubleCollector<R, R> of(Supplier<R> supplier, ObjDoubleConsumer<R> doubleAccumulator,
             BiConsumer<R, R> merger) {
-        return new DoubleCollectorImpl<>(supplier, doubleAccumulator, merger, Function.identity(), ID_CHARACTERISTICS);
+        return new DoubleCollectorImpl<>(supplier, doubleAccumulator, merger, Fn.identity(), ID_CHARACTERISTICS);
     }
 
     /**

@@ -25,8 +25,9 @@ import java.util.function.*;
 import java.util.stream.*;
 import java.util.stream.Collector.Characteristics;
 
+import com.landawn.streamex.util.Fn;
+
 import java.util.AbstractMap.SimpleImmutableEntry;
- 
 
 /**
  * Base class providing common functionality for {@link StreamEx} and
@@ -181,10 +182,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     }
 
     public <R> StreamEx<R> flattMap(Function<? super T, ? extends Collection<? extends R>> mapper) {
-        return flatMap(t -> {
-            Collection<? extends R> c = mapper.apply(t);
-            return c == null ? StreamEx.empty() : StreamEx.of(c.spliterator());
-        });
+        return flatMap(t -> StreamEx.of(mapper.apply(t)));
     }
 
     /**
@@ -218,10 +216,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     }
 
     public <R> StreamEx<R> flatMapp(Function<? super T, ? extends R[]> mapper) {
-        return flatMap(t -> {
-            R[] a = mapper.apply(t);
-            return a == null ? StreamEx.empty() : StreamEx.of(Arrays.spliterator(a));
-        });
+        return flatMap(t -> StreamEx.of(mapper.apply(t)));
     }
 
     @Override
@@ -338,7 +333,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
      */
     @SuppressWarnings("unchecked")
     public <K, V> EntryStream<K, V> mapToEntry(Function<? super T, ? extends Map.Entry<K, V>> mapper) {
-        final Function<?, ?> mapper2 = Function.identity();
+        final Function<?, ?> mapper2 = Fn.identity();
 
         if (mapper == mapper2) {
             return new EntryStream<>((StreamEx<Map.Entry<K, V>>) this, context);
@@ -1382,7 +1377,7 @@ public abstract class AbstractStreamEx<T, S extends AbstractStreamEx<T, S>> exte
     @SuppressWarnings("unchecked")
     public List<T> toImmutableList() {
         Object[] array = toArray(Object[]::new);
-        switch(array.length) {
+        switch (array.length) {
         case 0:
             return Collections.emptyList();
         case 1:

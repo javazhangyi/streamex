@@ -36,6 +36,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.landawn.streamex.util.Fn;
+
 /**
  * A {@link Collector} specialized to work with primitive {@code int}.
  * 
@@ -96,7 +98,7 @@ public interface IntCollector<A, R> extends MergingCollector<Integer, A, R> {
      * @return the new {@code IntCollector}
      */
     static <R> IntCollector<R, R> of(Supplier<R> supplier, ObjIntConsumer<R> intAccumulator, BiConsumer<R, R> merger) {
-        return new IntCollectorImpl<>(supplier, intAccumulator, merger, Function.identity(), ID_CHARACTERISTICS);
+        return new IntCollectorImpl<>(supplier, intAccumulator, merger, Fn.identity(), ID_CHARACTERISTICS);
     }
 
     /**

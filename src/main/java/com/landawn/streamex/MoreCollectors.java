@@ -55,6 +55,7 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import com.landawn.streamex.util.Comparators;
+import com.landawn.streamex.util.Fn;
 import com.landawn.streamex.util.MoreObjects;
 import com.landawn.streamex.util.Tuple;
 import com.landawn.streamex.util.Tuple.Tuple2;
@@ -155,7 +156,7 @@ public final class MoreCollectors {
         return new CancellableCollectorImpl<>(() -> EnumSet.noneOf(enumClass), EnumSet::add, (s1, s2) -> {
             s1.addAll(s2);
             return s1;
-        }, Function.identity(), set -> set.size() == size, UNORDERED_ID_CHARACTERISTICS);
+        }, Fn.identity(), set -> set.size() == size, UNORDERED_ID_CHARACTERISTICS);
     }
 
     /**
@@ -685,7 +686,7 @@ public final class MoreCollectors {
         }, (acc1, acc2) -> {
             acc1.addAll(acc2.subList(0, Math.min(acc2.size(), n - acc1.size())));
             return acc1;
-        }, Function.identity(), acc -> acc.size() >= n, ID_CHARACTERISTICS);
+        }, Fn.identity(), acc -> acc.size() >= n, ID_CHARACTERISTICS);
     }
 
     /**

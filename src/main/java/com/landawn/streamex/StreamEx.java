@@ -448,7 +448,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8
      */
     public <K> StreamEx<Map.Entry<K, List<T>>> groupBy(Function<? super T, ? extends K> classifier) {
-        return groupBy(classifier, Function.identity());
+        return groupBy(classifier, Fn.identity());
     }
 
     /**
@@ -472,7 +472,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream) {
-        return groupBy(classifier, Function.identity(), downstream);
+        return groupBy(classifier, Fn.identity(), downstream);
     }
 
     /**
@@ -499,7 +499,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      */
     public <K, D> StreamEx<Map.Entry<K, D>> groupBy(Function<? super T, ? extends K> classifier,
             Collector<? super T, ?, D> downstream, Supplier<? extends Map<K, D>> mapFactory) {
-        return groupBy(classifier, Function.identity(), downstream, mapFactory);
+        return groupBy(classifier, Fn.identity(), downstream, mapFactory);
     }
 
     public <K, V> StreamEx<Map.Entry<K, List<V>>> groupBy(Function<? super T, ? extends K> classifier,
@@ -700,7 +700,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <K> EntryStream<K, List<T>> groupByToEntry(Function<? super T, ? extends K> classifier) {
         final StreamEx<Map.Entry<K, List<T>>> s = groupBy(classifier);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     /**
@@ -726,7 +726,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Collector<? super T, ?, D> downstream) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     /**
@@ -755,21 +755,21 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Collector<? super T, ?, D> downstream, Supplier<? extends Map<K, D>> mapFactory) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, downstream, mapFactory);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     public <K, V> EntryStream<K, List<V>> groupByToEntry(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper) {
         final StreamEx<Map.Entry<K, List<V>>> s = groupBy(classifier, valueMapper);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     public <K, V, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
             Function<? super T, ? extends V> valueMapper, Collector<? super V, ?, D> downstream) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, valueMapper, downstream);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     public <K, V, D> EntryStream<K, D> groupByToEntry(Function<? super T, ? extends K> classifier,
@@ -777,7 +777,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Supplier<? extends Map<K, D>> mapFactory) {
         final StreamEx<Map.Entry<K, D>> s = groupBy(classifier, valueMapper, downstream, mapFactory);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     /**
@@ -806,7 +806,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             Supplier<? extends C> collectionFactory) {
         final StreamEx<Map.Entry<K, C>> s = groupBy(classifier, collectionFactory);
 
-        return s.mapToEntry(Function.identity());
+        return s.mapToEntry(Fn.identity());
     }
 
     /**
@@ -838,7 +838,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <K, C extends Collection<T>> EntryStream<K, C> groupByToEntry(Function<? super T, ? extends K> classifier,
             Supplier<? extends C> collectionFactory, Supplier<? extends Map<K, C>> mapFactory) {
 
-        return groupBy(classifier, collectionFactory, mapFactory).mapToEntry(Function.identity());
+        return groupBy(classifier, collectionFactory, mapFactory).mapToEntry(Fn.identity());
     }
 
     /**
@@ -856,7 +856,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.8.2
      */
     public EntryStream<Boolean, List<T>> partitionByToEntry(Predicate<? super T> predicate) {
-        return partitionBy(predicate).mapToEntry(Function.identity());
+        return partitionBy(predicate).mapToEntry(Fn.identity());
     }
 
     /**
@@ -881,7 +881,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <D> EntryStream<Boolean, D> partitionByToEntry(Predicate<? super T> predicate,
             Collector<? super T, ?, D> downstream) {
 
-        return partitionBy(predicate, downstream).mapToEntry(Function.identity());
+        return partitionBy(predicate, downstream).mapToEntry(Fn.identity());
     }
 
     /**
@@ -908,7 +908,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public <C extends Collection<T>> EntryStream<Boolean, C> partitionByToEntry(Predicate<? super T> predicate,
             Supplier<? extends C> collectionFactory) {
 
-        return partitionBy(predicate, (Supplier<C>) collectionFactory).mapToEntry(Function.identity());
+        return partitionBy(predicate, (Supplier<C>) collectionFactory).mapToEntry(Fn.identity());
     }
 
     public <K> EntryStream<K, Integer> countByToEntry(final Function<? super T, ? extends K> classifier) {
@@ -925,7 +925,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
     public StreamEx<T> distinct(final Predicate<? super Long> occurrencesFilter) {
         final Supplier<? extends Map<T, Long>> mapSupplier = Suppliers.ofLinkedHashMap();
 
-        return groupBy(Function.identity(), Collectors.counting(), mapSupplier).filter(e -> occurrencesFilter.test(e
+        return groupBy(Fn.identity(), Collectors.counting(), mapSupplier).filter(e -> occurrencesFilter.test(e
                 .getValue())).map(Fn.key());
     }
 
@@ -1434,7 +1434,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @see #toMap(Function, Function)
      */
     public <K> Map<K, T> toMap(Function<? super T, ? extends K> keyMapper) {
-        return toMap(keyMapper, Function.identity());
+        return toMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -1578,7 +1578,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.1.0
      */
     public <K> SortedMap<K, T> toSortedMap(Function<? super T, ? extends K> keyMapper) {
-        return toSortedMap(keyMapper, Function.identity());
+        return toSortedMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -1689,7 +1689,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.6.5
      */
     public <K> NavigableMap<K, T> toNavigableMap(Function<? super T, ? extends K> keyMapper) {
-        return toNavigableMap(keyMapper, Function.identity());
+        return toNavigableMap(keyMapper, Fn.identity());
     }
 
     /**
@@ -2031,7 +2031,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
             return this;
         if (values.length == 1)
             return without(values[0]);
-        return removeIf(Arrays.asList(values)::contains);
+        return removeIf(new HashSet<>(Arrays.asList(values))::contains);
     }
 
     /**
@@ -2159,7 +2159,7 @@ public class StreamEx<T> extends AbstractStreamEx<T, StreamEx<T>> {
      * @since 0.3.1
      */
     public StreamEx<T> collapse(BiPredicate<? super T, ? super T> collapsible, BinaryOperator<T> merger) {
-        return collapseInternal(collapsible, Function.identity(), merger, merger);
+        return collapseInternal(collapsible, Fn.identity(), merger, merger);
     }
 
     /**

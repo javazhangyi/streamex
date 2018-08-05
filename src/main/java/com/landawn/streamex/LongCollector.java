@@ -35,6 +35,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import com.landawn.streamex.util.Fn;
+
 /**
  * A {@link Collector} specialized to work with primitive {@code long}.
  * 
@@ -96,7 +98,7 @@ public interface LongCollector<A, R> extends MergingCollector<Long, A, R> {
      */
     static <R> LongCollector<R, R> of(Supplier<R> supplier, ObjLongConsumer<R> longAccumulator,
             BiConsumer<R, R> merger) {
-        return new LongCollectorImpl<>(supplier, longAccumulator, merger, Function.identity(), ID_CHARACTERISTICS);
+        return new LongCollectorImpl<>(supplier, longAccumulator, merger, Fn.identity(), ID_CHARACTERISTICS);
     }
 
     /**

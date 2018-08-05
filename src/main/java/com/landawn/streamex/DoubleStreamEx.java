@@ -24,6 +24,9 @@ import java.util.PrimitiveIterator.OfDouble;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.*;
 import java.util.stream.*;
+
+import com.landawn.streamex.util.Fn;
+
 import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
@@ -335,7 +338,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @since 0.3.0
      */
     public IntStreamEx flatMapToInt(DoubleFunction<? extends IntStream> mapper) {
-        return new IntStreamEx(stream().mapToObj(mapper).flatMapToInt(Function.identity()), context);
+        return new IntStreamEx(stream().mapToObj(mapper).flatMapToInt(Fn.identity()), context);
     }
 
     /**
@@ -354,7 +357,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @since 0.3.0
      */
     public LongStreamEx flatMapToLong(DoubleFunction<? extends LongStream> mapper) {
-        return new LongStreamEx(stream().mapToObj(mapper).flatMapToLong(Function.identity()), context);
+        return new LongStreamEx(stream().mapToObj(mapper).flatMapToLong(Fn.identity()), context);
     }
 
     /**
@@ -374,7 +377,7 @@ public class DoubleStreamEx extends BaseStreamEx<Double, DoubleStream, Spliterat
      * @since 0.3.0
      */
     public <R> StreamEx<R> flatMapToObj(DoubleFunction<? extends Stream<? extends R>> mapper) {
-        return new StreamEx<>(stream().mapToObj(mapper).flatMap(Function.identity()), context);
+        return new StreamEx<>(stream().mapToObj(mapper).flatMap(Fn.identity()), context);
     }
 
     public <R> StreamEx<R> flattMapToObj(DoubleFunction<? extends Collection<? extends R>> mapper) {
