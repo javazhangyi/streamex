@@ -2316,7 +2316,7 @@ public final class MoreCollectors {
      * @see Tuple#from(Collection)
      */
     @SuppressWarnings("rawtypes")
-    public static <T> Collector<T, ?, List<?>> combine(final Collection<Collector<? super T, ?, ?>> collectors) {
+    public static <T> Collector<T, ?, List<?>> combine(final Collection<? extends Collector<? super T, ?, ?>> collectors) {
         if (MoreObjects.isNullOrEmpty(collectors)) {
             throw new IllegalArgumentException("The specified 'collectors' can't be null or empty");
         }
