@@ -17,9 +17,6 @@
 package com.landawn.streamex.util;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.*;
@@ -55,51 +52,9 @@ public final class Triple<L, M, R> {
         return new Triple<>(l, m, r);
     }
 
-    public static <T> Triple<T, T, T> from(T[] a) {
-        if (a == null || a.length == 0) {
-            return new Triple<>(null, null, null);
-        } else if (a.length == 1) {
-            return new Triple<>(a[0], null, null);
-        } else if (a.length == 2) {
-            return new Triple<>(a[0], a[1], null);
-        } else {
-            return new Triple<>(a[0], a[1], a[2]);
-        }
-    }
-
-    public static <T> Triple<T, T, T> from(Collection<? extends T> c) {
-        if (c == null || c.size() == 0) {
-            return new Triple<>(null, null, null);
-        }
-
-        final List<T> list = c instanceof List ? (List<T>) c : null;
-
-        if (c.size() == 1) {
-            if (list != null) {
-                return new Triple<>(list.get(0), null, null);
-            } else {
-                return new Triple<>(c.iterator().next(), null, null);
-            }
-        } else if (c.size() == 2) {
-            if (list != null) {
-                return new Triple<>(list.get(0), list.get(1), null);
-            } else {
-                final Iterator<? extends T> iter = c.iterator();
-                return new Triple<>(iter.next(), iter.next(), null);
-            }
-        } else {
-            if (list != null) {
-                return new Triple<>(list.get(0), list.get(1), list.get(2));
-            } else {
-                final Iterator<? extends T> iter = c.iterator();
-                return new Triple<>(iter.next(), iter.next(), iter.next());
-            }
-        }
-    }
-
     public L left() {
         return left;
-    }
+    } 
 
     public M middle() {
         return middle;

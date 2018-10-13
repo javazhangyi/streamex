@@ -17,9 +17,6 @@
 package com.landawn.streamex.util;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,43 +53,10 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
 
     public static <L, R> Pair<L, R> of(final L l, final R r) {
         return new Pair<>(l, r);
-    }
+    } 
 
-    public static <K, V> Pair<K, V> copyOf(final Map.Entry<K, V> entry) {
+    public static <K, V> Pair<K, V> from(final Map.Entry<K, V> entry) {
         return new Pair<>(entry.getKey(), entry.getValue());
-    }
-
-    public static <T> Pair<T, T> from(T[] a) {
-        if (a == null || a.length == 0) {
-            return new Pair<>(null, null);
-        } else if (a.length == 1) {
-            return new Pair<>(a[0], null);
-        } else {
-            return new Pair<>(a[0], a[1]);
-        }
-    }
-
-    public static <T> Pair<T, T> from(Collection<? extends T> c) {
-        if (c == null || c.size() == 0) {
-            return new Pair<>(null, null);
-        }
-
-        final List<T> list = c instanceof List ? (List<T>) c : null;
-
-        if (c.size() == 1) {
-            if (list != null) {
-                return new Pair<>(list.get(0), null);
-            } else {
-                return new Pair<>(c.iterator().next(), null);
-            }
-        } else {
-            if (list != null) {
-                return new Pair<>(list.get(0), list.get(1));
-            } else {
-                final Iterator<? extends T> iter = c.iterator();
-                return new Pair<>(iter.next(), iter.next());
-            }
-        }
     }
 
     public L left() {
