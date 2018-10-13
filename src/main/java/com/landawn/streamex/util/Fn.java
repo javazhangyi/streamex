@@ -55,6 +55,11 @@ import java.util.regex.Pattern;
 /**
  * Factory utility class for functional interfaces.
  * 
+ * <br>
+ * Note: Don't save and reuse any Function/Predicat/Consumer/... created by calling the methods in this class.
+ * The method should be called every time.
+ * </br>
+ * 
  * <pre>
  * <code>
  * 
@@ -64,7 +69,9 @@ import java.util.regex.Pattern;
  * // Using Fn
  * Stream.of(map).filter(Fn.testByKey(k -> k.equals("a") || k.equals("b"))).collect(Collectors.toMap());
  * 
- * </code> </pre>
+ * </code>
+ * </pre>
+ * 
  * 
  * 
  * @author haiyang li
