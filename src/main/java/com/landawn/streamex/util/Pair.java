@@ -53,7 +53,7 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
 
     public static <L, R> Pair<L, R> of(final L l, final R r) {
         return new Pair<>(l, r);
-    } 
+    }
 
     public static <K, V> Pair<K, V> from(final Map.Entry<K, V> entry) {
         return new Pair<>(entry.getKey(), entry.getValue());
@@ -67,6 +67,12 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         return right;
     }
 
+    /**
+     * 
+     * @return
+     * @deprecated replaced by {@link #left()}
+     */
+    @Deprecated
     public L getLeft() {
         return left;
     }
@@ -77,6 +83,12 @@ public final class Pair<L, R> implements Map.Entry<L, R> {
         return this;
     }
 
+    /**
+     * 
+     * @return
+     * @deprecated replaced by {@link #right()}
+     */
+    @Deprecated
     public R getRight() {
         return right;
     }
